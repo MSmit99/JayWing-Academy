@@ -23,7 +23,7 @@ USE `jaywing` ;
 CREATE TABLE IF NOT EXISTS `jaywing`.`User` (
   `user_id` INT NOT NULL AUTO_INCREMENT,
   `username` VARCHAR(45) NOT NULL,
-  `email` VARCHAR(45) NOT NULL,
+  `email` VARCHAR(45) NOT NULL UNIQUE,
   `password` VARCHAR(45) NOT NULL,
   `wings` INT NULL,
   `admin` TINYINT(1) NULL,
