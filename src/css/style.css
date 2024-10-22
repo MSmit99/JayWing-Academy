@@ -8,3 +8,11 @@
     justify-content: center;
     height: 84vh; /* takes up window space minus header and footer */
 }
+
+/* Full Height Calendar */
+#calendar {
+    margin: 20px;
+    width: 100%;
+    max-width: 1150px; 
+    min-height: 600px;
+}
