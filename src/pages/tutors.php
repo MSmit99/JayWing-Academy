@@ -9,17 +9,17 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     
     <!-- custom css -->
-    <link rel="stylesheet" href="/src/css/style.css">
+    <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
     <header>
-        <nav id="navbar"></nav>
+        <?php include '../components/navbar.php'; ?>
     </header>
 
     <main>
-        <!-- TODO: Calendar goes here -->
+        <!-- TODO: Featured Tutors page goes here -->
          <div class="center-container">
-            <div id='calendar'></div>
+            <h1>Tutors</h1>
          </div>
 
     </main>
@@ -29,11 +29,7 @@
     <!-- bootstrap js -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
-    <!-- FullCalendar JS -->
-    <script src='https://cdn.jsdelivr.net/npm/fullcalendar/index.global.min.js'></script>
-
     <!-- Custom JS -->
-    <script src="/src/js/global.js"></script>
-    <script src="/src/js/calendar.js"></script>
+    <script src="../js/global.js"></script>
 </body>
 </html>

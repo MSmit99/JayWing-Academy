@@ -1,6 +1,4 @@
 <?php
-/* TODO: connect to database when setup 
-remove comment and add config to ignore
 require_once "db_config.php"; 
 
 
@@ -11,7 +9,6 @@ $connection = new mysqli($host, $dbUsername, $dbPassword, $database);
 if ($connection->connect_error) {
     die("Connection failed: ".$connection->connect_error);
 }
-*/
 
 
 ?>
