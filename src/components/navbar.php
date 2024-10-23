@@ -37,7 +37,7 @@ session_start();
                     <a class="nav-link" href="#">Messages</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Profile</a>
+                    <a class="nav-link" href="/jaywing-academy/src/pages/profile.php">Profile</a>
                 </li>
             </ul>
             <div class="ms-auto">
