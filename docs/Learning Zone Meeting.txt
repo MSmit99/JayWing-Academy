@@ -1,7 +1,7 @@
 10/23/2024 Meeting with Michelle Henry
 Attendees: Michelle Henry, Joey Wagner, Matt Smith, and Alex Roop
 
--IDs confidential
+- IDs confidential
 - Yes/No option for sending to professor/coach. 
 - How many sessions held / hours spent tutoring subjects. 
 - Students to tutors faster. 
