@@ -1,6 +1,5 @@
 <?php
 // src/data_src/api/login/login.php
-session_start();
 
 // Enable error reporting
 ini_set('display_errors', 1);
@@ -9,6 +8,7 @@ error_reporting(E_ALL);
 
 header('Content-Type: application/json');
 
+require_once '../../includes/session_handler.php';
 require_once '../../includes/db_connect.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -24,8 +24,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->close();
 
         if ($email_db && password_verify($password, $password_hash)) {
+            // Set session using session handler
             $_SESSION['user_id'] = $user_id;
             $_SESSION['username'] = $username;
+            
+            // Regenerate session ID for security
+            session_regenerate_id(true);
 
             echo json_encode(['success' => true, 'message' => 'Login successful']);
         } else {
