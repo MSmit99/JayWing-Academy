@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once __DIR__ . '/../data_src/includes/session_handler.php';
 ?>
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container-fluid">

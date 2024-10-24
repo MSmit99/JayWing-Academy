@@ -87,6 +87,7 @@ CREATE TABLE IF NOT EXISTS `jaywing`.`Event` (
   `start` DATETIME NOT NULL,
   `end` DATETIME NOT NULL,
   `event_type_id` INT NOT NULL,
+  `location` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`event_id`, `event_type_id`),
   INDEX `event_event_type_idx` (`event_type_id` ASC),
   CONSTRAINT `event_event_type`
