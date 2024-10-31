@@ -44,6 +44,8 @@
     async function handleLogin(event) {
       event.preventDefault();
       
+      let profile = document.getElementById('profile-tab');
+
       const formData = new FormData();
       formData.append('email', document.getElementById('loginEmail').value);
       formData.append('password', document.getElementById('loginPassword').value);
@@ -55,9 +57,13 @@
           });
           
           const data = await response.json();
-          
+
           if (data.success) {
-              window.location.reload(); // Refresh page to show logged-in state
+            if (profile && data.isLoggedIn) {
+                profile.classList.remove("hidden");
+            }
+            
+            window.location.reload(); // Refresh page to show logged-in state
           } else {
               alert(data.message);
           }

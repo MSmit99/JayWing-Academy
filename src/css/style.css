@@ -16,3 +16,7 @@
     max-width: 1150px; 
     min-height: 600px;
 }
+
+.hidden {
+    display: none !important;
+}  

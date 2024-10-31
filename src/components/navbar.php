@@ -36,7 +36,7 @@ require_once __DIR__ . '/../data_src/includes/session_handler.php';
                 <li class="nav-item">
                     <a class="nav-link" href="#">Messages</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item <?php echo (!isLoggedIn()) ? 'hidden' : ''; ?>" id="profile-tab">
                     <a class="nav-link" href="/jaywing-academy/src/pages/profile.php">Profile</a>
                 </li>
             </ul>
