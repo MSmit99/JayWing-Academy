@@ -145,29 +145,6 @@ CREATE TABLE IF NOT EXISTS `jaywing`.`Jobs` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
-
--- -----------------------------------------------------
--- Table `jaywing`.`Applications`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `jaywing`.`Applications` (
-  `application_id` INT NOT NULL AUTO_INCREMENT,
-  `job_id` INT NOT NULL,
-  `user_id` INT NOT NULL,
-  PRIMARY KEY (`application_id`, `job_id`, `user_id`),
-  INDEX `applications_user_idx` (`user_id` ASC) ,
-  CONSTRAINT `applications_jobs`
-    FOREIGN KEY (`job_id`)
-    REFERENCES `jaywing`.`Jobs` (`job_id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `applications_user`
-    FOREIGN KEY (`user_id`)
-    REFERENCES `jaywing`.`User` (`user_id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
 -- -----------------------------------------------------
 -- Table `jaywing`.`Chat`
 -- -----------------------------------------------------
