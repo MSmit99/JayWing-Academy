@@ -1,3 +1,26 @@
+<!-- <?php
+require_once '../../includes/session_handler.php';
+require_once '../../includes/db_connect.php';
+
+// Ideally user is always logged in when they reach this page
+if (!isLoggedIn) {
+  // TODO: Add login popup here or before page is loaded
+}
+
+// Getting User Credentials
+$user_id = getCurrentUserId();
+$user = null;
+
+if ($user_id) {
+  $stmt = $conn->prepare("SELECT username, email, wings FROM user WHERE user_id = ?");
+  $stmt->bind_param("i", $user_id);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  $user = $result->fetch_assoc();
+  $stmt->close();
+}
+?> -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
