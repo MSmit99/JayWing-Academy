@@ -42,6 +42,8 @@
 
 
 
+
+
   <div class="col-md-4">
     <label for="validationTooltipUsername" class="form-label">Professor Email</label>
     <div class="input-group has-validation">
@@ -59,6 +61,38 @@
       </div>
     </div>
 </div>
+
+<div class="col-12">
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" value="" id="invalidCheck2" required>
+      <label class="form-check-label" for="invalidCheck2">
+         <a href="javascript:void(0);" onclick="openModal()">Agree to terms and conditions</a>
+      </label>
+    </div>
+  </div>
+
+
+  
+
+    <script>
+        // Function to open the modal
+        function openModal() {
+            document.getElementById("modal").style.display = "flex";
+        }
+
+        // Function to close the modal
+        function closeModal() {
+            document.getElementById("modal").style.display = "none";
+        }
+
+        // Optional: close the modal when clicking outside of it
+        window.onclick = function(event) {
+            const modal = document.getElementById("modal");
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+    </script>
 
 <script>
 function validateEmailInput(input) {
@@ -96,7 +130,19 @@ function validateCourseCode() {
   </div>
   
 </form>
-         </div>
+
+<div class="modal-overlay" id="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal()">&times;</button>
+            <h1>Terms and Agreements</h1>
+            <p>
+                Here are the terms and agreements. By using this website, you agree to the following terms and conditions...
+            </p>
+            <!-- Add more terms content as needed -->
+        </div>
+    </div>
+
+   </div>
 
     </main>
     
