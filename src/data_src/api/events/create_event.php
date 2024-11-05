@@ -17,7 +17,7 @@ $connection->begin_transaction();
 try {
     // Create the event
     $stmt = $connection->prepare("
-        INSERT INTO Event (event_name, start, end, location, event_type_id) 
+        INSERT INTO Event (event_name, start, end, location, event_type_id)
         VALUES (?, ?, ?, ?, ?)
     ");
 
@@ -25,12 +25,12 @@ try {
         throw new Exception("Prepare failed: " . $connection->error);
     }
 
-    $stmt->bind_param("ssssi", 
+    $stmt->bind_param("ssssi",
         $_POST['event_name'],
         $_POST['start_time'],
         $_POST['end_time'],
         $_POST['location'],
-        $_POST['event_type_id'],
+        $_POST['event_type_id']
     );
 
     if (!$stmt->execute()) {
@@ -40,18 +40,33 @@ try {
     $eventId = $connection->insert_id;
     $stmt->close();
 
-    // Add participants
+    // add the creator (logged-in user) as a participant
+    $stmt = $connection->prepare("
+        INSERT INTO Attendance (role_in_event, user_id, event_id)
+        VALUES (?, ?, ?)
+    ");
+
+    // Get the creator's role from the first participant or default to 'professor'
+    $creatorRole = isset($_POST['participants'][0]['role']) ? 
+        $_POST['participants'][0]['role'] : 'professor';
+
+    // Add creator
+    $stmt->bind_param("sii",
+        $creatorRole,
+        $_SESSION['user_id'],
+        $eventId
+    );
+    $stmt->execute();
+
+    // add additional participants
     if (isset($_POST['participants']) && is_array($_POST['participants'])) {
-        $stmt = $connection->prepare("
-            INSERT INTO Attendance (role_in_event, user_id, event_id)
-            VALUES (?, ?, ?)
-        ");
-        
         $userStmt = $connection->prepare("
             SELECT user_id FROM User WHERE email = ?
         ");
 
-        foreach ($_POST['participants'] as $participant) {
+        // Start from index 1 to skip the creator's entry
+        for ($i = 1; $i < count($_POST['participants']); $i++) {
+            $participant = $_POST['participants'][$i];
             if (empty($participant['email'])) continue;
 
             $userStmt->bind_param("s", $participant['email']);
@@ -60,7 +75,7 @@ try {
             $user = $result->fetch_assoc();
 
             if ($user) {
-                // Skip if this participant is the creator
+                
                 if ($user['user_id'] == $_SESSION['user_id']) {
                     continue;
                 }
@@ -73,17 +88,6 @@ try {
                 $stmt->execute();
             }
         }
-
-        // Now add the creator with their selected role (from first participant)
-        $creatorRole = isset($_POST['participants'][0]['role']) ? 
-            $_POST['participants'][0]['role'] : 'professor';
-
-        $stmt->bind_param("sii", 
-            $creatorRole,
-            $_SESSION['user_id'],
-            $eventId
-        );
-        $stmt->execute();
 
         $userStmt->close();
         $stmt->close();

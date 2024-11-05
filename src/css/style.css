@@ -9,12 +9,19 @@
     height: 84vh; /* takes up window space minus header and footer */
 }
 
-/* Full Height Calendar */
+/* CALENDAR Styling */
 #calendar {
     margin: 20px;
     width: 100%;
     max-width: 1150px; 
     min-height: 600px;
+}
+
+
+.fc-event-title {
+    white-space: normal !important;
+    overflow: visible !important;
+    cursor: pointer;
 }
 
 .hidden {

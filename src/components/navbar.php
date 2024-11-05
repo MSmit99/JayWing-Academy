@@ -47,7 +47,7 @@ require_once __DIR__ . '/../data_src/includes/session_handler.php';
                             <?php echo htmlspecialchars($_SESSION['username']); ?>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="/src/pages/profile.php">Profile</a></li>
+                            <li><a class="dropdown-item" href="/jaywing-academy/src/pages/profile.php">Profile</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="/jaywing-academy/src/data_src/api/login/logout.php">Logout</a></li>
                         </ul>
