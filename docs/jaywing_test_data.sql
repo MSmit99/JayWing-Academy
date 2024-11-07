@@ -2,11 +2,11 @@ USE `jaywing`;
 
 SET FOREIGN_KEY_CHECKS = 0;
 
--- Insert test data into User table
-INSERT INTO `User` (username, email, password, wings, admin) VALUES
-('jdoe', 'jdoe@example.com', 'password123', 100, 1),
-('asmith', 'asmith@example.com', 'password456', 200, 0),
-('bjones', 'bjones@example.com', 'password789', 150, 0);
+-- Insert test data into User table - THIS NEEDS TO BE DONE ON THE WEBSITE SO THAT THE HASHING WORKS
+-- INSERT INTO `User` (username, email, password, wings, admin) VALUES
+-- ('jdoe', 'jdoe@example.com', 'password123', 100, 1),
+-- ('asmith', 'asmith@example.com', 'password456', 200, 0),
+-- ('bjones', 'bjones@example.com', 'password789', 150, 0);
 
 -- Insert test data into Class table
 INSERT INTO `Class` (class_name, description) VALUES
