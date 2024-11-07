@@ -17,20 +17,21 @@ $connection->begin_transaction();
 try {
     // Create the event
     $stmt = $connection->prepare("
-        INSERT INTO Event (event_name, start, end, location, event_type_id)
-        VALUES (?, ?, ?, ?, ?)
+        INSERT INTO Event (event_name, start, end, location, event_type_id, created_by)
+        VALUES (?, ?, ?, ?, ?, ?)
     ");
 
     if (!$stmt) {
         throw new Exception("Prepare failed: " . $connection->error);
     }
 
-    $stmt->bind_param("ssssi",
+    $stmt->bind_param("ssssii",
         $_POST['event_name'],
         $_POST['start_time'],
         $_POST['end_time'],
         $_POST['location'],
-        $_POST['event_type_id']
+        $_POST['event_type_id'],
+        $_SESSION['user_id']
     );
 
     if (!$stmt->execute()) {

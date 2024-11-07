@@ -22,17 +22,16 @@ if (!$eventId) {
 
 // Verify user is the creator
 $stmt = $connection->prepare("
-    SELECT user_id FROM Attendance 
-    WHERE event_id = ? 
-    LIMIT 1
+    SELECT created_by FROM Event 
+    WHERE event_id = ?
 ");
 
 $stmt->bind_param('i', $eventId);
 $stmt->execute();
 $result = $stmt->get_result();
-$creator = $result->fetch_assoc();
+$event = $result->fetch_assoc();
 
-if (!$creator || $creator['user_id'] != $_SESSION['user_id']) {
+if (!$event || $event['created_by'] != $_SESSION['user_id']) {
     echo json_encode(['success' => false, 'message' => 'Not authorized to delete this event']);
     exit();
 }

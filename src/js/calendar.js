@@ -275,6 +275,12 @@ async function showEventDetails(event) {
                   </button>
               `;
           }
+          actionsDiv.innerHTML += `
+                <a href="/jaywing-academy/src/pages/event_details.php?event_id=${event.id}" 
+                   class="btn btn-info ms-2">
+                    More Details
+                </a>
+            `;
 
           const modal = new bootstrap.Modal(document.getElementById('eventDetailsModal'));
           modal.show();

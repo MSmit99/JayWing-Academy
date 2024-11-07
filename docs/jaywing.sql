@@ -88,15 +88,21 @@ CREATE TABLE IF NOT EXISTS `jaywing`.`Event` (
   `end` DATETIME NOT NULL,
   `event_type_id` INT NOT NULL,
   `location` VARCHAR(45) NOT NULL,
+  `created_by` INT NOT NULL,
   PRIMARY KEY (`event_id`, `event_type_id`),
   INDEX `event_event_type_idx` (`event_type_id` ASC),
+  INDEX `event_creator_idx` (`created_by` ASC),
   CONSTRAINT `event_event_type`
     FOREIGN KEY (`event_type_id`)
     REFERENCES `jaywing`.`Event_Type` (`event_type_id`)
     ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `event_creator`
+    FOREIGN KEY (`created_by`)
+    REFERENCES `jaywing`.`User` (`user_id`)
+    ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
-
 
 -- -----------------------------------------------------
 -- Table `jaywing`.`Attendance`
