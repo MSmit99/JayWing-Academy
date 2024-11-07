@@ -19,7 +19,7 @@
     <main>
         <!-- TODO: Jobs page goes here -->
          <div class="center-container">
-         <form class="row g-3 needs-validation" novalidate>
+         <form class="row g-3 needs-validation" novalidate id="tutorApplicationForm">
 
          <div class="col-md-4 position-relative">
     <label for="validationTooltip01" class="form-label">Course Code</label>
@@ -64,36 +64,74 @@
 
 <div class="col-12">
     <div class="form-check">
-      <input class="form-check-input" type="checkbox" value="" id="invalidCheck2" required>
+      <input class="form-check-input" type="checkbox" value="" id="invalidCheck2">
       <label class="form-check-label" for="invalidCheck2">
-         <a href="javascript:void(0);" onclick="openModal()">Agree to terms and conditions</a>
+        <p>By checking this box, I confirm that I have read and agreed to the terms and conditions of this application.</p>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#termsModal">
+          View Terms and Conditions
+        </button>
       </label>
     </div>
   </div>
 
+<!-- Terms and Agreemnts Modal -->
+<div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="termsModalLabel">Terms and Conditions</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Insert your terms and conditions text here -->
+        <p><strong>Terms and Conditions for Tutor Application</strong></p>
+  
+  <p><strong>1. Consent to Share Academic Information</strong><br>
+  You acknowledge that applying for this tutoring position requires you to share information about your academic background, including but not limited to your educational history, certifications, and any academic achievements. By providing this information, you grant permission for this data to be reviewed as part of the application process.</p>
+  
+  <p><strong>2. FERPA Compliance</strong><br>
+  You understand that by voluntarily sharing your academic information, you are consenting to its use in accordance with FERPA (Family Educational Rights and Privacy Act) guidelines. This disclosure is necessary for evaluating your qualifications as a tutor and will not be shared outside of authorized review personnel.</p>
+  
+  <p><strong>3. Data Privacy</strong><br>
+  Your personal and academic information will be handled securely and only accessed by individuals directly involved in the application review process.</p>
+  
+  <p><strong>4. Agreement to Terms</strong><br>
+  By proceeding with the application, you affirm that you have read and understood these terms and consent to the described use of your academic information.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
 
   
 
-    <script>
-        // Function to open the modal
-        function openModal() {
-            document.getElementById("modal").style.display = "flex";
-        }
 
-        // Function to close the modal
-        function closeModal() {
-            document.getElementById("modal").style.display = "none";
-        }
+  
+<!-- script to check and make sure terms is checked -->
+<script>
+  const form = document.getElementById("tutorApplicationForm");
+const checkbox = document.getElementById("invalidCheck2");
+const submitBtn = document.getElementById("submitButton");
 
-        // Optional: close the modal when clicking outside of it
-        window.onclick = function(event) {
-            const modal = document.getElementById("modal");
-            if (event.target === modal) {
-                closeModal();
-            }
-        }
-    </script>
+// Add event listener to toggle submit button based on checkbox state
+checkbox.addEventListener('change', function() {
+    submitBtn.disabled = !checkbox.checked; // Disable submit if checkbox is unchecked
+});
 
+// Prevent form submission if checkbox is not checked
+form.addEventListener("submit", function(event) {
+    if (!checkbox.checked) {
+        event.preventDefault();  // Prevent form submission
+        alert("You must agree to the terms and conditions before submitting the application.");
+    }
+});
+</script>
+
+
+
+<!-- Valid email check -->
 <script>
 function validateEmailInput(input) {
     // Allowed characters: letters, numbers, ., _, %, +, and -
@@ -113,6 +151,8 @@ function validateEmailInput(input) {
   <div class="col-12">
   <button type="submit" id="submitButton" class="btn btn-primary" disabled>Submit</button>
 
+
+<!-- Making sure the course codes are valid -->
 <script>
 function validateCourseCode() {
     const courseCodeInput = document.getElementById('validationTooltip01');
@@ -131,18 +171,7 @@ function validateCourseCode() {
   
 </form>
 
-<div class="modal-overlay" id="modal">
-        <div class="modal-content">
-            <button class="close-btn" onclick="closeModal()">&times;</button>
-            <h1>Terms and Agreements</h1>
-            <p>
-                Here are the terms and agreements. By using this website, you agree to the following terms and conditions...
-            </p>
-            <!-- Add more terms content as needed -->
-        </div>
-    </div>
 
-   </div>
 
     </main>
     
