@@ -41,9 +41,8 @@ $stmt = $connection->prepare("
     FROM Attendance a
     JOIN User u ON a.user_id = u.user_id
     WHERE a.event_id = ?
-    ORDER BY CASE WHEN u.user_id = ? THEN 0 ELSE 1 END
 ");
-$stmt->bind_param("ii", $event_id, $event['created_by']);
+$stmt->bind_param("i", $event_id);
 $stmt->execute();
 $participants = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 
@@ -81,16 +80,20 @@ $eventEnded = strtotime($event['end']) < time();
                     <p><strong>Wings:</strong> <?php echo htmlspecialchars($event['wings']); ?></p>
                 </div>
 
-                <!-- Attendance Section (only visible to creator after event ends) -->
+                <!-- Participants list (visible to creator and participants) -->
                 <?php if ($isCreator || $isParticipant): ?>
                     <div class="table-responsive">
                         <h4 class="mb-3">Participants</h4>
+                        <?php if ($isCreator): ?>
+                            <form id="attendanceForm">
+                                <input type="hidden" name="event_id" value="<?php echo $event_id; ?>">
+                        <?php endif; ?>
                         <table class="table table-dark">
                             <thead>
                                 <tr>
                                     <th>Name</th>
                                     <th>Role</th>
-                                    <?php if ($isCreator && $eventEnded): ?>
+                                    <?php if ($isCreator): ?>
                                         <th>Attended</th>
                                     <?php endif; ?>
                                 </tr>
@@ -100,7 +103,7 @@ $eventEnded = strtotime($event['end']) < time();
                                     <tr>
                                         <td><?php echo htmlspecialchars($participant['username']); ?></td>
                                         <td><?php echo htmlspecialchars($participant['role_in_event']); ?></td>
-                                        <?php if ($isCreator && $eventEnded): ?>
+                                        <?php if ($isCreator): ?>
                                             <td>
                                                 <input type="checkbox" 
                                                     name="attendance[<?php echo $participant['user_id']; ?>]" 
@@ -111,11 +114,11 @@ $eventEnded = strtotime($event['end']) < time();
                                 <?php endforeach; ?>
                             </tbody>
                         </table>
+                        <?php if ($isCreator): ?>
+                            <button type="submit" class="btn btn-primary">Submit Attendance</button>
+                            </form>
+                        <?php endif; ?>
                     </div>
-
-                    <?php if ($isCreator && $eventEnded): ?>
-                        <button type="submit" class="btn btn-primary">Submit Attendance</button>
-                    <?php endif; ?>
                 <?php endif; ?>
             </div>
         </div>
