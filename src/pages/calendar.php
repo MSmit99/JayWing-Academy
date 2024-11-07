@@ -3,10 +3,22 @@ require_once '../data_src/includes/session_handler.php';
 require_once '../data_src/includes/db_connect.php';
 
 $isUserLoggedIn = isLoggedIn();
+$userEmail = '';
+$userId = '';
 
 // Fetch event types from database
 $eventTypes = [];
 if ($isUserLoggedIn) {  // Only fetch if logged in
+    $userId = $_SESSION['user_id'];
+    $stmt = $connection->prepare("SELECT email FROM User WHERE user_id = ?");
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if ($row = $result->fetch_assoc()) {
+        $userEmail = $row['email'];
+    }
+    $stmt->close();
+
     $result = $connection->query("SELECT * FROM Event_Type");
     while($row = $result->fetch_assoc()) {
         $eventTypes[] = $row;
@@ -88,7 +100,10 @@ if ($isUserLoggedIn) {  // Only fetch if logged in
                                     <div class="participant-entry row mb-2">
                                         <div class="col-md-8">
                                             <input type="email" class="form-control bg-dark text-white participant-email" 
-                                                placeholder="Participant Email" name="participants[0][email]" required>
+                                                value="<?php echo htmlspecialchars($userEmail); ?>" 
+                                                name="participants[0][email]" 
+                                                required 
+                                                readonly>
                                         </div>
                                         <div class="col-md-4">
                                             <select class="form-select bg-dark text-white" name="participants[0][role]" required>
@@ -165,6 +180,7 @@ if ($isUserLoggedIn) {  // Only fetch if logged in
     <!-- Pass login status to JavaScript -->
     <script>
         const isLoggedIn = <?php echo json_encode($isUserLoggedIn); ?>;
+        const currentUserEmail = <?php echo json_encode($userEmail); ?>;
     </script>
 
     <!-- Custom JS -->

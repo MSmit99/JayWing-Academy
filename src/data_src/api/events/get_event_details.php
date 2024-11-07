@@ -16,7 +16,7 @@ try {
     // Get event details
     $query = "
         SELECT e.*, et.type_name, et.wings,
-               (SELECT user_id FROM Attendance WHERE event_id = e.event_id LIMIT 1) as creator_id
+               e.created_by as creator_id  /* Changed to use created_by column */
         FROM Event e
         JOIN Event_Type et ON e.event_type_id = et.event_type_id
         WHERE e.event_id = ?
@@ -33,7 +33,7 @@ try {
         FROM Attendance a
         JOIN User u ON a.user_id = u.user_id
         WHERE a.event_id = ?
-        ORDER BY CASE WHEN a.user_id = ? THEN 0 ELSE 1 END
+        ORDER BY CASE WHEN u.user_id = ? THEN 0 ELSE 1 END
     ";
     
     $stmt = $connection->prepare($query);
@@ -50,7 +50,10 @@ try {
     
 } catch (Exception $e) {
     http_response_code(500);
-    echo json_encode(['success' => false, 'message' => 'Error fetching event details']);
+    echo json_encode([
+        'success' => false, 
+        'message' => 'Error fetching event details: ' . $e->getMessage()
+    ]);
 }
 
 $connection->close();

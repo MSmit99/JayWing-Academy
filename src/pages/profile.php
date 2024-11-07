@@ -1,9 +1,9 @@
-<!-- <?php
-require_once '../../includes/session_handler.php';
-require_once '../../includes/db_connect.php';
+<?php
+require_once '../data_src/includes/session_handler.php';
+require_once '../data_src/includes/db_connect.php';
 
 // Ideally user is always logged in when they reach this page
-if (!isLoggedIn) {
+if (!isLoggedIn()) {
   // TODO: Add login popup here or before page is loaded
 }
 
@@ -12,14 +12,14 @@ $user_id = getCurrentUserId();
 $user = null;
 
 if ($user_id) {
-  $stmt = $conn->prepare("SELECT username, email, wings FROM user WHERE user_id = ?");
+  $stmt = $connection->prepare("SELECT username, email, wings FROM user WHERE user_id = ?");
   $stmt->bind_param("i", $user_id);
   $stmt->execute();
   $result = $stmt->get_result();
   $user = $result->fetch_assoc();
   $stmt->close();
 }
-?> -->
+?> 
 
 <!DOCTYPE html>
 <html lang="en">

@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../data_src/includes/session_handler.php';
+require_once __DIR__ . '/../data_src/includes/db_connect.php';
 ?>
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container-fluid">
@@ -31,23 +32,33 @@ require_once __DIR__ . '/../data_src/includes/session_handler.php';
                     </ul>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Wings</a>
-                </li>
-                <li class="nav-item">
                     <a class="nav-link" href="#">Messages</a>
                 </li>
                 <li class="nav-item <?php echo (!isLoggedIn()) ? 'hidden' : ''; ?>" id="profile-tab">
                     <a class="nav-link" href="/jaywing-academy/src/pages/profile.php">Profile</a>
                 </li>
             </ul>
-            <div class="ms-auto">
+            <div class="d-flex align-items-center">
+                <?php if(isLoggedIn()): ?>
+                    <?php
+                    $stmt = $connection->prepare("SELECT wings FROM User WHERE user_id = ?");
+                    $stmt->bind_param("i", $_SESSION['user_id']);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+                    $wings = $result->fetch_assoc()['wings'];
+                    ?>
+                    <button class="btn btn-outline-light me-2">
+                        Wings: <?php echo htmlspecialchars($wings); ?>
+                    </button>
+                <?php endif; ?>
+
                 <?php if(isset($_SESSION['user_id'])): ?>
                     <div class="dropdown">
                         <button class="btn btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <?php echo htmlspecialchars($_SESSION['username']); ?>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="/src/pages/profile.php">Profile</a></li>
+                            <li><a class="dropdown-item" href="/jaywing-academy/src/pages/profile.php">Profile</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="/jaywing-academy/src/data_src/api/login/logout.php">Logout</a></li>
                         </ul>
