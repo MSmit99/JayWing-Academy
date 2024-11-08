@@ -3,6 +3,9 @@
 -- Model: New Model    Version: 1.0
 -- MySQL Workbench Forward Engineering
 
+-- Version: 2.0 Coming soon!
+
+
 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
@@ -22,11 +25,11 @@ USE `jaywing` ;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `jaywing`.`User` (
   `user_id` INT NOT NULL AUTO_INCREMENT,
-  `username` VARCHAR(45) NOT NULL,
+  `admin` TINYINT(1) NULL,
+  `username` VARCHAR(45) NOT NULL UNIQUE,
   `email` VARCHAR(45) NOT NULL UNIQUE,
   `password` VARCHAR(255) NOT NULL,
   `wings` INT NULL,
-  `admin` TINYINT(1) NULL,
   PRIMARY KEY (`user_id`))
 ENGINE = InnoDB;
 
