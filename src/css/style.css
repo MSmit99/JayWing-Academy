@@ -27,3 +27,9 @@
 .hidden {
     display: none !important;
 }  
+
+/* CS341 Logo in Footer */
+#cs341 {
+    height: 50px;
+    width: 50px;
+}
