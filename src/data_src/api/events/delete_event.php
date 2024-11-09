@@ -11,7 +11,6 @@ if (!isLoggedIn()) {
     exit();
 }
 
-// Get JSON data
 $data = json_decode(file_get_contents('php://input'), true);
 $eventId = $data['event_id'] ?? null;
 
@@ -20,23 +19,22 @@ if (!$eventId) {
     exit();
 }
 
-// Verify user is the creator
+// Verify user is the creator using Attendance table
 $stmt = $connection->prepare("
-    SELECT created_by FROM Event 
-    WHERE event_id = ?
+    SELECT user_id 
+    FROM Attendance 
+    WHERE event_id = ? AND user_id = ? AND isCreator = 1
 ");
 
-$stmt->bind_param('i', $eventId);
+$stmt->bind_param('ii', $eventId, $_SESSION['user_id']);
 $stmt->execute();
 $result = $stmt->get_result();
-$event = $result->fetch_assoc();
 
-if (!$event || $event['created_by'] != $_SESSION['user_id']) {
+if (!$result->fetch_assoc()) {
     echo json_encode(['success' => false, 'message' => 'Not authorized to delete this event']);
     exit();
 }
 
-// Start transaction
 $connection->begin_transaction();
 
 try {

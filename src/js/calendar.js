@@ -114,12 +114,12 @@ async function editEvent(eventId) {
             const detailsModal = bootstrap.Modal.getInstance(document.getElementById('eventDetailsModal'));
             detailsModal.hide();
 
-            // Populate form with event data
-            document.getElementById('eventName').value = data.event.event_name;
+            // Populate form with event data using new field names
+            document.getElementById('eventName').value = data.event.eventName;
             document.getElementById('location').value = data.event.location;
-            document.getElementById('startDateTime').value = data.event.start.slice(0, 16);
-            document.getElementById('endDateTime').value = data.event.end.slice(0, 16);
-            document.getElementById('eventType').value = data.event.event_type_id;
+            document.getElementById('startDateTime').value = data.event.eventStartTime.slice(0, 16);
+            document.getElementById('endDateTime').value = data.event.eventEndTime.slice(0, 16);
+            document.getElementById('eventType').value = data.event.type_id;
 
             // Add hidden event_id field
             let eventIdInput = document.getElementById('eventId');
@@ -148,9 +148,9 @@ async function editEvent(eventId) {
                     </div>
                     <div class="col-md-4">
                         <select class="form-select bg-dark text-white" name="participants[0][role]" required>
-                            <option value="professor" ${data.participants[0].role_in_event === 'professor' ? 'selected' : ''}>Professor</option>
-                            <option value="tutor" ${data.participants[0].role_in_event === 'tutor' ? 'selected' : ''}>Tutor</option>
-                            <option value="tutee" ${data.participants[0].role_in_event === 'tutee' ? 'selected' : ''}>Tutee</option>
+                            <option value="professor" ${data.participants[0].roleOfEvent === 'professor' ? 'selected' : ''}>Professor</option>
+                            <option value="tutor" ${data.participants[0].roleOfEvent === 'tutor' ? 'selected' : ''}>Tutor</option>
+                            <option value="tutee" ${data.participants[0].roleOfEvent === 'tutee' ? 'selected' : ''}>Tutee</option>
                         </select>
                     </div>
                 </div>
@@ -168,9 +168,9 @@ async function editEvent(eventId) {
                         </div>
                         <div class="col-md-3">
                             <select class="form-select bg-dark text-white" name="participants[${participantCounter}][role]" required>
-                                <option value="professor" ${participant.role_in_event === 'professor' ? 'selected' : ''}>Professor</option>
-                                <option value="tutor" ${participant.role_in_event === 'tutor' ? 'selected' : ''}>Tutor</option>
-                                <option value="tutee" ${participant.role_in_event === 'tutee' ? 'selected' : ''}>Tutee</option>
+                                <option value="professor" ${participant.roleOfEvent === 'professor' ? 'selected' : ''}>Professor</option>
+                                <option value="tutor" ${participant.roleOfEvent === 'tutor' ? 'selected' : ''}>Tutor</option>
+                                <option value="tutee" ${participant.roleOfEvent === 'tutee' ? 'selected' : ''}>Tutee</option>
                             </select>
                         </div>
                         <div class="col-md-1">
@@ -238,57 +238,57 @@ async function deleteEvent(eventId) {
 
 
 async function showEventDetails(event) {
-  try {
-      const response = await fetch(`/jaywing-academy/src/data_src/api/events/get_event_details.php?event_id=${event.id}`);
-      const data = await response.json();
-      
-      if (data.success) {
-          document.getElementById('detailsEventTitle').textContent = data.event.event_name;
-          document.getElementById('detailsEventLocation').textContent = data.event.location;
-          document.getElementById('detailsEventTime').textContent = 
-              `${new Date(data.event.start).toLocaleString()} - ${new Date(data.event.end).toLocaleString()}`;
-          document.getElementById('detailsEventType').textContent = data.event.type_name;
-          document.getElementById('detailsEventWings').textContent = data.event.wings;
+    try {
+        const response = await fetch(`/jaywing-academy/src/data_src/api/events/get_event_details.php?event_id=${event.id}`);
+        const data = await response.json();
+        
+        if (data.success) {
+            document.getElementById('detailsEventTitle').textContent = data.event.eventName;
+            document.getElementById('detailsEventLocation').textContent = data.event.location;
+            document.getElementById('detailsEventTime').textContent = 
+                `${new Date(data.event.eventStartTime).toLocaleString()} - ${new Date(data.event.eventEndTime).toLocaleString()}`;
+            document.getElementById('detailsEventType').textContent = data.event.type_name;
+            document.getElementById('detailsEventWings').textContent = data.event.wings;
 
-          // Clear and populate participants table
-          const tbody = document.getElementById('participantsTableBody');
-          tbody.innerHTML = '';
-          data.participants.forEach(participant => {
-              tbody.innerHTML += `
-                  <tr>
-                      <td>${participant.username}</td>
-                      <td>${participant.role_in_event}</td>
-                  </tr>
-              `;
-          });
+            // Clear and populate participants table
+            const tbody = document.getElementById('participantsTableBody');
+            tbody.innerHTML = '';
+            data.participants.forEach(participant => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${participant.username}</td>
+                        <td>${participant.role_in_event}</td>
+                    </tr>
+                `;
+            });
 
-          // Show edit/delete buttons if user is creator
-          const actionsDiv = document.getElementById('eventActions');
-          actionsDiv.innerHTML = '';
-          if (data.event.creator_id === data.current_user_id) {
-              actionsDiv.innerHTML = `
-                  <button class="btn btn-primary me-2" onclick="editEvent(${event.id})">
-                      Edit Event
-                  </button>
-                  <button class="btn btn-danger" onclick="deleteEvent(${event.id})">
-                      Delete Event
-                  </button>
-              `;
-          }
-          actionsDiv.innerHTML += `
+            // Show edit/delete buttons if user is creator (check creator_id)
+            const actionsDiv = document.getElementById('eventActions');
+            actionsDiv.innerHTML = '';
+            if (data.event.creator_id === data.current_user_id) {
+                actionsDiv.innerHTML = `
+                    <button class="btn btn-primary me-2" onclick="editEvent(${event.id})">
+                        Edit Event
+                    </button>
+                    <button class="btn btn-danger" onclick="deleteEvent(${event.id})">
+                        Delete Event
+                    </button>
+                `;
+            }
+            actionsDiv.innerHTML += `
                 <a href="/jaywing-academy/src/pages/event_details.php?event_id=${event.id}" 
                    class="btn btn-info ms-2">
                     More Details
                 </a>
             `;
 
-          const modal = new bootstrap.Modal(document.getElementById('eventDetailsModal'));
-          modal.show();
-      }
-  } catch (error) {
-      console.error('Error fetching event details:', error);
-      alert('Failed to load event details. Please try again.');
-  }
+            const modal = new bootstrap.Modal(document.getElementById('eventDetailsModal'));
+            modal.show();
+        }
+    } catch (error) {
+        console.error('Error fetching event details:', error);
+        alert('Failed to load event details. Please try again.');
+    }
 }
 
 

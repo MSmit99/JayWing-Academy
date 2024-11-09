@@ -10,14 +10,14 @@ try {
     $query = "
         SELECT DISTINCT 
             e.event_id,
-            e.event_name,
+            e.eventName as event_name,
             e.location,
-            e.start,
-            e.end,
-            et.type_name,
+            e.eventStartTime as start,
+            e.eventEndTime as end,
+            et.eventTypeName as type_name,
             et.wings
         FROM Event e
-        JOIN Event_Type et ON e.event_type_id = et.event_type_id
+        JOIN Event_Type et ON e.type_id = et.event_type_id
     ";
     
     if (isLoggedIn()) {

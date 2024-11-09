@@ -11,13 +11,12 @@ if (!isLoggedIn()) {
     exit();
 }
 
-// Start transaction
 $connection->begin_transaction();
 
 try {
-    // Create the event
+    // Create the event with new column names
     $stmt = $connection->prepare("
-        INSERT INTO Event (event_name, start, end, location, event_type_id, created_by)
+        INSERT INTO Event (eventName, eventStartTime, eventEndTime, location, type_id, eventDescription)
         VALUES (?, ?, ?, ?, ?, ?)
     ");
 
@@ -25,13 +24,15 @@ try {
         throw new Exception("Prepare failed: " . $connection->error);
     }
 
-    $stmt->bind_param("ssssii",
+    $description = $_POST['description'] ?? ''; // Optional description field
+    
+    $stmt->bind_param("ssssss",
         $_POST['event_name'],
         $_POST['start_time'],
         $_POST['end_time'],
         $_POST['location'],
-        $_POST['event_type_id'],
-        $_SESSION['user_id']
+        $_POST['event_type_id'], // This is now type_id in the new schema
+        $description
     );
 
     if (!$stmt->execute()) {
@@ -41,17 +42,16 @@ try {
     $eventId = $connection->insert_id;
     $stmt->close();
 
-    // add the creator (logged-in user) as a participant
+    // Add the creator with isCreator flag
     $stmt = $connection->prepare("
-        INSERT INTO Attendance (role_in_event, user_id, event_id)
-        VALUES (?, ?, ?)
+        INSERT INTO Attendance (roleOfEvent, user_id, event_id, isCreator)
+        VALUES (?, ?, ?, 1)
     ");
 
     // Get the creator's role from the first participant or default to 'professor'
     $creatorRole = isset($_POST['participants'][0]['role']) ? 
         $_POST['participants'][0]['role'] : 'professor';
 
-    // Add creator
     $stmt->bind_param("sii",
         $creatorRole,
         $_SESSION['user_id'],
@@ -59,8 +59,13 @@ try {
     );
     $stmt->execute();
 
-    // add additional participants
+    // Add additional participants
     if (isset($_POST['participants']) && is_array($_POST['participants'])) {
+        $stmt = $connection->prepare("
+            INSERT INTO Attendance (roleOfEvent, user_id, event_id, isCreator)
+            VALUES (?, ?, ?, 0)
+        ");
+
         $userStmt = $connection->prepare("
             SELECT user_id FROM User WHERE email = ?
         ");
@@ -75,12 +80,7 @@ try {
             $result = $userStmt->get_result();
             $user = $result->fetch_assoc();
 
-            if ($user) {
-                
-                if ($user['user_id'] == $_SESSION['user_id']) {
-                    continue;
-                }
-
+            if ($user && $user['user_id'] != $_SESSION['user_id']) {
                 $stmt->bind_param("sii",
                     $participant['role'],
                     $user['user_id'],
