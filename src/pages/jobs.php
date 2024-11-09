@@ -66,8 +66,8 @@
     <div class="form-check">
       <input class="form-check-input" type="checkbox" value="" id="invalidCheck2">
       <label class="form-check-label" for="invalidCheck2">
-        <p>By checking this box, I confirm that I have read and agreed to the terms and conditions of this application.</p>
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#termsModal">
+        <p class = 'inline'>By checking this box, I confirm that I have read and agreed to the terms and conditions of this application</p>
+        <button type="button" class="btn btn-primary inline" data-bs-toggle="modal" data-bs-target="#termsModal">
           View Terms and Conditions
         </button>
       </label>
