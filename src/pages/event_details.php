@@ -23,30 +23,39 @@ $isParticipant = $stmt->get_result()->num_rows > 0;
 
 // Fetch event details
 $stmt = $connection->prepare("
-    SELECT e.*, et.type_name, et.wings, e.created_by
+    SELECT e.*, et.eventTypeName as type_name, et.wings,
+           a.user_id as creator_id
     FROM Event e
-    JOIN Event_Type et ON e.event_type_id = et.event_type_id
+    JOIN Event_Type et ON e.type_id = et.event_type_id
+    JOIN Attendance a ON e.event_id = a.event_id AND a.isCreator = 1
     WHERE e.event_id = ?
 ");
 $stmt->bind_param("i", $event_id);
 $stmt->execute();
 $event = $stmt->get_result()->fetch_assoc();
 
-// Set isCreator 
-$isCreator = $event['created_by'] == $_SESSION['user_id'];
+// Set isCreator using the Attendance table
+$stmt = $connection->prepare("
+    SELECT 1 FROM Attendance 
+    WHERE event_id = ? AND user_id = ? AND isCreator = 1
+");
+$stmt->bind_param("ii", $event_id, $_SESSION['user_id']);
+$stmt->execute();
+$isCreator = $stmt->get_result()->num_rows > 0;
 
 // Fetch ALL participants
 $stmt = $connection->prepare("
-    SELECT u.user_id, u.username, u.email, a.role_in_event
+    SELECT u.user_id, u.username, u.email, a.roleOfEvent as role_in_event
     FROM Attendance a
     JOIN User u ON a.user_id = u.user_id
     WHERE a.event_id = ?
+    ORDER BY a.isCreator DESC
 ");
 $stmt->bind_param("i", $event_id);
 $stmt->execute();
 $participants = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 
-$eventEnded = strtotime($event['end']) < time();
+$eventEnded = strtotime($event['eventEndTime']) < time();
 ?>
 
 <!DOCTYPE html>
@@ -68,14 +77,14 @@ $eventEnded = strtotime($event['end']) < time();
     <main class="container mt-4">
         <div class="card bg-dark text-white">
             <div class="card-header">
-                <h2><?php echo htmlspecialchars($event['event_name']); ?></h2>
+                <h2><?php echo htmlspecialchars($event['eventName']); ?></h2>
             </div>
             <div class="card-body">
                 <!-- Event Details -->
                 <div class="mb-4">
                     <p><strong>Location:</strong> <?php echo htmlspecialchars($event['location']); ?></p>
-                    <p><strong>Time:</strong> <?php echo date('F j, Y g:i A', strtotime($event['start'])); ?> - 
-                        <?php echo date('F j, Y g:i A', strtotime($event['end'])); ?></p>
+                    <p><strong>Time:</strong> <?php echo date('F j, Y g:i A', strtotime($event['eventStartTime'])); ?> - 
+                        <?php echo date('F j, Y g:i A', strtotime($event['eventEndTime'])); ?></p>
                     <p><strong>Type:</strong> <?php echo htmlspecialchars($event['type_name']); ?></p>
                     <p><strong>Wings:</strong> <?php echo htmlspecialchars($event['wings']); ?></p>
                 </div>

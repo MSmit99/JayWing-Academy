@@ -109,30 +109,34 @@ require_once __DIR__ . '/../data_src/includes/db_connect.php';
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <!-- Signup Form -->
-                <form id="signupForm" method="POST" onsubmit="handleSignup(event)">
-                    <div class="mb-3">
-                        <label for="signupUsername" class="form-label">Display Name</label>
-                        <input type="text" class="form-control bg-dark text-white" id="signupUsername" name="username" required>
-                        </div>
-                    <div class="mb-3">
-                        <label for="signupEmail" class="form-label">Email address</label>
-                        <input type="email" class="form-control bg-dark text-white" id="signupEmail" name="email" required>
-                        </div>
-                    <div class="mb-3">
-                        <label for="signupPassword" class="form-label">Password</label>
-                        <input type="password" class="form-control bg-dark text-white" id="signupPassword" name="password" minlength="8" required>
-                        </div>
-                    <div class="mb-3">
-                        <label for="confirmPassword" class="form-label">Confirm Password</label>
-                        <input type="password" class="form-control bg-dark text-white" id="confirmPassword" name="confirm_password" minlength="8" required>
-                        </div>
-                    <button type="submit" class="btn btn-primary w-100">Create Account</button>
-                </form>
-                <div class="text-center mt-3">
-                    <p>Already have an account? <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal" data-bs-dismiss="modal">Login</a></p>
+            <form id="signupForm" method="POST" onsubmit="handleSignup(event)">
+                <div class="mb-3">
+                    <label for="signupUsername" class="form-label">Display Name</label>
+                    <input type="text" class="form-control bg-dark text-white" id="signupUsername" name="username" required>
                 </div>
-            </div>
+                <div class="mb-3">
+                    <label for="signupFirstName" class="form-label">First Name</label>
+                    <input type="text" class="form-control bg-dark text-white" id="signupFirstName" name="firstName" required>
+                </div>
+                <div class="mb-3">
+                    <label for="signupLastName" class="form-label">Last Name</label>
+                    <input type="text" class="form-control bg-dark text-white" id="signupLastName" name="lastName" required>
+                </div>
+                <div class="mb-3">
+                    <label for="signupEmail" class="form-label">Email address</label>
+                    <input type="email" class="form-control bg-dark text-white" id="signupEmail" name="email" required>
+                </div>
+                <div class="mb-3">
+                    <label for="signupPassword" class="form-label">Password</label>
+                    <input type="password" class="form-control bg-dark text-white" id="signupPassword" name="password" minlength="8" required>
+                </div>
+                <div class="mb-3">
+                    <label for="confirmPassword" class="form-label">Confirm Password</label>
+                    <input type="password" class="form-control bg-dark text-white" id="confirmPassword" name="confirm_password" minlength="8" required>
+                </div>
+        <button type="submit" class="btn btn-primary w-100">Create Account</button>
+    </form>
+</div>
         </div>
     </div>
 </div>

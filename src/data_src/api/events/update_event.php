@@ -11,7 +11,6 @@ if (!isLoggedIn()) {
     exit();
 }
 
-// Start transaction
 $connection->begin_transaction();
 
 try {
@@ -21,27 +20,27 @@ try {
         throw new Exception("Event ID is required");
     }
 
-    // Verify user is the creator
+    // Verify user is the creator using Attendance table
     $stmt = $connection->prepare("
-        SELECT created_by FROM Event 
-        WHERE event_id = ?
+        SELECT 1 FROM Attendance 
+        WHERE event_id = ? AND user_id = ? AND isCreator = 1
     ");
-    $stmt->bind_param('i', $eventId);
+    $stmt->bind_param('ii', $eventId, $_SESSION['user_id']);
     $stmt->execute();
-    $event = $stmt->get_result()->fetch_assoc();
+    $result = $stmt->get_result();
 
-    if (!$event || $event['created_by'] != $_SESSION['user_id']) {
+    if ($result->num_rows === 0) {
         throw new Exception("Not authorized to edit this event");
     }
 
-    // Update event details
+    // Update event details with new column names
     $stmt = $connection->prepare("
         UPDATE Event 
-        SET event_name = ?, 
+        SET eventName = ?, 
             location = ?,
-            start = ?, 
-            end = ?, 
-            event_type_id = ?
+            eventStartTime = ?, 
+            eventEndTime = ?, 
+            type_id = ?
         WHERE event_id = ?
     ");
 
@@ -66,33 +65,37 @@ try {
     // Add updated participants
     if (isset($_POST['participants']) && is_array($_POST['participants'])) {
         $stmt = $connection->prepare("
-            INSERT INTO Attendance (role_in_event, user_id, event_id)
-            VALUES (?, ?, ?)
+            INSERT INTO Attendance (roleOfEvent, user_id, event_id, isCreator)
+            VALUES (?, ?, ?, ?)
         ");
         
         // First add the creator
-        $stmt->bind_param("sii", 
+        $isCreator = 1;
+        $stmt->bind_param("siii", 
             $_POST['participants'][0]['role'],
             $_SESSION['user_id'],
-            $eventId
+            $eventId,
+            $isCreator
         );
         $stmt->execute();
 
         // Then add other participants
         $userStmt = $connection->prepare("SELECT user_id FROM User WHERE email = ?");
+        $isCreator = 0;
         
         foreach ($_POST['participants'] as $index => $participant) {
-            if ($index === 0 || empty($participant['email'])) continue; // Skip creator and empty emails
+            if ($index === 0 || empty($participant['email'])) continue;
             
             $userStmt->bind_param("s", $participant['email']);
             $userStmt->execute();
             $user = $userStmt->get_result()->fetch_assoc();
             
             if ($user) {
-                $stmt->bind_param("sii",
+                $stmt->bind_param("siii",
                     $participant['role'],
                     $user['user_id'],
-                    $eventId
+                    $eventId,
+                    $isCreator
                 );
                 $stmt->execute();
             }

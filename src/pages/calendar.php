@@ -88,7 +88,7 @@ if ($isUserLoggedIn) {  // Only fetch if logged in
                                 <select class="form-select bg-dark text-white" id="eventType" name="event_type_id" required>
                                     <?php foreach ($eventTypes as $type): ?>
                                         <option value="<?= htmlspecialchars($type['event_type_id']) ?>">
-                                            <?= htmlspecialchars($type['type_name']) ?> (<?= $type['wings'] ?> Wings)
+                                            <?= htmlspecialchars($type['eventTypeName']) ?> (<?= $type['wings'] ?> Wings)
                                         </option>
                                     <?php endforeach; ?>
                                 </select>

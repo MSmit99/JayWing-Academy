@@ -1,7 +1,5 @@
 <?php
 // src/data_src/api/login/login.php
-
-// Enable error reporting
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -16,22 +14,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'];
 
     try {
-        $stmt = $connection->prepare("SELECT user_id, email, password, username FROM User WHERE email = ?");
+        // Updated query to match new schema
+        $stmt = $connection->prepare("SELECT user_id, email, password, username, firstName, lastName FROM User WHERE email = ?");
         $stmt->bind_param('s', $email);
         $stmt->execute();
-        $stmt->bind_result($user_id, $email_db, $password_hash, $username);
+        $stmt->bind_result($user_id, $email_db, $password_hash, $username, $firstName, $lastName);
         $stmt->fetch();
         $stmt->close();
 
         if ($email_db && password_verify($password, $password_hash)) {
-            // Set session using session handler
+            // Store additional user information in session
             $_SESSION['user_id'] = $user_id;
             $_SESSION['username'] = $username;
+            $_SESSION['firstName'] = $firstName;
+            $_SESSION['lastName'] = $lastName;
             
-            // Regenerate session ID for security
             session_regenerate_id(true);
 
-            echo json_encode(['success' => true, 'message' => 'Login successful']);
+            echo json_encode([
+                'success' => true, 
+                'message' => 'Login successful',
+                'user' => [
+                    'username' => $username,
+                    'firstName' => $firstName,
+                    'lastName' => $lastName
+                ]
+            ]);
         } else {
             echo json_encode(['success' => false, 'message' => 'Invalid email or password']);
         }

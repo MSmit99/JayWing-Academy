@@ -16,12 +16,13 @@ $attendance = $_POST['attendance'] ?? [];
 $connection->begin_transaction();
 
 try {
-    // Verify user is event creator using created_by column
+    // Verify user is event creator using Attendance table
     $stmt = $connection->prepare("
         SELECT e.*, et.wings 
         FROM Event e
-        JOIN Event_Type et ON e.event_type_id = et.event_type_id
-        WHERE e.event_id = ? AND e.created_by = ?
+        JOIN Event_Type et ON e.type_id = et.event_type_id
+        JOIN Attendance a ON e.event_id = a.event_id
+        WHERE e.event_id = ? AND a.user_id = ? AND a.isCreator = 1
     ");
     $stmt->bind_param("ii", $event_id, $_SESSION['user_id']);
     $stmt->execute();
@@ -30,7 +31,6 @@ try {
     if (!$event) {
         throw new Exception("Not authorized to update attendance");
     }
-
 
     $stmt = $connection->prepare("
         SELECT user_id FROM Attendance WHERE event_id = ?
