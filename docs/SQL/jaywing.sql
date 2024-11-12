@@ -23,7 +23,7 @@ USE `jaywing` ;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `jaywing`.`User` (
   `user_id` INT NOT NULL AUTO_INCREMENT,
-  `admin` TINYINT(1) NULL,
+  `admin` TINYINT(1) NOT NULL,
   `username` VARCHAR(45) NOT NULL,
   `firstName` VARCHAR(45) NOT NULL,
   `lastName` VARCHAR(45) NOT NULL,
@@ -51,8 +51,8 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `jaywing`.`Enrollment` (
   `enrollment_id` INT NOT NULL AUTO_INCREMENT,
-  `class_id` INT NULL,
-  `user_id` INT NULL,
+  `class_id` INT NOT NULL,
+  `user_id` INT NOT NULL,
   `roleOfClass` VARCHAR(45) NOT NULL,
   `roleDescription` TEXT(500) NULL,
   PRIMARY KEY (`enrollment_id`, `class_id`, `user_id`),
@@ -108,10 +108,10 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `jaywing`.`Attendance` (
   `attendance_id` INT NOT NULL AUTO_INCREMENT,
-  `user_id` INT NULL,
+  `user_id` INT NOT NULL,
   `event_id` INT NOT NULL,
   `roleOfEvent` VARCHAR(45) NOT NULL,
-  `isCreator` TINYINT(1) NULL,
+  `isCreator` TINYINT(1) NOT NULL,
   PRIMARY KEY (`attendance_id`, `user_id`, `event_id`),
   INDEX `user_enrollment_idx` (`user_id` ASC) ,
   INDEX `event_attendance_idx` (`event_id` ASC) ,
@@ -144,8 +144,8 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `jaywing`.`Messages` (
   `message_id` INT NOT NULL AUTO_INCREMENT,
-  `chat_id` INT NULL,
-  `sender_id` INT NULL,
+  `chat_id` INT NOT NULL,
+  `sender_id` INT NOT NULL,
   `messageContent` TEXT(2500) NOT NULL,
   PRIMARY KEY (`message_id`, `chat_id`, `sender_id`),
   INDEX `messages_chat_idx` (`chat_id` ASC) ,
@@ -168,7 +168,7 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `jaywing`.`Availability` (
   `availability_id` INT NOT NULL AUTO_INCREMENT,
-  `user_id` INT NULL,
+  `user_id` INT NOT NULL,
   `weekday` ENUM('MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY','SUNDAY') NOT NULL,
   `start` TIME NOT NULL,
   `end` TIME NOT NULL,
@@ -188,7 +188,7 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `jaywing`.`Person_Rating` (
   `rating_id` INT NOT NULL,
-  `class_id` INT NULL,
+  `class_id` INT NOT NULL,
   `tutee_id` INT NOT NULL,
   `tutor_id` INT NOT NULL,
   `personRating` TINYINT(5) NOT NULL,
@@ -210,7 +210,7 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `jaywing`.`Event_Rating` (
   `rating_id` INT NOT NULL,
-  `event_id` INT NULL,
+  `event_id` INT NOT NULL,
   `rating` TINYINT(5) NOT NULL,
   `eventFeedback` TEXT(500) NULL,
   PRIMARY KEY (`rating_id`, `event_id`),
