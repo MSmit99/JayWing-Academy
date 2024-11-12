@@ -17,6 +17,10 @@
     min-height: 600px;
 }
 
+.inline{
+    display:inline;
+}
+
 
 .fc-event-title {
     white-space: normal !important;
