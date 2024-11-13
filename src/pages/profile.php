@@ -20,6 +20,18 @@ if ($user_id) {
   $stmt->close();
 }
 
+// Getting User Titles
+$user_titles = null;
+
+if ($user_id) {
+  $stmt = $connection->prepare("SELECT DISTINCT roleOfClass FROM enrollment WHERE user_id = ?");
+  $stmt->bind_param("i", $user_id);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  $user_titles = $result->fetch_all(MYSQLI_ASSOC);
+  $stmt->close();
+}
+
 // Getting Upcoming Events
 $events = null;
 
@@ -86,7 +98,17 @@ if ($user_id) {
           <img src="../images/blue_jay.png" alt="avatar"
           class="rounded-circle img-fluid" style="width: 125px;">
             <h5 class="my-3"><?php echo htmlspecialchars($user['username'] ?? 'Profile Name'); ?></h5>
-            <p class="text-muted mb-1">Profile Title (Student, Tutor, Professor, Admin, etc.)</p>
+            <p class="text-muted mb-1">
+              <?php 
+                // Display each of the users roles in a comma separated list
+                if ($user_titles) {
+                  $roleOfClass = array_column($user_titles, 'roleOfClass');
+                  echo implode(', ', $roleOfClass);
+                } else {
+                  echo 'Current Positions';
+                }
+              ?>
+            </p>
             <div class="d-flex justify-content-center mb-2">
               <button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-primary ms-1">Message</button>
             </div>
