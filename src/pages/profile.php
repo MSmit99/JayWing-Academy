@@ -49,6 +49,13 @@ if ($user_id) {
     
     <!-- custom css -->
     <link rel="stylesheet" href="../css/style.css">
+
+    <style>
+      .upcoming-event-item {
+      margin-bottom: 10px; /* Adjust the value for more or less space */
+      }
+    </style>
+
 </head>
 <body>
     <header>
@@ -76,6 +83,8 @@ if ($user_id) {
       <div class="col-lg-4">
         <div class="card mb-4">
           <div class="card-body text-center">
+          <img src="../images/blue_jay.png" alt="avatar"
+          class="rounded-circle img-fluid" style="width: 125px;">
             <h5 class="my-3"><?php echo htmlspecialchars($user['username'] ?? 'Profile Name'); ?></h5>
             <p class="text-muted mb-1">Profile Title (Student, Tutor, Professor, Admin, etc.)</p>
             <div class="d-flex justify-content-center mb-2">
@@ -161,7 +170,7 @@ if ($user_id) {
                 <!-- If the User has events scheduled -->
                   <?php if ($events) : ?>
                     <?php foreach ($events as $event) : ?>
-                      <li class="list-group">
+                      <li class="list-group upcoming-event-item">
                         <div class="d-flex justify-content-between">
                           <h6 class="mb-1"><?php echo htmlspecialchars($event['eventName']); ?></h6>
                           <small><?php echo htmlspecialchars($event['eventStartTime']); ?></small>
