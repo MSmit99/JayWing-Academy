@@ -19,6 +19,22 @@ if ($user_id) {
   $user = $result->fetch_assoc();
   $stmt->close();
 }
+
+// Getting Upcoming Events
+$events = null;
+
+if ($user_id) {
+  $stmt = $connection->prepare("SELECT e.event_id, e.eventName, e.eventStartTime, e.eventEndTime, e.Location, e.eventDescription FROM event e 
+                                JOIN attendance a ON e.event_id = a.event_id
+                                WHERE a.user_id = ?
+                                AND e.eventStartTime > NOW()
+                                ORDER BY e.eventStartTime ASC;");
+  $stmt->bind_param("i", $user_id);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  $events = $result->fetch_all(MYSQLI_ASSOC);
+  $stmt->close();
+}
 ?> 
 
 <!DOCTYPE html>
@@ -81,6 +97,7 @@ if ($user_id) {
         </div>
       </div>
 
+      <!-- Upper Middle Profile Section -->
       <div class="col-lg-8">
         <div class="card mb-4">
           <div class="card-body">
@@ -130,44 +147,43 @@ if ($user_id) {
             </div>
           </div>
         </div>
+        <!-- Bottom Row -->
         <div class="row">
+          <!-- Bottom Row Left Side -->
           <div class="col-md-6">
             <div class="card mb-4 mb-md-0">
               <div class="card-body">
-                <p class="mb-4"><span class="text-primary font-italic me-1">assigment</span> Project Status
+                <p class="mb-4"><span class="text-primary font-italic me-1">Upcoming Events</span>
                 </p>
-                <p class="mb-1" style="font-size: .77rem;">Web Design</p>
-                <div class="progress rounded" style="height: 5px;">
-                  <div class="progress-bar" role="progressbar" style="width: 80%" aria-valuenow="80"
-                    aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-                <p class="mt-4 mb-1" style="font-size: .77rem;">Website Markup</p>
-                <div class="progress rounded" style="height: 5px;">
-                  <div class="progress-bar" role="progressbar" style="width: 72%" aria-valuenow="72"
-                    aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-                <p class="mt-4 mb-1" style="font-size: .77rem;">One Page</p>
-                <div class="progress rounded" style="height: 5px;">
-                  <div class="progress-bar" role="progressbar" style="width: 89%" aria-valuenow="89"
-                    aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-                <p class="mt-4 mb-1" style="font-size: .77rem;">Mobile Template</p>
-                <div class="progress rounded" style="height: 5px;">
-                  <div class="progress-bar" role="progressbar" style="width: 55%" aria-valuenow="55"
-                    aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-                <p class="mt-4 mb-1" style="font-size: .77rem;">Backend API</p>
-                <div class="progress rounded mb-2" style="height: 5px;">
-                  <div class="progress-bar" role="progressbar" style="width: 66%" aria-valuenow="66"
-                    aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
+                <!-- List 5 Upcoming Events with soonest at top -->
+                <ul class="list-group list-group-flush">
+
+                <!-- If the User has events scheduled -->
+                  <?php if ($events) : ?>
+                    <?php foreach ($events as $event) : ?>
+                      <li class="list-group">
+                        <div class="d-flex justify-content-between">
+                          <h6 class="mb-1"><?php echo htmlspecialchars($event['eventName']); ?></h6>
+                          <small><?php echo htmlspecialchars($event['eventStartTime']); ?></small>
+                        </div>
+                        <p class="mb-1"><?php echo htmlspecialchars($event['eventDescription']); ?></p>
+                        <small><?php echo htmlspecialchars($event['Location']); ?></small>
+                      </li>
+                    <?php endforeach; ?>
+                    <!-- If no events scheduled -->
+                  <?php else : ?>
+                    No Upcoming Events
+                  <?php endif; ?>
+                </ul>
+                
+                
               </div>
             </div>
           </div>
           <div class="col-md-6">
             <div class="card mb-4 mb-md-0">
               <div class="card-body">
-                <p class="mb-4"><span class="text-primary font-italic me-1">assigment</span> Project Status
+                <p class="mb-4"><span class="text-primary font-italic me-1">Tutoring For</span>
                 </p>
                 <p class="mb-1" style="font-size: .77rem;">Web Design</p>
                 <div class="progress rounded" style="height: 5px;">
