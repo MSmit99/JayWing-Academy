@@ -12,11 +12,58 @@ $user_id = getCurrentUserId();
 $user = null;
 
 if ($user_id) {
-  $stmt = $connection->prepare("SELECT username, email, wings FROM user WHERE user_id = ?");
+  $stmt = $connection->prepare("SELECT username, firstName, lastName, email, wings FROM user WHERE user_id = ?");
   $stmt->bind_param("i", $user_id);
   $stmt->execute();
   $result = $stmt->get_result();
   $user = $result->fetch_assoc();
+  $stmt->close();
+}
+
+// Getting User Titles
+$user_titles = null;
+
+if ($user_id) {
+  $stmt = $connection->prepare("SELECT DISTINCT roleOfClass FROM enrollment WHERE user_id = ?");
+  $stmt->bind_param("i", $user_id);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  $user_titles = $result->fetch_all(MYSQLI_ASSOC);
+  $stmt->close();
+}
+
+// Getting Upcoming Events
+$events = null;
+
+if ($user_id) {
+  $stmt = $connection->prepare("SELECT e.event_id, e.eventName, e.eventStartTime, e.eventEndTime, e.Location, e.eventDescription FROM event e 
+                                JOIN attendance a ON e.event_id = a.event_id
+                                WHERE a.user_id = ?
+                                AND e.eventStartTime > NOW()
+                                ORDER BY e.eventStartTime ASC;");
+  $stmt->bind_param("i", $user_id);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  $events = $result->fetch_all(MYSQLI_ASSOC);
+  $stmt->close();
+}
+
+// Getting Classes User is Tutoring For
+$classes = null;
+
+if ($user_id) {
+  $stmt = $connection->prepare("SELECT c.class_id, c.className, c.courseCode, c.classDescription, AVG(pr.personRating) AS averageRating, COUNT(pr.rating_id) AS ratingCount
+                                FROM Class c
+                                JOIN Enrollment e ON c.class_id = e.class_id
+                                LEFT JOIN Person_Rating pr ON e.class_id = pr.class_id AND e.user_id = pr.tutor_id
+                                WHERE e.user_id = ? AND e.roleOfClass = 'Tutor'
+                                GROUP BY c.class_id, c.className, c.courseCode, c.classDescription
+                                ORDER BY ratingCount DESC
+                                LIMIT 5;");
+  $stmt->bind_param("i", $user_id);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  $classes = $result->fetch_all(MYSQLI_ASSOC);
   $stmt->close();
 }
 ?> 
@@ -33,6 +80,13 @@ if ($user_id) {
     
     <!-- custom css -->
     <link rel="stylesheet" href="../css/style.css">
+
+    <style>
+      .upcoming-event-item {
+      margin-bottom: 10px; /* Adjust the value for more or less space */
+      }
+    </style>
+
 </head>
 <body>
     <header>
@@ -56,44 +110,44 @@ if ($user_id) {
     </div>
 
     <div class="row">
+      <!-- Upper Left Profile Section -->
       <div class="col-lg-4">
         <div class="card mb-4">
           <div class="card-body text-center">
-              <!-- Upper Left Profile Section -->
-            <h5 class="my-3">Profile Name</h5>
-            <p class="text-muted mb-1">Profile Title (Student, Tutor, Professor, Admin, etc.)</p>
+          <img src="../images/blue_jay.png" alt="avatar"
+          class="rounded-circle img-fluid" style="width: 125px;">
+            <h5 class="my-3"><?php echo htmlspecialchars($user['username'] ?? 'Profile Name'); ?></h5>
+            <p class="text-muted mb-1">
+              <?php 
+                // Display each of the users roles in a comma separated list
+                if ($user_titles) {
+                  $roleOfClass = array_column($user_titles, 'roleOfClass');
+                  echo implode(', ', $roleOfClass);
+                } else {
+                  echo 'Current Positions';
+                }
+              ?>
+            </p>
             <div class="d-flex justify-content-center mb-2">
               <button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-primary ms-1">Message</button>
             </div>
           </div>
         </div>
+
+        <!-- Lower Left Profile Section -->
         <div class="card mb-4 mb-lg-0">
-          <div class="card-body p-0">
-            <ul class="list-group list-group-flush rounded-3">
-              <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                <i class="fas fa-globe fa-lg text-warning"></i>
-                <p class="mb-0">https://mdbootstrap.com</p>
-              </li>
-              <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                <i class="fab fa-github fa-lg text-body"></i>
-                <p class="mb-0">mdbootstrap</p>
-              </li>
-              <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                <i class="fab fa-twitter fa-lg" style="color: #55acee;"></i>
-                <p class="mb-0">@mdbootstrap</p>
-              </li>
-              <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                <i class="fab fa-instagram fa-lg" style="color: #ac2bac;"></i>
-                <p class="mb-0">mdbootstrap</p>
-              </li>
-              <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                <i class="fab fa-facebook-f fa-lg" style="color: #3b5998;"></i>
-                <p class="mb-0">mdbootstrap</p>
-              </li>
-            </ul>
+          <div class="card-body text-center">
+            <!-- Wing Icon Section with Text Overlay -->
+             <div style="position: relative; display: inline-block;">
+             <h5 class="my-3">Wings Bank</h5>
+             <img src="../images/wing.png" alt="Wings Icon" style="width: 200px; height: 200px;">
+             <h5 class="my-3">Current Balance: <?php echo htmlspecialchars($user['wings'] ?? 0); ?></h5>              
+            </div>
           </div>
         </div>
       </div>
+
+      <!-- Upper Middle Profile Section -->
       <div class="col-lg-8">
         <div class="card mb-4">
           <div class="card-body">
@@ -102,7 +156,10 @@ if ($user_id) {
                 <p class="mb-0">Full Name</p>
               </div>
               <div class="col-sm-9">
-                <p class="text-muted mb-0">Johnatan Smith</p>
+                <p class="text-muted mb-0">
+                  <?php echo htmlspecialchars($user['firstName'] ?? 'First Name'); ?>
+                  <?php echo htmlspecialchars($user['lastName'] ?? 'Last Name'); ?>
+                </p>
               </div>
             </div>
             <hr>
@@ -111,102 +168,77 @@ if ($user_id) {
                 <p class="mb-0">Email</p>
               </div>
               <div class="col-sm-9">
-                <p class="text-muted mb-0">example@example.com</p>
-              </div>
-            </div>
-            <hr>
-            <div class="row">
-              <div class="col-sm-3">
-                <p class="mb-0">Phone</p>
-              </div>
-              <div class="col-sm-9">
-                <p class="text-muted mb-0">(097) 234-5678</p>
-              </div>
-            </div>
-            <hr>
-            <div class="row">
-              <div class="col-sm-3">
-                <p class="mb-0">Mobile</p>
-              </div>
-              <div class="col-sm-9">
-                <p class="text-muted mb-0">(098) 765-4321</p>
-              </div>
-            </div>
-            <hr>
-            <div class="row">
-              <div class="col-sm-3">
-                <p class="mb-0">Address</p>
-              </div>
-              <div class="col-sm-9">
-                <p class="text-muted mb-0">Bay Area, San Francisco, CA</p>
+                <p class="text-muted mb-0"><?php echo htmlspecialchars($user['email'] ?? 'Email Address'); ?></p>
               </div>
             </div>
           </div>
         </div>
+
+        <!-- Bottom Row -->
         <div class="row">
+          <!-- Bottom Row Left Side -->
+           <!-- Upcoming Events -->
           <div class="col-md-6">
             <div class="card mb-4 mb-md-0">
               <div class="card-body">
-                <p class="mb-4"><span class="text-primary font-italic me-1">assigment</span> Project Status
+                <p class="mb-4"><span class="text-primary font-italic me-1">Upcoming Events</span>
                 </p>
-                <p class="mb-1" style="font-size: .77rem;">Web Design</p>
-                <div class="progress rounded" style="height: 5px;">
-                  <div class="progress-bar" role="progressbar" style="width: 80%" aria-valuenow="80"
-                    aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-                <p class="mt-4 mb-1" style="font-size: .77rem;">Website Markup</p>
-                <div class="progress rounded" style="height: 5px;">
-                  <div class="progress-bar" role="progressbar" style="width: 72%" aria-valuenow="72"
-                    aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-                <p class="mt-4 mb-1" style="font-size: .77rem;">One Page</p>
-                <div class="progress rounded" style="height: 5px;">
-                  <div class="progress-bar" role="progressbar" style="width: 89%" aria-valuenow="89"
-                    aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-                <p class="mt-4 mb-1" style="font-size: .77rem;">Mobile Template</p>
-                <div class="progress rounded" style="height: 5px;">
-                  <div class="progress-bar" role="progressbar" style="width: 55%" aria-valuenow="55"
-                    aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-                <p class="mt-4 mb-1" style="font-size: .77rem;">Backend API</p>
-                <div class="progress rounded mb-2" style="height: 5px;">
-                  <div class="progress-bar" role="progressbar" style="width: 66%" aria-valuenow="66"
-                    aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
+                <!-- List 5 Upcoming Events with soonest at top -->
+                <ul class="list-group list-group-flush">
+
+                <!-- If the User has events scheduled -->
+                  <?php if ($events) : ?>
+                    <?php foreach ($events as $event) : ?>
+                      <li class="list-group upcoming-event-item">
+                        <div class="d-flex justify-content-between">
+                          <h6 class="mb-1"><?php echo htmlspecialchars($event['eventName']); ?></h6>
+                          <small><?php echo htmlspecialchars($event['eventStartTime']); ?></small>
+                        </div>
+                        <p class="mb-1"><?php echo htmlspecialchars($event['eventDescription']); ?></p>
+                        <small><?php echo htmlspecialchars($event['Location']); ?></small>
+                      </li>
+                    <?php endforeach; ?>
+                    <!-- If no events scheduled -->
+                  <?php else : ?>
+                    No Upcoming Events
+                  <?php endif; ?>
+                </ul>
               </div>
             </div>
           </div>
+
+          <!-- Bottom Row Right Side -->
+          <!-- Classes User is tutoring for -->
           <div class="col-md-6">
             <div class="card mb-4 mb-md-0">
               <div class="card-body">
-                <p class="mb-4"><span class="text-primary font-italic me-1">assigment</span> Project Status
-                </p>
-                <p class="mb-1" style="font-size: .77rem;">Web Design</p>
-                <div class="progress rounded" style="height: 5px;">
-                  <div class="progress-bar" role="progressbar" style="width: 80%" aria-valuenow="80"
-                    aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-                <p class="mt-4 mb-1" style="font-size: .77rem;">Website Markup</p>
-                <div class="progress rounded" style="height: 5px;">
-                  <div class="progress-bar" role="progressbar" style="width: 72%" aria-valuenow="72"
-                    aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-                <p class="mt-4 mb-1" style="font-size: .77rem;">One Page</p>
-                <div class="progress rounded" style="height: 5px;">
-                  <div class="progress-bar" role="progressbar" style="width: 89%" aria-valuenow="89"
-                    aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-                <p class="mt-4 mb-1" style="font-size: .77rem;">Mobile Template</p>
-                <div class="progress rounded" style="height: 5px;">
-                  <div class="progress-bar" role="progressbar" style="width: 55%" aria-valuenow="55"
-                    aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-                <p class="mt-4 mb-1" style="font-size: .77rem;">Backend API</p>
-                <div class="progress rounded mb-2" style="height: 5px;">
-                  <div class="progress-bar" role="progressbar" style="width: 66%" aria-valuenow="66"
-                    aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
+                <p class="mb-4"><span class="text-primary font-italic me-1">Tutoring For</span></p>
+                <!-- Display Top 5 Classes Tutoring For with the number of ratings and average rating -->
+                <ul class="list-group">
+                <?php if ($classes) : ?>
+                  <?php foreach ($classes as $class) : ?>
+                    <li class="list-group upcoming-event-item">
+                      <div class="d-flex justify-content-between">
+                        <h6 class="mb-1"><?php echo htmlspecialchars($class['className']); ?></h6>
+                        <small><?php echo htmlspecialchars($class['courseCode']); ?></small>
+                      </div>
+                      <small>
+                        <?php 
+                          $ratingCount = (int)$class['ratingCount'];
+                          echo $ratingCount . ' ' . ($ratingCount === 1 ? 'Rating' : 'Ratings'); 
+                        ?>
+                        <?php if ($class['averageRating']) : ?>
+                          - <?php echo number_format((float)$class['averageRating'], 2); ?> Stars
+                        <?php else : ?>
+                          - No Ratings
+                        <?php endif; ?>
+                      </small>
+                    </li>
+                  <?php endforeach; ?>
+                <?php else : ?>
+                  No Classes
+                <?php endif; ?>
+                </ul>
               </div>
             </div>
           </div>
