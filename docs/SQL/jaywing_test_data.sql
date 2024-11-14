@@ -8,11 +8,51 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- ('asmith', 'asmith@example.com', 'password456', 200, 0),
 -- ('bjones', 'bjones@example.com', 'password789', 150, 0);
 
+----------------------------------------------------------------------------------------
+
 -- Insert test data into Class table
-INSERT INTO `Class` (class_name, description) VALUES
-('Math 101', 'Basic Mathematics Class'),
-('Physics 101', 'Introduction to Physics'),
-('Chemistry 101', 'Introduction to Chemistry');
+    -- `className` VARCHAR(45) NOT NULL,
+    -- `courseCode` VARCHAR(7) NULL,
+    -- `classDescription` TEXT(500) NULL,
+INSERT INTO `Class` (className, courseCode) VALUES
+('Calculus I', 'MA121'),
+('Physics I', 'PHY121'),
+
+INSERT INTO `Class` (className, classDescription) VALUES
+('Computer Science I', 'Intro to Computer Science'),
+('Drawing I', 'Intro to Drawing');
+
+INSERT INTO `Class` (className, courseCode, classDescription) VALUES
+('Calculus III', 'MA222', 'Vectors, 3-D modeling, and more!'),
+('Data Structures', 'CS221', 'Intro to Drawing');
+
+----------------------------------------------------------------------------------------
+
+-- Insert test data into Enrollment table
+    -- `class_id` INT NULL,
+    -- `user_id` INT NULL,
+    -- `roleOfClass` VARCHAR(45) NOT NULL,
+    -- `roleDescription` TEXT(500) NULL,
+-- (FK) Ensure the user_id and class_id values exist in User and Class tables
+
+INSERT INTO `Enrollment` (class_id, courseCode) VALUES
+('Calculus I', 'MA121'),
+('Physics I', 'PHY121'),
+
+INSERT INTO `Enrollment` (className, classDescription) VALUES
+('Computer Science I', 'Intro to Computer Science'),
+('Drawing I', 'Intro to Drawing');
+
+INSERT INTO `Enrollment` (className, courseCode, classDescription) VALUES
+('Calculus III', 'MA222', 'Vectors, 3-D modeling, and more!'),
+('Data Structures', 'CS221', 'Intro to Drawing');
+
+INSERT INTO `Enrollment` (class_id, role_in_class, user_id) VALUES
+(1, 'Student', 1),
+(1, 'Student', 2),
+(2, 'Tutor', 3);
+
+
 
 -- Insert test data into Event_Type table (as it is a required reference for Event table)
 INSERT INTO `Event_Type` (type_name, wings) VALUES
@@ -31,13 +71,6 @@ INSERT INTO `Chat` (chat_id, chat_name) VALUES
 (1, 'Math 101 Group Chat'),
 (2, 'Physics 101 Group Chat'),
 (3, 'Chemistry 101 Group Chat');
-
--- Insert test data into Enrollment table
--- Ensure the user_id and class_id values exist in User and Class tables
-INSERT INTO `Enrollment` (class_id, role_in_class, user_id) VALUES
-(1, 'Student', 1),
-(1, 'Student', 2),
-(2, 'Tutor', 3);
 
 -- Insert test data into Attendance table
 -- Ensure the user_id and event_id values exist in User and Event tables
