@@ -141,7 +141,7 @@ function validateEmailInput(input) {
 
 
   <div class="mb-3">
-    <label for="validationTextarea" class="form-label">Textarea</label>
+    <label for="validationTextarea" class="form-label">Note for Professor: </label>
     <textarea class="form-control" id="validationTextarea" placeholder="Note for Professor" required></textarea>
     <div class="invalid-feedback">
       Please enter a message in the textarea.
