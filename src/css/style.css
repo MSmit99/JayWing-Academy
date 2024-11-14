@@ -17,6 +17,10 @@
     min-height: 600px;
 }
 
+.inline{
+    display:inline;
+}
+
 
 .fc-event-title {
     white-space: normal !important;
@@ -32,4 +36,8 @@
 #cs341 {
     height: 50px;
     width: 50px;
+}
+
+.inline{
+    display:inline;
 }
