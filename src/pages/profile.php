@@ -32,8 +32,25 @@ if ($user_id) {
   $stmt->close();
 }
 
-// Getting Upcoming Events
+// Getting Top 5 Upcoming Events
 $events = null;
+
+if ($user_id) {
+  $stmt = $connection->prepare("SELECT e.event_id, e.eventName, e.eventStartTime, e.eventEndTime, e.Location, e.eventDescription FROM event e 
+                                JOIN attendance a ON e.event_id = a.event_id
+                                WHERE a.user_id = ?
+                                AND e.eventStartTime > NOW()
+                                ORDER BY e.eventStartTime ASC
+                                LIMIT 5;");
+  $stmt->bind_param("i", $user_id);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  $events = $result->fetch_all(MYSQLI_ASSOC);
+  $stmt->close();
+}
+
+// Getting All Upcoming Events
+$all_events = null;
 
 if ($user_id) {
   $stmt = $connection->prepare("SELECT e.event_id, e.eventName, e.eventStartTime, e.eventEndTime, e.Location, e.eventDescription FROM event e 
@@ -44,11 +61,18 @@ if ($user_id) {
   $stmt->bind_param("i", $user_id);
   $stmt->execute();
   $result = $stmt->get_result();
-  $events = $result->fetch_all(MYSQLI_ASSOC);
+  $all_events = $result->fetch_all(MYSQLI_ASSOC);
   $stmt->close();
 }
 
-// Getting Classes User is Tutoring For
+// Check if events are greater than five
+$more_events = false;
+
+if ($events && $all_events) {
+  $more_events = count($events) < count($all_events);
+}
+
+// Getting Top 5 Classes User is Tutoring For
 $classes = null;
 
 if ($user_id) {
@@ -65,6 +89,31 @@ if ($user_id) {
   $result = $stmt->get_result();
   $classes = $result->fetch_all(MYSQLI_ASSOC);
   $stmt->close();
+}
+
+// Getting All Classes User is Tutoring For
+$all_classes = null;
+
+if ($user_id) {
+  $stmt = $connection->prepare("SELECT c.class_id, c.className, c.courseCode, c.classDescription, AVG(pr.personRating) AS averageRating, COUNT(pr.rating_id) AS ratingCount
+                                FROM Class c
+                                JOIN Enrollment e ON c.class_id = e.class_id
+                                LEFT JOIN Person_Rating pr ON e.class_id = pr.class_id AND e.user_id = pr.tutor_id
+                                WHERE e.user_id = ? AND e.roleOfClass = 'Tutor'
+                                GROUP BY c.class_id, c.className, c.courseCode, c.classDescription
+                                ORDER BY ratingCount DESC;");
+  $stmt->bind_param("i", $user_id);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  $all_classes = $result->fetch_all(MYSQLI_ASSOC);
+  $stmt->close();
+}
+
+// Check if classes tutoring for is greater than five
+$more_classes = false;
+
+if ($classes && $all_classes) {
+  $more_classes = count($classes) < count($all_classes);
 }
 ?> 
 
@@ -198,6 +247,12 @@ if ($user_id) {
                         <small><?php echo htmlspecialchars($event['Location']); ?></small>
                       </li>
                     <?php endforeach; ?>
+                    <!-- If there are more events than the top 5 -->
+                    <?php if ($more_events) : ?>
+                      <div class="d-flex justify-content-end mt-2">
+                        <button type="button" class="btn btn-outline-primary">View All</button>
+                      </div>
+                    <?php endif; ?>
                     <!-- If no events scheduled -->
                   <?php else : ?>
                     No Upcoming Events
@@ -230,8 +285,8 @@ if ($user_id) {
                         <?php if ($class['averageRating']) : ?>
                           - <?php echo number_format((float)$class['averageRating'], 2); ?> Stars
                         <?php else : ?>
-                          - No Ratings
-                        <?php endif; ?>
+                            <!-- Placeholder for no ratings -->
+                          <?php endif; ?>
                       </small>
                     </li>
                   <?php endforeach; ?>
@@ -239,6 +294,12 @@ if ($user_id) {
                   No Classes
                 <?php endif; ?>
                 </ul>
+                <!-- If there are more classes than the top 5 -->
+                <?php if ($more_classes) : ?>
+                  <div class="d-flex justify-content-end mt-2">
+                    <button type="button" class="btn btn-outline-primary">View All</button>
+                  </div>
+                <?php endif; ?>
               </div>
             </div>
           </div>
