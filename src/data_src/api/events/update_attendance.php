@@ -16,7 +16,7 @@ $attendance = $_POST['attendance'] ?? [];
 $connection->begin_transaction();
 
 try {
-    // Verify user is event creator using Attendance table
+    // First verify user is event creator and get event details
     $stmt = $connection->prepare("
         SELECT e.*, et.wings 
         FROM Event e
@@ -32,24 +32,26 @@ try {
         throw new Exception("Not authorized to update attendance");
     }
 
+    // First, remove all previously awarded wings for this event
+    // This ensures we start fresh and prevents double-counting
     $stmt = $connection->prepare("
-        SELECT user_id FROM Attendance WHERE event_id = ?
+        UPDATE User u
+        JOIN Attendance a ON u.user_id = a.user_id
+        SET u.wings = u.wings - ?
+        WHERE a.event_id = ? AND u.wings >= ?
     ");
-    $stmt->bind_param("i", $event_id);
+    $stmt->bind_param("iii", $event['wings'], $event_id, $event['wings']);
     $stmt->execute();
-    $participants = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 
-    $updateWingsStmt = $connection->prepare("
-        UPDATE User SET wings = wings + ? WHERE user_id = ?
-    ");
-
-    foreach ($participants as $participant) {
-        $userId = $participant['user_id'];
-        // If user was checked in the form
-        if (isset($attendance[$userId])) {
-            $updateWingsStmt->bind_param("ii", $event['wings'], $userId);
-            $updateWingsStmt->execute();
-        }
+    // Now award wings to currently checked attendees
+    if (!empty($attendance)) {
+        $stmt = $connection->prepare("
+            UPDATE User 
+            SET wings = wings + ? 
+            WHERE user_id IN (" . implode(',', array_map('intval', array_keys($attendance))) . ")
+        ");
+        $stmt->bind_param("i", $event['wings']);
+        $stmt->execute();
     }
 
     $connection->commit();
@@ -62,3 +64,4 @@ try {
 }
 
 $connection->close();
+?>
