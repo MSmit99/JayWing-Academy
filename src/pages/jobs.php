@@ -19,7 +19,7 @@
     <main>
         <!-- TODO: Jobs page goes here -->
          <div class="center-container">
-         <form class="row g-3 needs-validation" novalidate id="tutorApplicationForm">
+         <form class="row g-3 needs-validation center-container" novalidate id="tutorApplicationForm">
 
          <div class="col-md-4 position-relative">
     <label for="validationTooltip01" class="form-label">Course Code</label>
