@@ -19,3 +19,8 @@ function getCurrentUserId() {
 function getCurrentUsername() {
     return $_SESSION['username'] ?? null;
 }
+
+// Function to check if user is an admin
+function isAdmin() {
+    return isset($_SESSION['admin']) && $_SESSION['admin'] === 1;
+}
