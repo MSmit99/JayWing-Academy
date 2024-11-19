@@ -3,6 +3,11 @@
 -- Model: New Model    Version: 1.0
 -- MySQL Workbench Forward Engineering
 
+-- Changes for 2.1 version:
+  -- Added back Chat_Participant table
+  -- Added 2 more attributes to User table
+  -- Connected messages back to User table
+
 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
@@ -61,10 +66,10 @@ DROP TABLE IF EXISTS `jaywing`.`Enrollment` ;
 
 CREATE TABLE IF NOT EXISTS `jaywing`.`Enrollment` (
   `enrollment_id` INT NOT NULL AUTO_INCREMENT,
-  `class_id` INT NOT NULL,
-  `user_id` INT NOT NULL,
+  `class_id` INT NULL,
+  `user_id` INT NULL,
   `roleOfClass` VARCHAR(45) NOT NULL,
-  `roleDescription` TEXT(500) NULL,
+  `roleDescription` VARCHAR(500) NULL,
   PRIMARY KEY (`enrollment_id`, `class_id`, `user_id`),
   INDEX `class_enrollment_idx` (`class_id` ASC),
   INDEX `user_enrollment_idx` (`user_id` ASC),
@@ -106,7 +111,7 @@ CREATE TABLE IF NOT EXISTS `jaywing`.`Event` (
   `eventStartTime` DATETIME NOT NULL,
   `eventEndTime` DATETIME NOT NULL,
   `location` VARCHAR(45) NOT NULL,
-  `eventDescription` TEXT(500) NULL,
+  `eventDescription` VARCHAR(500) NULL,
   PRIMARY KEY (`event_id`, `type_id`),
   INDEX `event_type_idx` (`type_id` ASC),
   CONSTRAINT `event_type`
@@ -124,7 +129,7 @@ DROP TABLE IF EXISTS `jaywing`.`Attendance` ;
 
 CREATE TABLE IF NOT EXISTS `jaywing`.`Attendance` (
   `attendance_id` INT NOT NULL AUTO_INCREMENT,
-  `user_id` INT NOT NULL,
+  `user_id` INT NULL,
   `event_id` INT NOT NULL,
   `roleOfEvent` VARCHAR(45) NOT NULL,
   `isCreator` TINYINT(1) NULL,
@@ -152,7 +157,7 @@ DROP TABLE IF EXISTS `jaywing`.`Chat` ;
 CREATE TABLE IF NOT EXISTS `jaywing`.`Chat` (
   `chat_id` INT NOT NULL,
   `chatName` VARCHAR(45) NOT NULL,
-  `chatDescription` TEXT(750) NULL,
+  `chatDescription` VARCHAR(750) NULL,
   PRIMARY KEY (`chat_id`))
 ENGINE = InnoDB;
 
@@ -166,7 +171,7 @@ CREATE TABLE IF NOT EXISTS `jaywing`.`Messages` (
   `message_id` INT NOT NULL AUTO_INCREMENT,
   `chat_id` INT NOT NULL,
   `sender_id` INT NOT NULL,
-  `messageContent` TEXT(2500) NOT NULL,
+  `messageContent` VARCHAR(2500) NOT NULL,
   PRIMARY KEY (`message_id`, `chat_id`, `sender_id`),
   INDEX `messages_chat_idx` (`chat_id` ASC),
   INDEX `sender_chat_idx` (`sender_id` ASC),
