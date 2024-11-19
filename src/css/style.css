@@ -41,3 +41,9 @@
 .inline{
     display:inline;
 }
+
+.dropdown-item:hover {
+    background-color: #0d6efd; 
+    color: white;
+    cursor: pointer;
+}

@@ -14,11 +14,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'];
 
     try {
-        // Updated query to match new schema
-        $stmt = $connection->prepare("SELECT user_id, email, password, username, firstName, lastName FROM User WHERE email = ?");
+        $stmt = $connection->prepare("SELECT user_id, email, password, username, firstName, lastName, admin FROM User WHERE email = ?");
         $stmt->bind_param('s', $email);
         $stmt->execute();
-        $stmt->bind_result($user_id, $email_db, $password_hash, $username, $firstName, $lastName);
+        $stmt->bind_result($user_id, $email_db, $password_hash, $username, $firstName, $lastName, $admin);
         $stmt->fetch();
         $stmt->close();
 
@@ -28,6 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['username'] = $username;
             $_SESSION['firstName'] = $firstName;
             $_SESSION['lastName'] = $lastName;
+            $_SESSION['admin'] = $admin;
             
             session_regenerate_id(true);
 
@@ -37,7 +37,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'user' => [
                     'username' => $username,
                     'firstName' => $firstName,
-                    'lastName' => $lastName
+                    'lastName' => $lastName,
+                    'isAdmin' => (bool)$admin
                 ]
             ]);
         } else {
