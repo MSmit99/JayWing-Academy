@@ -3,117 +3,83 @@ USE `jaywing`;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- Insert test data into User table - THIS NEEDS TO BE DONE ON THE WEBSITE SO THAT THE HASHING WORKS
--- INSERT INTO `User` (username, email, password, wings, admin) VALUES
--- ('jdoe', 'jdoe@example.com', 'password123', 100, 1),
--- ('asmith', 'asmith@example.com', 'password456', 200, 0),
--- ('bjones', 'bjones@example.com', 'password789', 150, 0);
+-- INSERT INTO `User` (username, firstName, lastName, email, password, wings, admin, publicProfile) VALUES
+-- ('techtutor', 'Alex', 'Rodriguez', 'alex.rod@jaywing.edu', 'hashedpassword123', 500, 0, 1),
+-- ('mathmagician', 'Emma', 'Chen', 'emma.chen@jaywing.edu', 'securepass456', 750, 1, 1),
+-- ('sciencewhiz', 'Liam', 'Patel', 'liam.patel@jaywing.edu', 'protectedkey789', 600, 0, 0),
+-- ('artcreator', 'Sofia', 'Martinez', 'sofia.m@jaywing.edu', 'creativepath101', 400, 0, 1);
 
-----------------------------------------------------------------------------------------
-
--- Insert test data into Class table
-    -- `className` VARCHAR(45) NOT NULL,
-    -- `courseCode` VARCHAR(7) NULL,
-    -- `classDescription` TEXT(500) NULL,
-INSERT INTO `Class` (className, courseCode) VALUES
-('Calculus I', 'MA121'),
-('Physics I', 'PHY121'),
-
-INSERT INTO `Class` (className, classDescription) VALUES
-('Computer Science I', 'Intro to Computer Science'),
-('Drawing I', 'Intro to Drawing');
-
+-- Insert dummy Classes
 INSERT INTO `Class` (className, courseCode, classDescription) VALUES
-('Calculus III', 'MA222', 'Vectors, 3-D modeling, and more!'),
-('Data Structures', 'CS221', 'Intro to Drawing');
+('Machine Learning Basics', 'CS301', 'Introduction to machine learning algorithms and techniques'),
+('Modern Art History', 'ART205', 'Exploring art movements from 20th century to present'),
+('Advanced Calculus', 'MA302', 'Deep dive into multivariable calculus and complex analysis'),
+('Web Development', 'CS250', 'Full-stack web development with modern frameworks');
 
-----------------------------------------------------------------------------------------
+-- Insert dummy Enrollments
+INSERT INTO `Enrollment` (class_id, user_id, roleOfClass, roleDescription) VALUES
+(1, 1, 'Tutor', 'Assisting students with programming concepts'),
+(1, 3, 'Student', 'Learning machine learning fundamentals'),
+(2, 4, 'Student', 'Exploring contemporary art theories'),
+(3, 2, 'Tutor', 'Guiding students through advanced mathematical concepts'),
+(4, 1, 'Student', 'Learning full-stack web development techniques');
 
--- Insert test data into Enrollment table
-    -- `class_id` INT NULL,
-    -- `user_id` INT NULL,
-    -- `roleOfClass` VARCHAR(45) NOT NULL,
-    -- `roleDescription` TEXT(500) NULL,
--- (FK) Ensure the user_id and class_id values exist in User and Class tables
+-- Insert dummy Event Types
+INSERT INTO `Event_Type` (eventTypeName, wings) VALUES
+('WORKSHOP', 250),
+('NETWORKING', 150),
+('CONFERENCE', 400);
 
-INSERT INTO `Enrollment` (class_id, courseCode) VALUES
-('Calculus I', 'MA121'),
-('Physics I', 'PHY121'),
+-- Insert dummy Events
+INSERT INTO `Event` (type_id, eventName, eventStartTime, eventEndTime, location, eventDescription) VALUES
+(1, 'AI Ethics Workshop', '2024-12-05 09:00:00', '2024-12-05 13:00:00', 'Tech Hall A', 'Exploring ethical considerations in artificial intelligence'),
+(2, 'Tech Startup Mixer', '2024-12-12 18:00:00', '2024-12-12 21:00:00', 'Innovation Center', 'Networking event for tech entrepreneurs and innovators'),
+(3, 'Annual Computer Science Conference', '2025-01-15 10:00:00', '2025-01-17 17:00:00', 'Convention Center', 'Multi-day conference featuring research presentations and keynote speakers');
 
-INSERT INTO `Enrollment` (className, classDescription) VALUES
-('Computer Science I', 'Intro to Computer Science'),
-('Drawing I', 'Intro to Drawing');
+-- Insert dummy Attendance
+INSERT INTO `Attendance` (user_id, event_id, roleOfEvent, isCreator) VALUES
+(1, 1, 'Presenter', 1),
+(2, 2, 'Participant', 0),
+(3, 3, 'Speaker', 0),
+(4, 1, 'Attendee', 0);
 
-INSERT INTO `Enrollment` (className, courseCode, classDescription) VALUES
-('Calculus III', 'MA222', 'Vectors, 3-D modeling, and more!'),
-('Data Structures', 'CS221', 'Intro to Drawing');
+-- Insert dummy Chats
+INSERT INTO `Chat` (chat_id, chatName, chatDescription) VALUES
+(1, 'ML Study Group', 'Discussion forum for machine learning students'),
+(2, 'Web Dev Collaboration', 'Collaborative space for web development projects'),
+(3, 'Art History Discussions', 'Platform for sharing insights on art history');
 
-INSERT INTO `Enrollment` (class_id, role_in_class, user_id) VALUES
-(1, 'Student', 1),
-(1, 'Student', 2),
-(2, 'Tutor', 3);
+-- Insert dummy Chat Participants
+INSERT INTO `Chat_Participant` (participant_id, chat_id, user_id, joinedAt) VALUES
+(1, 1, 1, '2024-11-20 10:30:00'),
+(2, 1, 3, '2024-11-21 14:45:00'),
+(3, 2, 1, '2024-11-22 09:15:00'),
+(4, 3, 4, '2024-11-23 16:20:00');
 
+-- Insert dummy Messages
+INSERT INTO `Messages` (chat_id, sender_id, messageContent) VALUES
+(1, 1, 'Welcome to the Machine Learning study group! Let''s discuss our current project.'),
+(1, 3, 'Hi everyone! Can someone explain gradient descent?'),
+(2, 1, 'I''ve found a great tutorial on React hooks. Check it out!'),
+(3, 4, 'Thoughts on the latest modern art exhibition?');
 
+-- Insert dummy Availability
+INSERT INTO `Availability` (user_id, weekday, start, end) VALUES
+(1, 'MONDAY', '14:00:00', '18:00:00'),
+(2, 'TUESDAY', '10:00:00', '15:00:00'),
+(3, 'WEDNESDAY', '16:00:00', '20:00:00'),
+(4, 'THURSDAY', '09:00:00', '13:00:00');
 
--- Insert test data into Event_Type table (as it is a required reference for Event table)
-INSERT INTO `Event_Type` (type_name, wings) VALUES
-('DROP_IN', 100),
-('TUTORING', 200),
-('GROUP', 300);
+-- Insert dummy Person Ratings
+INSERT INTO `Person_Rating` (rating_id, class_id, tutee_id, tutor_id, personRating, userFeedback) VALUES
+(1, 1, 3, 1, 4, 'Great explanations of complex machine learning concepts'),
+(2, 3, 2, 2, 5, 'Exceptional tutoring, very patient and clear'),
+(3, 4, 1, 1, 3, 'Helpful but could provide more detailed guidance');
 
--- Insert test data into Event table
-INSERT INTO `Event` (event_name, start, end, event_type_id, location) VALUES
-('Math Workshop', '2024-11-01 10:00:00', '2024-11-01 12:00:00', 1, 'Room 101'),
-('Physics Seminar', '2024-11-02 14:00:00', '2024-11-02 16:00:00', 2, 'Room 102'),
-('Chemistry Study Group', '2024-11-03 09:00:00', '2024-11-03 11:00:00', 3, 'Room 103');
-
--- Insert test data into Chat table
-INSERT INTO `Chat` (chat_id, chat_name) VALUES
-(1, 'Math 101 Group Chat'),
-(2, 'Physics 101 Group Chat'),
-(3, 'Chemistry 101 Group Chat');
-
--- Insert test data into Attendance table
--- Ensure the user_id and event_id values exist in User and Event tables
-INSERT INTO `Attendance` (role_in_event, user_id, event_id) VALUES
-('Participant', 1, 1),
-('Speaker', 3, 2),
-('Organizer', 2, 3);
-
--- Insert test data into Jobs table
--- Ensure that class_id and admin_id (user_id from User table) exist
-INSERT INTO `Jobs` (job_id, class_id, admin_id, description) VALUES
-(1, 1, 1, 'Tutor needed for Math 101'),
-(2, 2, 1, 'Lab assistant required for Physics 101'),
-(3, 3, 1, 'Study group leader for Chemistry 101');
-
--- Insert test data into Chat_Roster table
--- Ensure user_id and chat_id exist in User and Chat tables
-INSERT INTO `Chat_Roster` (chat_roster_id, user_id, chat_id) VALUES
-(1, 1, 1),
-(2, 2, 1),
-(3, 3, 2),
-(4, 1, 3);
-
--- Insert test data into Messages table
--- Ensure chat_id and sender_id (user_id) exist in Chat and User tables
-INSERT INTO `Messages` (chat_id, content, sender_id) VALUES
-(1, 'Hello everyone!', 1),
-(1, 'Hi! Looking forward to the class.', 2),
-(2, 'Can anyone help with the assignment?', 3),
-(3, 'Let\'s meet before the study group.', 1);
-
--- Insert test data into Availability table
--- Ensure user_id exists in User table
-INSERT INTO `Availability` (user_id, weekday, start_time, end_time) VALUES
-(1, 'MONDAY', '09:00:00', '12:00:00'),
-(2, 'WEDNESDAY', '13:00:00', '15:00:00'),
-(3, 'FRIDAY', '10:00:00', '14:00:00');
-
--- Insert test data into Rating table
--- Ensure user_id, class_id, and tutor_id (user_id) exist in User and Class tables
-INSERT INTO `Rating` (rating_id, user_id, class_id, rating, tutor_id) VALUES
-(1, 1, 1, 5, 3),
-(2, 2, 1, 4, 3),
-(3, 3, 2, 5, 1);
+-- Insert dummy Event Ratings
+INSERT INTO `Event_Rating` (rating_id, event_id, rating, eventFeedback) VALUES
+(1, 1, 5, 'Insightful workshop with practical AI ethics discussions'),
+(2, 2, 4, 'Good networking opportunities, could use more structured interactions'),
+(3, 3, 5, 'Exceptional conference with cutting-edge research presentations');
 
 SET FOREIGN_KEY_CHECKS = 1;
