@@ -21,18 +21,42 @@
         </div>
 
         <script>
-            const classes = [
-                { title: "Class 1", details: "Details for Class 1..." },
-                { title: "Class 2", details: "Details for Class 2..." },
-                { title: "Class 3", details: "Details for Class 3..." },
-                { title: "Class 4", details: "Details for Class 4..." },
-                { title: "Class 5", details: "Details for Class 5..." },
-                { title: "Class 6", details: "Details for Class 6..." },
-                { title: "Class 7", details: "Details for Class 7..." }
-            ];
-
+            let classes = [];
             let visibleClasses = 5;
             let activeCollapse = null;
+
+            // Fetch classes from PHP
+            fetch('../data_src/api/tutor/read.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        classes = data.classes.map(classItem => ({
+                            title: `${classItem.className} (${classItem.courseCode})`,
+                            details: `
+                                <p>${classItem.classDescription}</p>
+                                <h6>Tutors:</h6>
+                                <ul>
+                                    ${classItem.tutors.length > 0 
+                                        ? classItem.tutors.map(tutor => 
+                                            `<li>${tutor.firstName} ${tutor.lastName} (${tutor.email})</li>`
+                                        ).join('') 
+                                        : '<li>No tutors assigned</li>'}
+                                </ul>
+                            `
+                        }));
+                        renderClasses();
+                    } else {
+                        throw new Error(data.message || 'Failed to fetch classes');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching classes:', error);
+                    document.getElementById('classesTable').innerHTML = `
+                        <div class="alert alert-danger">
+                            Error loading classes: ${error.message}
+                        </div>
+                    `;
+                });
 
             function renderClasses(classesToRender = classes) {
                 const table = document.getElementById('classesTable');
@@ -73,13 +97,14 @@
 
                     table.appendChild(card);
                 });
+
+                // Update show more button visibility
+                const showMoreButton = document.getElementById("showMoreButton");
+                showMoreButton.style.display = visibleClasses >= classesToRender.length ? "none" : "block";
             }
 
             function showMoreClasses() {
                 visibleClasses += 5;
-                if (visibleClasses >= classes.length) {
-                    document.getElementById("showMoreButton").style.display = "none";
-                }
                 renderClasses();
             }
 
@@ -91,8 +116,6 @@
                 activeCollapse = null; // Reset active collapse when filtering
                 renderClasses(filteredClasses);
             }
-
-            renderClasses();
         </script>
     </main>
     
