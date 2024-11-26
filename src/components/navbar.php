@@ -31,7 +31,7 @@ require_once __DIR__ . '/../data_src/includes/db_connect.php';
                         <li><a class="dropdown-item" href="/jaywing-academy/src/pages/jobs.php">Job Board</a></li>
                     </ul>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item <?php echo (!isLoggedIn()) ? 'hidden' : ''; ?>">
                     <a class="nav-link" href="/jaywing-academy/src/pages/message.php">Messages</a>
                 </li>
                 <li class="nav-item <?php echo (!isLoggedIn()) ? 'hidden' : ''; ?>" id="profile-tab">
