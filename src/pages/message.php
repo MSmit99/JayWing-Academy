@@ -52,12 +52,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         $stmt->bind_param("iss", $newChatId, $chatName, $chatDescription);
         $stmt->execute();
         
+        // Get new participant_id
+        $result = $connection->query("SELECT MAX(participant_id) as max_id FROM Chat_Participant");
+        $row = $result->fetch_assoc();
+        $newParticipantId = ($row['max_id'] ?? 0) + 1;
+        
+        // Add creator as a participant with current timestamp
+        $currentTime = date('Y-m-d H:i:s');
+        $stmt = $connection->prepare("INSERT INTO Chat_Participant (participant_id, chat_id, user_id, joinedAt) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param("iiis", $newParticipantId, $newChatId, $userId, $currentTime);
+        $stmt->execute();
+        
+        // Add a system message to indicate chat creation
+        $systemMessage = "Chat created by " . $fullName;
+        $stmt = $connection->prepare("INSERT INTO Messages (chat_id, sender_id, messageContent) VALUES (?, ?, ?)");
+        $stmt->bind_param("iis", $newChatId, $userId, $systemMessage);
+        $stmt->execute();
+        
         $connection->commit();
         header("Location: ?chat_id=" . $newChatId);
         exit();
     } catch (Exception $e) {
         $connection->rollback();
-        $error = "Failed to create chat";
+        $error = "Failed to create chat: " . $e->getMessage();
     }
 }
 
@@ -99,22 +116,26 @@ $currentChat = isset($_GET['chat_id']) ? $_GET['chat_id'] : null;
                 <!-- List of existing chats -->
                 <div class="space-y-2">
                     <?php
-                    $stmt = $connection->prepare("
+                        $stmt = $connection->prepare("
                         SELECT DISTINCT c.chat_id, c.chatName, c.chatDescription
                         FROM Chat c
-                        JOIN Messages m ON c.chat_id = m.chat_id
-                        WHERE m.sender_id = ? OR EXISTS (
-                            SELECT 1 FROM Messages 
-                            WHERE chat_id = c.chat_id 
-                            AND sender_id = ?
-                        )
+                        LEFT JOIN Messages m ON c.chat_id = m.chat_id
+                        LEFT JOIN Chat_Participant cp ON c.chat_id = cp.chat_id
+                        WHERE cp.user_id = ?
                         ORDER BY c.chat_id DESC
-                    ");
-                    $stmt->bind_param("ii", $userId, $userId);
-                    $stmt->execute();
-                    $chats = $stmt->get_result();
-                    
-                    while ($chat = $chats->fetch_assoc()):
+                        ");
+                        $stmt->bind_param("i", $userId);
+                        $stmt->execute();
+                        $chats = $stmt->get_result();
+                        
+                        if (isset($error)) {
+                            echo '<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">';
+                            echo '<strong class="font-bold">Error!</strong>';
+                            echo '<span class="block sm:inline"> ' . htmlspecialchars($error) . '</span>';
+                            echo '</div>';
+                        }
+
+                        while ($chat = $chats->fetch_assoc()):
                     ?>
                         <a href="?chat_id=<?php echo $chat['chat_id']; ?>" 
                            class="block p-3 rounded hover:bg-gray-100 <?php echo $currentChat == $chat['chat_id'] ? 'bg-gray-100' : ''; ?>">
