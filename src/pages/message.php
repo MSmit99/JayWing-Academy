@@ -276,22 +276,6 @@ $currentChat = isset($_GET['chat_id']) ? $_GET['chat_id'] : null;
         </div>
     </div>
 
-    <script>
-        function showNewChatModal() {
-            document.getElementById('newChatModal').classList.remove('hidden');
-        }
-
-        function hideNewChatModal() {
-            document.getElementById('newChatModal').classList.add('hidden');
-        }
-
-        // Auto-scroll to bottom of messages
-        const messagesDiv = document.querySelector('.overflow-y-auto');
-        if (messagesDiv) {
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
-        }
-    </script>
-
     <footer id="footer"></footer>
 
     <!-- Bootstrap JS -->
@@ -299,5 +283,6 @@ $currentChat = isset($_GET['chat_id']) ? $_GET['chat_id'] : null;
 
     <!-- Custom JS -->
     <script src="../js/global.js"></script>
+    <script src="../js/chat.js"></script>
 </body>
 </html>
