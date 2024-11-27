@@ -39,10 +39,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'create_chat') {
     $chatName = $_POST['chat_name'];
     $chatDescription = $_POST['chat_description'];
+    $participants = isset($_POST['participants']) ? $_POST['participants'] : [];
     
     $connection->begin_transaction();
     try {
-        // Get new chat_id (since it's not AUTO_INCREMENT in your schema)
+        // Get new chat_id
         $result = $connection->query("SELECT MAX(chat_id) as max_id FROM Chat");
         $row = $result->fetch_assoc();
         $newChatId = ($row['max_id'] ?? 0) + 1;
@@ -52,18 +53,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         $stmt->bind_param("iss", $newChatId, $chatName, $chatDescription);
         $stmt->execute();
         
-        // Get new participant_id
+        // Get new participant_id base
         $result = $connection->query("SELECT MAX(participant_id) as max_id FROM Chat_Participant");
         $row = $result->fetch_assoc();
         $newParticipantId = ($row['max_id'] ?? 0) + 1;
         
-        // Add creator as a participant with current timestamp
+        // Add creator as a participant
         $currentTime = date('Y-m-d H:i:s');
         $stmt = $connection->prepare("INSERT INTO Chat_Participant (participant_id, chat_id, user_id, joinedAt) VALUES (?, ?, ?, ?)");
         $stmt->bind_param("iiis", $newParticipantId, $newChatId, $userId, $currentTime);
         $stmt->execute();
         
-        // Add a system message to indicate chat creation
+        // Add selected participants
+        foreach ($participants as $participantId) {
+            $newParticipantId++;
+            $stmt = $connection->prepare("INSERT INTO Chat_Participant (participant_id, chat_id, user_id, joinedAt) VALUES (?, ?, ?, ?)");
+            $stmt->bind_param("iiis", $newParticipantId, $newChatId, $participantId, $currentTime);
+            $stmt->execute();
+        }
+        
+        // Add a system message
         $systemMessage = "Chat created by " . $fullName;
         $stmt = $connection->prepare("INSERT INTO Messages (chat_id, sender_id, messageContent) VALUES (?, ?, ?)");
         $stmt->bind_param("iis", $newChatId, $userId, $systemMessage);
@@ -187,7 +196,7 @@ $currentChat = isset($_GET['chat_id']) ? $_GET['chat_id'] : null;
                             while ($message = $messages->fetch_assoc()):
                                 $isOwnMessage = $message['sender_id'] == $userId;
                             ?>
-                                <div class="flex <?php echo $isOwnMessage ? 'justify-end' : 'justify-start'; ?>">
+                                <div data-message-id="<?php echo $message['message_id']; ?>" class="flex <?php echo $isOwnMessage ? 'justify-end' : 'justify-start'; ?>">
                                     <div class="max-w-[70%] <?php echo $isOwnMessage ? 'bg-blue-500 text-white' : 'bg-gray-100'; ?> rounded-lg p-3">
                                         <?php if (!$isOwnMessage): ?>
                                             <div class="text-sm font-medium <?php echo $isOwnMessage ? 'text-white' : 'text-gray-900'; ?>">
@@ -201,7 +210,7 @@ $currentChat = isset($_GET['chat_id']) ? $_GET['chat_id'] : null;
                         </div>
                         
                         <!-- Message input -->
-                        <form method="POST" class="mt-auto">
+                        <form method="POST" name="messageForm" class="mt-auto">
                             <input type="hidden" name="action" value="send_message">
                             <input type="hidden" name="chat_id" value="<?php echo $currentChat; ?>">
                             <div class="flex gap-2">
@@ -232,7 +241,7 @@ $currentChat = isset($_GET['chat_id']) ? $_GET['chat_id'] : null;
 
     <!-- New Chat Modal -->
     <div id="newChatModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-        <div class="bg-white rounded-lg p-6 w-96">
+        <div class="bg-white rounded-lg p-6 w-[32rem]">
             <h3 class="text-xl font-bold mb-4">New Chat</h3>
             <form method="POST">
                 <input type="hidden" name="action" value="create_chat">
@@ -256,6 +265,42 @@ $currentChat = isset($_GET['chat_id']) ? $_GET['chat_id'] : null;
                         class="w-full border rounded-lg p-2"
                         rows="3"
                     ></textarea>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Add Participants
+                    </label>
+                    <div class="border rounded-lg p-2 max-h-48 overflow-y-auto">
+                        <?php
+                        // Fetch all users except current user
+                        $stmt = $connection->prepare("
+                            SELECT user_id, username, firstName, lastName 
+                            FROM User 
+                            WHERE user_id != ?
+                            ORDER BY firstName, lastName
+                        ");
+                        $stmt->bind_param("i", $userId);
+                        $stmt->execute();
+                        $users = $stmt->get_result();
+                        
+                        while ($user = $users->fetch_assoc()):
+                        ?>
+                            <div class="flex items-center p-2 hover:bg-gray-50">
+                                <input 
+                                    type="checkbox"
+                                    name="participants[]"
+                                    value="<?php echo $user['user_id']; ?>"
+                                    class="mr-3"
+                                >
+                                <label>
+                                    <?php echo htmlspecialchars($user['firstName'] . ' ' . $user['lastName']); ?>
+                                    <span class="text-sm text-gray-500">
+                                        (@<?php echo htmlspecialchars($user['username']); ?>)
+                                    </span>
+                                </label>
+                            </div>
+                        <?php endwhile; ?>
+                    </div>
                 </div>
                 <div class="flex justify-end gap-2">
                     <button 
