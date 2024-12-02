@@ -7,6 +7,8 @@ if (!isLoggedIn()) {
   // TODO: Add login popup here or before page is loaded
 }
 
+// SQL Queries
+// TODO: Combine some of the queries into one query to reduce the number of queries
 // Getting User Credentials
 $user_id = getCurrentUserId();
 $user = null;
@@ -32,6 +34,7 @@ if ($user_id) {
   $stmt->close();
 }
 
+// TODO: Combine "Top 5" and "All" queries into one query to reduce the number of queries
 // Getting Top 5 Upcoming Events
 $events = null;
 
@@ -178,7 +181,8 @@ if ($classes && $all_classes) {
               ?>
             </p>
             <div class="d-flex justify-content-center mb-2">
-              <button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-primary ms-1">Message</button>
+              <!-- Maybe add this back in the event that we allow users to view other users profile page -->
+              <!-- <button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-primary ms-1">Message</button> -->
             </div>
           </div>
         </div>
