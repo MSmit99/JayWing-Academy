@@ -311,6 +311,8 @@ if ($classes && $all_classes) {
       </div>
     </div>
   </div>
+<!-- TODO: Add a calendar feature at the bottom that allows user to update their availability -->
+
 </section>
 
     </main>
