@@ -14,7 +14,7 @@ $user_id = getCurrentUserId();
 $user = null;
 
 if ($user_id) {
-  $stmt = $connection->prepare("SELECT username, firstName, lastName, email, wings FROM user WHERE user_id = ?");
+  $stmt = $connection->prepare("SELECT username, firstName, lastName, email, wings, Unavailable FROM User WHERE user_id = ?");
   $stmt->bind_param("i", $user_id);
   $stmt->execute();
   $result = $stmt->get_result();
@@ -26,7 +26,7 @@ if ($user_id) {
 $user_titles = null;
 
 if ($user_id) {
-  $stmt = $connection->prepare("SELECT DISTINCT roleOfClass FROM enrollment WHERE user_id = ?");
+  $stmt = $connection->prepare("SELECT DISTINCT roleOfClass FROM Enrollment WHERE user_id = ?");
   $stmt->bind_param("i", $user_id);
   $stmt->execute();
   $result = $stmt->get_result();
@@ -39,8 +39,8 @@ if ($user_id) {
 $events = null;
 
 if ($user_id) {
-  $stmt = $connection->prepare("SELECT e.event_id, e.eventName, e.eventStartTime, e.eventEndTime, e.Location, e.eventDescription FROM event e 
-                                JOIN attendance a ON e.event_id = a.event_id
+  $stmt = $connection->prepare("SELECT e.event_id, e.eventName, e.eventStartTime, e.eventEndTime, e.Location, e.eventDescription FROM Event e 
+                                JOIN Attendance a ON e.event_id = a.event_id
                                 WHERE a.user_id = ?
                                 AND e.eventStartTime > NOW()
                                 ORDER BY e.eventStartTime ASC
@@ -56,8 +56,8 @@ if ($user_id) {
 $all_events = null;
 
 if ($user_id) {
-  $stmt = $connection->prepare("SELECT e.event_id, e.eventName, e.eventStartTime, e.eventEndTime, e.Location, e.eventDescription FROM event e 
-                                JOIN attendance a ON e.event_id = a.event_id
+  $stmt = $connection->prepare("SELECT e.event_id, e.eventName, e.eventStartTime, e.eventEndTime, e.Location, e.eventDescription FROM Event e 
+                                JOIN Attendance a ON e.event_id = a.event_id
                                 WHERE a.user_id = ?
                                 AND e.eventStartTime > NOW()
                                 ORDER BY e.eventStartTime ASC;");
@@ -307,6 +307,76 @@ if ($classes && $all_classes) {
               </div>
             </div>
           </div>
+
+          <!-- Availability Section -->
+          <div class="row mt-4">
+          <div class="col-md-12">
+            <div class="card mb-4 mb-md-0">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                  <p class="mb-0"><span class="text-primary font-italic me-1">Availability Settings</span></p>
+                  <button type="button" 
+                          class="btn <?php echo $user['Unavailable'] ? 'btn-success' : 'btn-danger'; ?>" 
+                          id="toggleAvailability">
+                    <?php echo $user['Unavailable'] ? 'Set Available' : 'Set Unavailable'; ?>
+                  </button>
+                </div>
+
+                <!-- Current Availability Display -->
+                <div class="mb-4" id="currentAvailability">
+                  <h6 class="mb-3">Current Availability</h6>
+                  <div class="table-responsive">
+                    <table class="table table-striped">
+                      <thead>
+                        <tr>
+                          <th>Day</th>
+                          <th>Start Time</th>
+                          <th>End Time</th>
+                          <th>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody id="availabilityTableBody">
+                        <!-- Will be populated by JavaScript -->
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <!-- Availability Form -->
+                <form id="availabilityForm">
+                  <h6 class="mb-3">Set New Availability</h6>
+                  <div id="availabilityInputs">
+                    <div class="row mb-3 availability-entry">
+                      <div class="col-md-4">
+                        <select class="form-select" name="weekday[]" required>
+                          <option value="">Select Day</option>
+                          <option value="MONDAY">Monday</option>
+                          <option value="TUESDAY">Tuesday</option>
+                          <option value="WEDNESDAY">Wednesday</option>
+                          <option value="THURSDAY">Thursday</option>
+                          <option value="FRIDAY">Friday</option>
+                          <option value="SATURDAY">Saturday</option>
+                          <option value="SUNDAY">Sunday</option>
+                        </select>
+                      </div>
+                      <div class="col-md-3">
+                        <input type="time" class="form-control" name="start[]" required>
+                      </div>
+                      <div class="col-md-3">
+                        <input type="time" class="form-control" name="end[]" required>
+                      </div>
+                      <div class="col-md-2">
+                        <button type="button" class="btn btn-danger remove-time">Remove</button>
+                      </div>
+                    </div>
+                  </div>
+                  <button type="button" class="btn btn-secondary mb-3" id="addTimeSlot">Add Time Slot</button>
+                  <button type="submit" class="btn btn-primary w-100">Save Availability</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
         </div>
       </div>
     </div>
@@ -324,5 +394,6 @@ if ($classes && $all_classes) {
 
     <!-- Custom JS -->
     <script src="../js/global.js"></script>
+    <script src="../js/availability.js"></script>
 </body>
 </html>
