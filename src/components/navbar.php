@@ -13,14 +13,8 @@ require_once __DIR__ . '/../data_src/includes/db_connect.php';
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="/jaywing-academy/index.php">Home</a>
                 </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Schedule
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="/jaywing-academy/src/pages/calendar.php">Calendar</a></li>
-                        <li><a class="dropdown-item" href="#">Appointments</a></li>
-                    </ul>
+                <li class="nav-item">
+                    <a class="nav-link" href="/jaywing-academy/src/pages/calendar.php">Calendar</a>
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">

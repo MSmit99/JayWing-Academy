@@ -215,6 +215,8 @@ $users = $connection->query("SELECT * FROM User");
     <footer id="footer"></footer>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
     <script src="../js/class_management.js"></script>
+    <script src="../js/global.js"></script>
 </body>
 </html>
