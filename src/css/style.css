@@ -158,3 +158,76 @@
     background-color: #04cdff;
     color: #004c5b
 }
+
+/*--------------------- Messaging Page ---------------------------*/
+
+/* Chat container and layout */
+.chat-container {
+    max-height: 600px;
+}
+
+.messages-area {
+    overflow-y: auto;
+    height: 500px;
+}
+
+/* Message styling */
+.message-sent {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 10px;
+}
+
+.message-received {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 10px;
+}
+
+.message-bubble {
+    max-width: 70%;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.message-sent .message-bubble {
+    background-color: #007bff;
+    color: white;
+}
+
+.message-received .message-bubble {
+    background-color: #f1f0f0;
+    color: black;
+}
+
+/* Participants modal */
+.participants-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+/* Ensure proper scrolling in modals */
+.modal-body {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.card-body {
+    overflow-y: auto; /* Ensures the message area is scrollable */
+}
+
+.message-content {
+    word-wrap: break-word; /* Breaks long words if needed */
+    overflow-wrap: break-word; /* Ensures overflow text is wrapped */
+}
+
+.text-message {
+    max-width: 70%;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+/* Prevent horizontal overflow */
+.d-flex {
+    flex-wrap: wrap; /* Ensure the messages are wrapped correctly */
+}

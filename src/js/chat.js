@@ -122,3 +122,11 @@ window.showNewChatModal = () => chatManager.showNewChatModal();
 window.hideNewChatModal = () => chatManager.hideNewChatModal();
 window.showParticipantsModal = () => chatManager.showParticipantsModal();
 window.hideParticipantsModal = () => chatManager.hideParticipantsModal();
+
+function showParticipantsModal() {
+    document.getElementById('participantsModal').classList.remove('hidden');
+}
+
+function hideParticipantsModal() {
+    document.getElementById('participantsModal').classList.add('hidden');
+}

@@ -186,10 +186,10 @@ if (isset($_GET['chat_id']) && filter_var($_GET['chat_id'], FILTER_VALIDATE_INT)
                         while ($chat = $chats->fetch_assoc()):
                     ?>
                     <a href="?chat_id=<?php echo htmlspecialchars($chat['chat_id'], ENT_QUOTES, 'UTF-8'); ?>" 
-                    class="block p-3 rounded hover:bg-gray-100 <?php echo $currentChat == $chat['chat_id'] ? 'bg-gray-100' : ''; ?>">
-                        <div class="font-medium"><?php echo htmlspecialchars($chat['chatName'], ENT_QUOTES, 'UTF-8'); ?></div>
+                        class="block p-3 rounded hover:bg-gray-100 <?php echo $currentChat == $chat['chat_id'] ? 'bg-gray-100' : ''; ?> message-container">
+                        <div class="font-medium truncate"><?php echo htmlspecialchars($chat['chatName'], ENT_QUOTES, 'UTF-8'); ?></div>
                         <?php if ($chat['chatDescription']): ?>
-                            <div class="text-xs text-gray-500"><?php echo htmlspecialchars($chat['chatDescription'], ENT_QUOTES, 'UTF-8'); ?></div>
+                            <div class="text-xs text-gray-500 truncate"><?php echo htmlspecialchars($chat['chatDescription'], ENT_QUOTES, 'UTF-8'); ?></div>
                         <?php endif; ?>
                     </a>
                     <?php endwhile; ?>
@@ -216,7 +216,52 @@ if (isset($_GET['chat_id']) && filter_var($_GET['chat_id'], FILTER_VALIDATE_INT)
                                     <?php echo htmlspecialchars($chatDetails['chatDescription']); ?>
                                 </div>
                             <?php endif; ?>
+
+                            <!-- Button to show participants modal positioned right of the text -->
+                            <button onclick="showParticipantsModal()" class="bg-green-500 text-white px-3 py-1 rounded-full text-sm">
+                                View Participants
+                            </button>
                         </div>
+
+                        <!-- Participants Modal -->
+                        <div id="participantsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                            <div class="bg-white rounded-lg p-6 w-[32rem]">
+                                <h3 class="text-xl font-bold mb-4">Chat Participants</h3>
+                                
+                                <!-- List of participants -->
+                                <div class="space-y-2">
+                                    <?php
+                                    // Fetch participants for the current chat
+                                    $stmt = $connection->prepare("
+                                        SELECT u.firstName, u.lastName, u.username
+                                        FROM Chat_Participant cp
+                                        JOIN User u ON cp.user_id = u.user_id
+                                        WHERE cp.chat_id = ?
+                                    ");
+                                    $stmt->bind_param("i", $currentChat);
+                                    $stmt->execute();
+                                    $participants = $stmt->get_result();
+                                    
+                                    while ($participant = $participants->fetch_assoc()):
+                                    ?>
+                                    <div class="p-2 border-b">
+                                        <div class="font-medium">
+                                            <?php echo htmlspecialchars($participant['firstName'] . ' ' . $participant['lastName']); ?>
+                                        </div>
+                                        <div class="text-xs text-gray-500">
+                                            (@<?php echo htmlspecialchars($participant['username']); ?>)
+                                        </div>
+                                    </div>
+                                    <?php endwhile; ?>
+                                </div>
+
+                                <!-- Close button -->
+                                <button onclick="hideParticipantsModal()" class="bg-red-500 text-white px-4 py-2 rounded-lg mt-4">
+                                    Close
+                                </button>
+                            </div>
+                        </div>
+
                         
                         <!-- Messages area -->
                         <div class="flex-1 overflow-y-auto mb-4 space-y-4">
@@ -255,7 +300,7 @@ if (isset($_GET['chat_id']) && filter_var($_GET['chat_id'], FILTER_VALIDATE_INT)
                             <div class="flex gap-2">
                                 <textarea 
                                     name="message" 
-                                    class="flex-1 border rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    class="flex-1 border rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 break-words"
                                     placeholder="Type your message..."
                                     rows="2"
                                     required
@@ -301,7 +346,7 @@ if (isset($_GET['chat_id']) && filter_var($_GET['chat_id'], FILTER_VALIDATE_INT)
                     </label>
                     <textarea 
                         name="chat_description"
-                        class="w-full border rounded-lg p-2"
+                        class="w-full border rounded-lg p-2 break-words"
                         rows="3"
                     ></textarea>
                 </div>
