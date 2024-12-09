@@ -25,7 +25,7 @@
         <div class="team-grid">
             <div class="team-member">
               <h2 class="member-name">Muz Islam</h2>
-              <p class="member-role">Daddy Muz</p>
+              <p class="member-role">Programmer</p>
               <p class="member-bio">Muz is a senior IS major actively looking for a job when he graduates.</p>
               <div class="btn-container aboutBtnContainer">
                 <a href="islam.html" class="btn aboutBtn">View Profile</a>
@@ -35,7 +35,7 @@
             <div class="team-member">
               <h2 class="member-name">Alex Roop</h2>
               <p class="member-role">Programmer</p>
-              <p class="member-bio">Alex is a junior data science major looking for an internship in the upcoming summer.</p>
+              <p class="member-bio">Alex is a junior Computer Science major with a concentration in data science looking for an internship in the upcoming summer.</p>
               <div class="btn-container aboutBtnContainer">
                 <a href="roop.html" class="btn aboutBtn">View Profile</a>
               </div>
@@ -44,7 +44,7 @@
             <div class="team-member">
               <h2 class="member-name">Joey Wagner</h2>
               <p class="member-role">Programmer</p>
-              <p class="member-bio">Joey is a junior data science major looking for an internship in the upcoming summer.</p>
+              <p class="member-bio">Joey is a junior computer science major with a concentration in data science looking for an internship in the upcoming summer.</p>
               <div class="btn-container aboutBtnContainer">
                 <a href="wagner.html" class="btn aboutBtn">View Profile</a>
               </div>
