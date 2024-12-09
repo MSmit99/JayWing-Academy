@@ -25,7 +25,24 @@ if ($isUserLoggedIn) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'send_message') {
     $messageContent = $_POST['message'];
     $chatId = $_POST['chat_id'];
-    
+
+    // Validate that the user is a participant of the chat before inserting the message
+    $stmt = $connection->prepare("
+        SELECT 1 
+        FROM Chat_Participant 
+        WHERE chat_id = ? AND user_id = ?
+    ");
+    $stmt->bind_param("ii", $chatId, $userId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows === 0) {
+        // User is not part of this chat, redirect them or show an error
+        header("Location: index.php"); // Redirect to a safe page
+        exit();
+    }
+
+    // Insert the message if validation passes
     $stmt = $connection->prepare("INSERT INTO Messages (chat_id, sender_id, messageContent) VALUES (?, ?, ?)");
     $stmt->bind_param("iis", $chatId, $userId, $messageContent);
     $stmt->execute();
@@ -87,7 +104,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     }
 }
 
-$currentChat = isset($_GET['chat_id']) ? $_GET['chat_id'] : null;
+if (isset($_GET['chat_id']) && filter_var($_GET['chat_id'], FILTER_VALIDATE_INT)) {
+    $currentChat = (int) $_GET['chat_id'];
+    
+    // Validate that the user is a participant of the chat
+    $stmt = $connection->prepare("
+        SELECT 1 
+        FROM Chat_Participant 
+        WHERE chat_id = ? AND user_id = ?
+    ");
+    $stmt->bind_param("ii", $currentChat, $userId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows === 0) {
+        // If no result, user is not a participant of the chat
+        header("Location: index.php"); // Redirect to a safe page, like the home page
+        exit();
+    }
+} else {
+    $currentChat = null;
+}
+
+
 ?>
 
 <!DOCTYPE html>
@@ -146,13 +185,13 @@ $currentChat = isset($_GET['chat_id']) ? $_GET['chat_id'] : null;
 
                         while ($chat = $chats->fetch_assoc()):
                     ?>
-                        <a href="?chat_id=<?php echo $chat['chat_id']; ?>" 
-                           class="block p-3 rounded hover:bg-gray-100 <?php echo $currentChat == $chat['chat_id'] ? 'bg-gray-100' : ''; ?>">
-                            <div class="font-medium"><?php echo htmlspecialchars($chat['chatName']); ?></div>
-                            <?php if ($chat['chatDescription']): ?>
-                                <div class="text-xs text-gray-500"><?php echo htmlspecialchars($chat['chatDescription']); ?></div>
-                            <?php endif; ?>
-                        </a>
+                    <a href="?chat_id=<?php echo htmlspecialchars($chat['chat_id'], ENT_QUOTES, 'UTF-8'); ?>" 
+                    class="block p-3 rounded hover:bg-gray-100 <?php echo $currentChat == $chat['chat_id'] ? 'bg-gray-100' : ''; ?>">
+                        <div class="font-medium"><?php echo htmlspecialchars($chat['chatName'], ENT_QUOTES, 'UTF-8'); ?></div>
+                        <?php if ($chat['chatDescription']): ?>
+                            <div class="text-xs text-gray-500"><?php echo htmlspecialchars($chat['chatDescription'], ENT_QUOTES, 'UTF-8'); ?></div>
+                        <?php endif; ?>
+                    </a>
                     <?php endwhile; ?>
                 </div>
             </div>
@@ -171,7 +210,7 @@ $currentChat = isset($_GET['chat_id']) ? $_GET['chat_id'] : null;
                     <div class="flex flex-col h-[600px]">
                         <!-- Chat header -->
                         <div class="border-b pb-4 mb-4">
-                            <h2 class="text-xl font-bold"><?php echo htmlspecialchars($chatDetails['chatName']); ?></h2>
+                        <h2 class="text-xl font-bold"><?php echo htmlspecialchars($chatDetails['chatName'], ENT_QUOTES, 'UTF-8'); ?></h2>
                             <?php if ($chatDetails['chatDescription']): ?>
                                 <div class="text-sm text-gray-500">
                                     <?php echo htmlspecialchars($chatDetails['chatDescription']); ?>
