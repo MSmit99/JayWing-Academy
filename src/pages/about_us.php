@@ -40,6 +40,15 @@
                 <a href="https://github.com/Acroop35" class="btn aboutBtn">View GitHub</a>
               </div>
             </div>
+
+            <div class="team-member">
+              <h2 class="member-name">Matt Smith</h2>
+              <p class="member-role">Programmer</p>
+              <p class="member-bio">Matt is a junior computer science major with a cocentration in cybersecurity looking for an internship in the upcoming summer.</p>
+              <div class="btn-container aboutBtnContainer">
+                <a href="https://github.com/MSmit99" class="btn aboutBtn">View GitHub</a>
+              </div>
+            </div>
           
             <div class="team-member">
               <h2 class="member-name">Joey Wagner</h2>
@@ -47,15 +56,6 @@
               <p class="member-bio">Joey is a junior computer science major with a concentration in data science looking for an internship in the upcoming summer.</p>
               <div class="btn-container aboutBtnContainer">
                 <a href="https://github.com/joeeyw" class="btn aboutBtn">View GitHub</a>
-              </div>
-            </div>
-          
-            <div class="team-member">
-              <h2 class="member-name">Matt Smith</h2>
-              <p class="member-role">Programmer</p>
-              <p class="member-bio">Matt is a junior computer science major with a cocentration in cybersecurity looking for an internship in the upcoming summer.</p>
-              <div class="btn-container aboutBtnContainer">
-                <a href="https://github.com/MSmit99" class="btn aboutBtn">View GitHub</a>
               </div>
             </div>
         </div>
