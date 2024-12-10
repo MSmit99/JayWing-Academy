@@ -17,8 +17,7 @@
     </header>
 
     <main>
-        <!-- TODO: Jobs page goes here -->
-         <div class="center-container">
+        <div class="center-container">
          <form class="row g-3 needs-validation center-container" novalidate id="tutorApplicationForm">
 
          <div class="col-md-4 position-relative">
@@ -39,10 +38,6 @@
       Course code must start with 2-3 letters followed by at least 3 numbers.
     </div>
 </div>
-
-
-
-
 
   <div class="col-md-4">
     <label for="validationTooltipUsername" class="form-label">Professor Email</label>
@@ -66,7 +61,7 @@
     <div class="form-check">
       <input class="form-check-input" type="checkbox" value="" id="invalidCheck2">
       <label class="form-check-label" for="invalidCheck2">
-        <p class = 'inline'>By checking this box, I confirm that I have read and agreed to the terms and conditions of this application</p>
+        <p class='inline'>By checking this box, I confirm that I have read and agreed to the terms and conditions of this application</p>
         <button type="button" class="btn btn-primary inline" data-bs-toggle="modal" data-bs-target="#termsModal">
           View Terms and Conditions
         </button>
@@ -74,7 +69,7 @@
     </div>
   </div>
 
-<!-- Terms and Agreemnts Modal -->
+<!-- Terms and Agreements Modal -->
 <div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -83,7 +78,6 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <!-- Insert your terms and conditions text here -->
         <p><strong>Terms and Conditions for Tutor Application</strong></p>
   
   <p><strong>1. Consent to Share Academic Information</strong><br>
@@ -105,41 +99,6 @@
   </div>
 </div>
 
-  
-
-
-  
-<!-- script to check and make sure terms is checked -->
-<script>
-  const form = document.getElementById("tutorApplicationForm");
-const checkbox = document.getElementById("invalidCheck2");
-const submitBtn = document.getElementById("submitButton");
-
-// Add event listener to toggle submit button based on checkbox state
-checkbox.addEventListener('change', function() {
-    submitBtn.disabled = !checkbox.checked; // Disable submit if checkbox is unchecked
-});
-
-// Prevent form submission if checkbox is not checked
-form.addEventListener("submit", function(event) {
-    if (!checkbox.checked) {
-        event.preventDefault();  // Prevent form submission
-        alert("You must agree to the terms and conditions before submitting the application.");
-    }
-});
-</script>
-
-
-
-<!-- Valid email check -->
-<script>
-function validateEmailInput(input) {
-    // Allowed characters: letters, numbers, ., _, %, +, and -
-    input.value = input.value.replace(/[^a-zA-Z0-9._%+-]/g, '');
-}
-</script>
-
-
   <div class="mb-3">
     <label for="validationTextarea" class="form-label">Note for Professor: </label>
     <textarea class="form-control" id="validationTextarea" placeholder="Note for Professor" required></textarea>
@@ -150,29 +109,9 @@ function validateEmailInput(input) {
 
   <div class="col-12">
   <button type="submit" id="submitButton" class="btn btn-primary" disabled>Submit</button>
-
-
-<!-- Making sure the course codes are valid -->
-<script>
-function validateCourseCode() {
-    const courseCodeInput = document.getElementById('validationTooltip01');
-    const submitButton = document.getElementById('submitButton');
-    const courseCodePattern = /^[A-Za-z]{2,3}\d{3,}$/;
-
-    // Enable submit button only if input matches pattern
-    if (courseCodePattern.test(courseCodeInput.value)) {
-        submitButton.disabled = false;
-    } else {
-        submitButton.disabled = true;
-    }
-}
-</script>
   </div>
   
 </form>
-
-
-
     </main>
     
     <footer id="footer"></footer>
@@ -182,5 +121,6 @@ function validateCourseCode() {
 
     <!-- Custom JS -->
     <script src="../js/global.js"></script>
+    <script src="../js/jobs.js"></script>
 </body>
 </html>
