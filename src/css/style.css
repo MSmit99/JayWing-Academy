@@ -207,8 +207,8 @@
 }
 
 .message-content {
-    word-wrap: break-word; /* Breaks long words if needed */
-    overflow-wrap: break-word; /* Ensures overflow text is wrapped */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .text-message {
@@ -219,7 +219,7 @@
 
 /* Prevent horizontal overflow */
 .d-flex {
-    flex-wrap: wrap; /* Ensure the messages are wrapped correctly */
+    flex-wrap: wrap;
 }
 
 #newChatModal {
