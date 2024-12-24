@@ -3,3 +3,6 @@ JayWing Academy is a comprehensive tutor management system designed to streamlin
 
 # Installing the Project
 Install xampp or other software to run php locally - https://www.apachefriends.org/download.html
+
+# Hosting the Project
+The project is currently hosted at: [jaywing.etowndb.com](http://jaywing.etowndb.com/)
