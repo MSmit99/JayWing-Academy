@@ -31,10 +31,10 @@ DROP TABLE IF EXISTS `jaywing`.`User` ;
 CREATE TABLE IF NOT EXISTS `jaywing`.`User` (
   `user_id` INT NOT NULL AUTO_INCREMENT,
   `admin` TINYINT(1) NULL,
-  `username` VARCHAR(45) NOT NULL,
+  `username` VARCHAR(45) NOT NULL UNIQUE,
   `firstName` VARCHAR(45) NOT NULL,
   `lastName` VARCHAR(45) NOT NULL,
-  `email` VARCHAR(45) NOT NULL,
+  `email` VARCHAR(45) NOT NULL UNIQUE,
   `password` VARCHAR(255) NOT NULL,
   `wings` INT NULL,
   `publicProfile` TINYINT(1) NULL,
@@ -53,6 +53,8 @@ CREATE TABLE IF NOT EXISTS `jaywing`.`Class` (
   `className` VARCHAR(45) NOT NULL,
   `courseCode` VARCHAR(7) NULL,
   `classDescription` TEXT(500) NULL,
+  `createdBy` INT NOT NULL,
+  `filepath` VARCHAR(100),
   PRIMARY KEY (`class_id`),
   UNIQUE INDEX `className_UNIQUE` (`className` ASC),
   UNIQUE INDEX `courseCode_UNIQUE` (`courseCode` ASC))
@@ -70,6 +72,9 @@ CREATE TABLE IF NOT EXISTS `jaywing`.`Enrollment` (
   `user_id` INT NOT NULL,
   `roleOfClass` VARCHAR(45) NOT NULL,
   `roleDescription` TEXT(500) NULL,
+  `interest` VARCHAR(100) DEFAULT NULL,
+  `responseLength` VARCHAR(20) DEFAULT 'Average',
+  `archived` TINYINT(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`enrollment_id`, `class_id`, `user_id`),
   INDEX `class_enrollment_idx` (`class_id` ASC),
   INDEX `user_enrollment_idx` (`user_id` ASC),
@@ -83,6 +88,24 @@ CREATE TABLE IF NOT EXISTS `jaywing`.`Enrollment` (
     REFERENCES `jaywing`.`Class` (`class_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `jaywing`.`AI_Messages`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `jaywing`.`AI_Messages` (
+    `message_id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `enrollment_id` INT NOT NULL,
+    `question` TEXT,
+    `answer` TEXT,
+    `timestamp` DATETIME DEFAULT current_timestamp,
+    `sourceName` VARCHAR(100),
+    `feedbackRating` ENUM('up', 'down') DEFAULT NULL,
+    `feedbackExplanation` TEXT,
+    `feedbackTimestamp` DATETIME DEFAULT NULL,
+    FOREIGN KEY (`enrollment_id`) REFERENCES `jaywing`.`Enrollment` (`enrollment_id`) ON DELETE CASCADE
+)
 ENGINE = InnoDB;
 
 
