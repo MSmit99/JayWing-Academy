@@ -1,3 +1,5 @@
 .DS_Store
 db_config.php
 db_connect.php
+.env
+gcloud_keys
