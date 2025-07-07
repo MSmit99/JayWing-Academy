@@ -1,0 +1,504 @@
+/*--------------------- Body and Global Settings ------------------------*/
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #C8C8C8;
+    color: #0A2240;
+}
+
+/* Header and Footer */
+header, footer {
+    background-color: #004B98;
+    color: white;
+    text-align: center;
+    padding: 20px 0;
+}
+
+/* Main Content Container */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Tooltip left align */
+.tooltip-left-align .tooltip-inner {
+    text-align: left;
+  }
+
+/*--------------------- Button Dropdown Settings ------------------------*/
+.dropdown {
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
+}
+
+.dropdown > button {
+    display: block;
+    width: 100%;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #212529;
+    background-color: #fff;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 16px 12px;
+    border: 1px solid #dee2e6 !important;
+    border-radius: 0.375rem;
+    appearance: none;
+    transition: box-shadow .15s ease-in-out;
+}
+
+/* Trim ends of text in Dropdown Button span */
+.dropdown > button span {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 90%;
+}
+
+/* Hide default Bootstrap dropdown arrow for Dropdown Buttons */
+.dropdown > button.dropdown-toggle::after {
+    display: none;
+}
+
+/* Dropdown Button Focus Style */
+.dropdown > button:focus {
+    outline: 0;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25); /* The blue glowing effect */
+    border-color: #86b7fe !important;
+}
+
+/* Dropdown Button Active Style */
+.dropdown > button:active {
+    outline: 0;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25); /* Apply blue glow on active */
+    border-color: #86b7fe !important;
+}
+
+/* Dropdown Button Hover Style */
+.dropdown-item:hover {
+    background-color: #0b5ed7;
+    color: white;
+    cursor: default;
+}
+
+/* Prevent horizontal scrolling on the dropdown-menu */
+.dropdown-menu {
+  overflow-x: hidden;
+}
+
+/* Trim ends of text in Dropdown Button dropdown */
+.dropdown-item {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.main-line {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: default;
+}
+
+.subheader-line {
+  font-size: 1rem;
+  color: #adb5bd;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: default;
+}
+
+.dropdown-item.active {
+    background-color: #007bff; /* Bootstrap primary blue */
+    color: white;
+}
+
+/*--------------------- Table Settings ------------------------*/
+/* Ensure the table honors the column widths */
+#enrollmentsTableConfig {
+    table-layout: fixed;
+    width: 100%;
+}
+
+#enrollmentsTableConfig th:nth-child(1),
+#enrollmentsTableConfig td:nth-child(1) {
+    width: 35%;
+}
+
+#enrollmentsTableConfig th:nth-child(2),
+#enrollmentsTableConfig td:nth-child(2) {
+    width: 30%;
+}
+
+#enrollmentsTableConfig th:nth-child(3),
+#enrollmentsTableConfig td:nth-child(3) {
+    width: 20%;
+}
+
+#enrollmentsTableConfig th:nth-child(4),
+#enrollmentsTableConfig td:nth-child(4) {
+    width: 15%;
+}
+
+
+#classesTableConfig {
+    table-layout: fixed; 
+    width: 100%;
+}
+
+#classesTableConfig th:nth-child(1),
+#classesTableConfig td:nth-child(1) {
+    width: 30%;
+}
+
+#classesTableConfig th:nth-child(2),
+#classesTableConfig td:nth-child(2) {
+    width: 15%;
+}
+
+#classesTableConfig th:nth-child(3),
+#classesTableConfig td:nth-child(3) {
+    width: 40%;
+}
+
+#classesTableConfig th:nth-child(4),
+#classesTableConfig td:nth-child(4) {
+    width: 15%;
+}
+
+tr.hidden {
+        display: none !important; /* This will hide the row regardless of other display properties */
+    }
+
+@media (max-width: 1024px) {
+    /* Main table display for mobile (card-like layout) */
+    table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        border: none !important;
+        display: block !important; /* Table acts as a block */
+    }
+
+    /* Override table-responsive to prevent horizontal scrolling */
+    .table-responsive {
+        overflow-x: hidden !important; /* Prevents horizontal scrolling within the card */
+    }
+
+    /* Table header (thead) styling for vertical stacking */
+    table thead {
+        display: block !important; /* Make thead itself a block to contain stacked rows */
+        width: 100% !important;
+        background-color: #f8f9fa;
+        border-bottom: 2px solid #dee2e6 !important;
+    }
+
+    table thead tr {
+        display: block !important; /* Make the header row a block, so its children (th) can stack */
+        margin-bottom: 0.5rem !important; /* Add some space between stacked header items */
+        border: 1px solid #e2e8f0 !important; /* Optional: Give headers a card-like look too */
+        border-radius: 0.25rem !important;
+        padding: 0.5rem !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+    }
+
+    /* Apply general layout for th elements within your tables */
+    #classesTableConfig th,
+    #enrollmentsTableConfig th {
+        display: block !important; /* Each header cell (th) takes its own line */
+        width: 100% !important; /* Each header cell takes full width */
+        padding: 0.5rem !important; /* Adjust padding as needed */
+        text-align: left !important; /* Align content to the left */
+        position: relative !important;
+        border-bottom: none !important;
+        font-size: 0.875rem !important;
+        color: #4a5568 !important;
+    }
+
+    /* Adjust input within th for better mobile appearance */
+    table th input.form-control {
+        margin-top: 0.5rem !important; /* Space between header text and input */
+        width: 100% !important; /* Ensure input takes full width within th */
+    }
+
+    /* Table body (tbody) and data rows (tr) styling for card layout */
+    table tbody {
+        display: block !important; /* Make tbody a block */
+        width: 100% !important;
+    }
+
+    table tr { /* This targets tr within tbody as well, ensuring card layout */
+        display: block !important;
+        width: 100% !important;
+        margin-bottom: 1rem !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 0.25rem !important;
+        padding: 0.5rem !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+    }
+
+    /* Apply general layout for td elements within your tables */
+    #classesTableConfig td,
+    #enrollmentsTableConfig td {
+        display: block !important;
+        width: 100% !important;
+        padding: 0.5rem !important;
+        border-bottom: 1px solid #e2e8f0 !important;
+        position: relative !important;
+        min-height: 2.5rem !important;
+        padding-left: 120px !important; /* Space for ::before label */
+        text-align: right !important; /* Text content aligns right */
+        
+        /* TRUNCATION PROPERTIES REMOVED HERE, NOW HANDLED BY JAVASCRIPT */
+        /* white-space: nowrap !important; */
+        /* overflow: hidden !important; */
+        /* text-overflow: ellipsis !important; */
+        /* word-wrap: normal !important; */
+    }
+
+    table td::before {
+        content: attr(data-label) !important;
+        display: block !important;
+        position: absolute !important;
+        left: 0.5rem !important;
+        width: 100px !important;
+        
+        /* --- Truncation properties for the label itself (still in CSS) --- */
+        white-space: nowrap !important; /* Keep this nowrap for data labels */
+        overflow: hidden !important; /* Hide overflowing label text */
+        text-overflow: ellipsis !important; /* Add ellipsis for label truncation */
+
+        text-align: left !important;
+        font-weight: bold !important;
+        color: #4a5568 !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+    }
+
+    table tr td:last-child {
+        border-bottom: 0 !important;
+    }
+
+    table td .main-line,
+    table td .subheader-line {
+        width: 100% !important;
+    }
+}
+
+
+/*--------------------- File Preview Settings ------------------------*/
+/* Preview Styles */
+#preview-div {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.file-preview {
+    width: 100px;
+    height: 150px;
+    text-align: center;
+    border: 0px;
+    display: flex;
+    justify-content: flex-start;
+    /* align-items: center; */
+    flex-direction: column;
+    position: relative;
+    background-size: cover;
+    background-position: center;
+}
+
+.file-preview img {
+    width: 80px;
+    height: 100px;
+}
+
+.file-preview.untrained {
+    filter: grayscale(100%);
+}
+
+/* File Name */
+.file-name {
+    font-size: 12px;
+    color: #0A2240;
+    margin-top: 5px;
+
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-word;
+
+    line-height: 1.3;        /* For 12px, that's ~15.6px per line */
+    max-height: 2.6em;       /* 2 × 1.3em = fits exactly 2 lines */
+}
+
+/* Deleting icon */
+.delete-icon {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.delete-icon:hover {
+    background-color: #004B98;
+}
+
+/*--------------------- Modal Settings ------------------------*/
+
+.modal-dialog-lower {
+    margin-top: 5rem; /* Make modals and banners visible */
+    margin-bottom: 5rem; /* Helps keep it from hugging the bottom if content is short */
+    display: flex;
+    align-items: flex-start;
+    min-height: calc(100% - 10rem); /* Ensures it takes up some vertical space, adjusting for margins */
+}
+
+/* For smaller screens, ensure the modal doesn't get squished */
+@media (max-width: 576px) {
+    .modal-dialog-lower {
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+        min-height: calc(100% - 4rem);
+    }
+}
+
+/*--------------------- Dashboard Settings ------------------------*/
+/* Carousel */
+/* Lock the height of the carousel */
+.owl-carousel {
+  height: 180px !important; /* Force height */
+  overflow: hidden;
+}
+
+/* Force owl-item to inherit and not stretch the height */
+.owl-carousel .owl-item {
+  display: flex !important;
+  align-items: stretch !important;
+  height: 180px !important;
+}
+
+/* Make the .item div and its child card fill exactly */
+.owl-carousel .item {
+  flex: 1 1 auto;
+  height: 100% !important;
+  display: flex;
+}
+
+.owl-carousel .item > div {
+  flex: 1 1 auto;
+  height: 100% !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Word Cloud */
+.wordcloud-container {
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+  /* aspect-ratio: 2 / 1; */
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.wordcloud-container.shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    left: -150%;
+  }
+  50% {
+    left: 100%;
+  }
+  100% {
+    left: 150%;
+  }
+}
+
+#wordcloudImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  z-index: 1;
+}
+
+.hover\:bg-gray-250:hover {
+    background-color: #d8dbe3;
+}
+
+/* Modal */
+.answer-snippet {
+  max-height: 8em;
+  overflow: hidden;
+  position: relative;
+  display: block;
+  transition: max-height 0.3s ease;
+}
+
+.answer-snippet::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2em;
+  background: linear-gradient(to top, white, rgba(255, 255, 255, 0));
+}
+
+.answer-snippet.expanded {
+  max-height: none;
+}
+
+.toggle-answer {
+  display: inline-block;
+  color: #2563eb;
+  font-size: 0.85rem;
+  margin-top: 0.5em;
+  cursor: pointer;
+}
+
+/*--------------------- Responsive Design Settings ------------------------*/
+
+#my-content {
+  display: grid;
+  grid-template-columns: 288px 1fr;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* When screen size is small */
+#my-content.mobile {
+  grid-template-columns: 1fr !important;
+}

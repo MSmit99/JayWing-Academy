@@ -4,15 +4,15 @@ require_once __DIR__ . '/../data_src/includes/db_connect.php';
 ?>
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container-fluid">
-        <a class="navbar-brand" href="#">JayWing Academy</a>
+        <a class="navbar-brand" href="/jaywing-academy/index.php">JayWing Academy</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
+                <!-- <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="/jaywing-academy/index.php">Home</a>
-                </li>
+                </li> -->
                 <li class="nav-item">
                     <a class="nav-link" href="/jaywing-academy/src/pages/calendar.php">Calendar</a>
                 </li>
@@ -27,6 +27,9 @@ require_once __DIR__ . '/../data_src/includes/db_connect.php';
                 </li>
                 <li class="nav-item <?php echo (!isLoggedIn()) ? 'hidden' : ''; ?>">
                     <a class="nav-link" href="/jaywing-academy/src/pages/message.php">Messages</a>
+                </li>
+                <li class="nav-item <?php echo (isAdmin() || !isLoggedIn()) ? 'hidden' : ''; ?>">
+                    <a class="nav-link" href="/jaywing-academy/src/pages/student.php">JayBot</a>
                 </li>
                 <li class="nav-item <?php echo (!isLoggedIn()) ? 'hidden' : ''; ?>" id="profile-tab">
                     <a class="nav-link" href="/jaywing-academy/src/pages/profile.php">Profile</a>
