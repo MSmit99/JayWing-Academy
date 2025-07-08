@@ -1,6 +1,6 @@
 <?php
-require_once '../../includes/session_handler.php';
-require_once '../../includes/db_connect.php';
+require_once '../../../includes/session_handler.php';
+require_once '../../../includes/db_connect.php';
 
 // Set the content type to JSON for the response
 header('Content-Type: application/json');
@@ -19,9 +19,9 @@ try {
     // Prepare a SQL statement to select all users, excluding the logged-in user.
     // The 'id' column from the 'users' table is used to identify users.
     $stmt = $connection->prepare("
-        SELECT id, username, role 
-        FROM users
-        WHERE id != ?
+        SELECT user_id, username, admin 
+        FROM user
+        WHERE user_id != ?
     ");
     // Bind the logged-in user's ID to the prepared statement to exclude them from the results.
     $stmt->bind_param("i", $loggedInUserId);

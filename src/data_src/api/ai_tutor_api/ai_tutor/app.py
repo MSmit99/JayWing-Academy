@@ -401,38 +401,38 @@ def delete_file():
 
     return jsonify(success=True, message=f"GCS deleted: {gcs_deleted}, Pinecone deleted: {pinecone_deleted}")
 
-@app.route('/delete-course', methods=['DELETE'])
-def delete_course():
+@app.route('/delete-class', methods=['DELETE'])
+def delete_class():
     """
-    Deletes files for a specified course
+    Deletes files for a specified class
 
-    Requires: headers and courseId
+    Requires: headers and classId
 
     Return: success message or error message.
     """
-    print("Delete course endpoint hit")
+    print("Delete class endpoint hit")
     # Get user info from headers
     user_id, username, user_role, folder_prefix = get_user_info_from_headers()
     if not user_id or user_role != 1:
         return jsonify(success=False, message="Unauthorized"), 401
     
     data = request.get_json()
-    courseId = int(data['courseId'])
-    print(f"Course ID: {courseId}")
-    if not courseId:
-        return jsonify(success=False, message="No course specified")
+    classId = int(data['classId'])
+    print(f"Class ID: {classId}")
+    if not classId:
+        return jsonify(success=False, message="No class specified")
     
     try:
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
 
-        cursor.execute("SELECT filepath FROM courses WHERE id = %s", (courseId,))
+        cursor.execute("SELECT filepath FROM class WHERE class_id = %s", (classId,))
         result = cursor.fetchone()
         filepath = result['filepath'] if result else None
         print(f"Filepath: {filepath}")
         conn.close()
 
-        # Delete the course folder in the bucket
+        # Delete the class folder in the bucket
         bucket = storage_client.bucket(bucket_name)
         blobs = list(bucket.list_blobs(prefix=filepath))  # Convert iterator to list to inspect it
 
@@ -469,13 +469,13 @@ def delete_course():
                     index.delete(delete_all=True, namespace=namespace)
                 else:
                     print(f"Namespace '{namespace}' does not exist in Pinecone. Skipping deletion.")
-                return jsonify(success=True, message="Course deleted successfully")
+                return jsonify(success=True, message="Class deleted successfully")
             else:
                 print(f"Invalid filepath format: {filepath}. Cannot extract namespace.")
                 return jsonify(success=False, message="Invalid filepath format. Cannot extract namespace."), 400
         else:
             print(f"Pinecone index '{index_name}' does not exist. Skipping namespace deletion.")
-            return jsonify(success=True, message="Course deleted successfully")
+            return jsonify(success=True, message="Class deleted successfully")
     
     except Exception as e:
         return jsonify(success=False, message=str(e)), 500

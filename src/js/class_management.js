@@ -200,13 +200,13 @@ document.addEventListener('DOMContentLoaded', function () {
                         for (const cls of allClassesForCheck) {
                             // Check for duplicate class name and course code if provided
                             if ((courseCode && cls.courseCode && cls.courseCode.toLowerCase() === courseCode.toLowerCase()) &&
-                                (className && cls.name && cls.name.toLowerCase() === className.toLowerCase())) {
+                                (className && cls.className && cls.className.toLowerCase() === className.toLowerCase())) {
                                 showErrorBanner(`A class with the name "${className}" and course code "${courseCode}" already exists for this user.`);
                                 duplicateFound = true;
                                 break;
                             }
                             // Check for duplicate class name
-                            if (className && cls.name && cls.name.toLowerCase() === className.toLowerCase()) {
+                            if (className && cls.className && cls.className.toLowerCase() === className.toLowerCase()) {
                                 showErrorBanner(`A class with the name "${className}" already exists for this user.`);
                                 duplicateFound = true;
                                 break;
@@ -225,10 +225,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
                         // If no duplicates found, proceed with class creation
                         const data = {
-                            userId: userId,
-                            name: className,
+                            user_id: userId,
+                            className: className,
                             courseCode: courseCode,
-                            description: classDescription
+                            classDescription: classDescription
                         };
 
                         fetch('../data_src/api/ai_tutor_api/classes/create.php', {
@@ -282,10 +282,10 @@ document.addEventListener('DOMContentLoaded', function () {
             const form = this;
 
             // Check that user filled required fields
-            const courseId = document.getElementById('class_id').value;
+            const classId = document.getElementById('class_id').value;
             const userId = document.getElementById('user_id').value;
             const roleOfClass = document.getElementById('roleOfClass').value;
-            if (!(courseId)) {
+            if (!(classId)) {
                 showErrorBanner("Please select a class in the dropdown.");
                 return;
             }
@@ -310,14 +310,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     console.log('All enrollments loaded:', allEnrollments);
 
                     const data = {
-                        courseId: courseId,
-                        userId: userId,
+                        class_id: classId,
+                        user_id: userId,
                         roleOfClass: roleOfClass
                     };
 
                     // Check if user is already enrolled in the class
                     const isAlreadyEnrolled = allEnrollments.some(enrollment =>
-                        enrollment.courseId == data.courseId && enrollment.userId == data.userId
+                        enrollment.class_id == data.class_id && enrollment.user_id == data.user_id
                     );
 
                     if (isAlreadyEnrolled) {
@@ -377,10 +377,11 @@ document.addEventListener('DOMContentLoaded', function () {
             e.preventDefault();
             const form = this;
 
-            const courseId = document.getElementById('multiple_class_id').value;
+            const classId = document.getElementById('multiple_class_id').value;
             const userIds = multipleUserIdInput.value.split(',').filter(id => id.trim() !== '');
+            const roleOfClass = document.getElementById('multiple_roleOfClass').value
 
-            if (!(courseId)) {
+            if (!(classId)) {
                 showErrorBanner("Please select a class in the dropdown.");
                 return;
             }
@@ -388,13 +389,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 showErrorBanner("Please select at least one user in the dropdown.");
                 return;
             }
+            if (!(roleOfClass)) {
+                showErrorBanner("Please select a role in the dropdown.");
+                return;
+            }
 
             let enrollmentsToCreate = [];
             userIds.forEach(userId => {
                 enrollmentsToCreate.push({
-                    courseId: courseId,
-                    userId: userId,
-                    // roleOfClass: document.getElementById('multiple_roleOfClass').value
+                    class_id: classId,
+                    user_id: userId,
+                    roleOfClass: roleOfClass
                 });
             });
 
@@ -409,7 +414,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 .then(response => response.json())
                 .then(result => {
                     if (!result.success) {
-                        console.error(`Error enrolling user ${data.userId} in class ${data.courseId}:`, result.message);
+                        console.error(`Error enrolling user ${data.user_id} in class ${data.class_id}:`, result.message);
                         showErrorBanner(`Error enrolling some users: ${result.message}`);
                     }
                     return result;
@@ -485,7 +490,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const courseCodeInput = document.getElementById('edit_course_code');
             let courseCodeGet = courseCodeInput.value.toUpperCase();
             let classDescription = document.getElementById('edit_class_description').value;
-            const courseIdBeingEdited = document.getElementById('edit_class_id').value;
+            const classIdBeingEdited = document.getElementById('edit_class_id').value;
             const newClassName = document.getElementById('edit_class_name').value.trim();
 
             // Use the reusable function to validate the input
@@ -509,12 +514,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
                         for (const cls of allClassesForCheck) {
                             // Skip the class currently being edited
-                            if (cls.id == courseIdBeingEdited) {
+                            if (cls.class_id == classIdBeingEdited) {
                                 continue;
                             }
 
                             // Check for duplicate class name and course code if new code provided
-                            if ((cls.name && newClassName && cls.name.toLowerCase() === newClassName.toLowerCase()) &&
+                            if ((cls.className && newClassName && cls.className.toLowerCase() === newClassName.toLowerCase()) &&
                                 (courseCodeGet && cls.courseCode && cls.courseCode.toLowerCase() === courseCodeGet.toLowerCase())) {
                                 showErrorBanner(`A class with the name "${newClassName}" and course code "${courseCodeGet}" already exists for this user.`);
                                 duplicateFound = true;
@@ -522,7 +527,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             }
 
                             // Check for duplicate class name
-                            if (cls.name && newClassName && cls.name.toLowerCase() === newClassName.toLowerCase()) {
+                            if (cls.className && newClassName && cls.className.toLowerCase() === newClassName.toLowerCase()) {
                                 showErrorBanner(`A class with the name "${newClassName}" already exists for this user.`);
                                 duplicateFound = true;
                                 break;
@@ -540,10 +545,10 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
 
                         const data = {
-                            courseId: courseIdBeingEdited,
-                            name: newClassName,
+                            class_id: classIdBeingEdited,
+                            className: newClassName,
                             courseCode: courseCodeGet,
-                            description: classDescription
+                            classDescription: classDescription
                         };
                         
                         fetch('../data_src/api/ai_tutor_api/classes/update.php', {
@@ -600,8 +605,8 @@ document.addEventListener('DOMContentLoaded', function () {
         editEnrollmentForm.addEventListener('submit', function(e) {
             e.preventDefault();
 
-            const userCourseId = document.getElementById('edit_enrollment_id').value;
-            const courseId = document.getElementById('edit_class_id').value;
+            const enrollmentId = document.getElementById('edit_enrollment_id').value;
+            const classId = document.getElementById('edit_className_id').value;
             const userId = document.getElementById('edit_user_id').value;
             const roleOfClass = document.getElementById('edit_roleOfClass').value;
 
@@ -617,9 +622,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     let duplicateFound = false;
 
                     for (const enrollment of enrollments) {
-                        if (enrollment.userCoursesId == userCourseId) continue;
+                        if (enrollment.enrollment_id == enrollmentId) continue;
 
-                        if (enrollment.courseId == courseId && enrollment.userId == userId) {
+                        if (enrollment.class_id == classId && enrollment.user_id == userId) {
                             showErrorBanner(`This user is already enrolled in the selected class.`);
                             duplicateFound = true;
                             break;
@@ -629,10 +634,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (duplicateFound) return;
                     
                     const data = {
-                        userCourseId,
-                        courseId,
-                        userId,
-                        roleOfClass
+                        enrollment_id: enrollmentId,
+                        class_id: classId,
+                        user_id: userId,
+                        roleOfClass: roleOfClass
                     };
 
                     fetch('../data_src/api/ai_tutor_api/enrollments/update.php', {
@@ -650,6 +655,8 @@ document.addEventListener('DOMContentLoaded', function () {
                             initializeSearchableEnrollmentTable();
                             reloadFilterDropdowns();
                             enrollmentModal.hide();
+                        } else if (!data.success) {
+                            showErrorBanner(data.message);
                         }
                     })
                     .catch(error => {
@@ -852,7 +859,7 @@ function generateReport(classFilter='All', userFilter='All', startDate=null, end
                         });
                         document.querySelectorAll('.active-course').forEach(el => {
                             if (data.most_active_course) {
-                                el.textContent = data.most_active_course.course_name ?? 'N/A';
+                                el.textContent = data.most_active_course.class_name ?? 'N/A';
                                 if (el.textContent !== 'N/A') {
                                     document.querySelectorAll('.active-course-title').forEach(titleEl => {
                                         titleEl.textContent = 'Most Active Course';
@@ -938,7 +945,7 @@ function clearDashboardFilters() {
  * 
  * @param {'up'|'down'} feedbackRating - Whether the student liked ('up') or disliked ('down') the message
  * 
- * @see '../data_src/api/ai_tutor_api/feedback/read.php'
+ * @see ../data_src/api/ai_tutor_api/feedback/read.php
  */
 function openFeedbackModal(feedbackRating) {
     const classId = document.getElementById('class_id').value || 'All';
@@ -1073,10 +1080,10 @@ function loadClasses() {
  * - Appends each row to the table body and then refreshes any class dropdowns.
  *
  * @param {{ 
- *   id: number, 
- *   name: string, 
+ *   class_id: number, 
+ *   className: string, 
  *   courseCode?: string, 
- *   description?: string, 
+ *   classDescription?: string, 
  *   createdByUsername: string 
  * }[]} classList – an array of class objects to render
  *
@@ -1093,24 +1100,24 @@ function renderClassTable(classList) {
             tr.innerHTML = `
                 <td data-label="Class Name">
                     <div class="main-line">
-                        ${classItem.name}
+                        ${classItem.className}
                     </div>
                     <div class="subheader-line">
                         Created by: ${classItem.createdByUsername}
                     </div>
                 </td>
                 <td data-label="Course Code">${classItem.courseCode || ''}</td>
-                <td data-label="Description">${classItem.description || ''}</td>
+                <td data-label="Description">${classItem.classDescription || ''}</td>
                 <td data-label="Actions">
                     <button class="btn btn-sm btn-primary m-0 edit-class-btn"
-                        data-class-id="${classItem.id}"
-                        data-class-name="${classItem.name}"
+                        data-class-id="${classItem.class_id}"
+                        data-class-name="${classItem.className}"
                         data-course-code="${classItem.courseCode || ''}"
-                        data-class-description="${classItem.description || ''}"
+                        data-class-description="${classItem.classDescription || ''}"
                         data-created-by-username="${classItem.createdByUsername}">
                         Edit
                     </button>
-                    <button class="btn btn-sm btn-danger m-0" onclick="deleteClass(${classItem.id})">
+                    <button class="btn btn-sm btn-danger m-0" onclick="deleteClass(${classItem.class_id})">
                         Delete
                     </button>
                 </td>
@@ -1233,50 +1240,50 @@ function loadEnrollments() {
  * - Appends each row to the table body and then refreshes any class dropdowns.
  *
  * @param {{ 
- *   id: number, 
- *   name: string,
+ *   enrollment_id: number, 
+ *   className: string,
  *   username: string,
- *   courseId: number,
- *   userId: number,
+ *   class_id: number,
+ *   user_id: number,
  *   createdByUsername: string,
  *   courseCode?: string 
- * }[]} userCourses – an array of enrollment objects to render
+ * }[]} enrollmentList – an array of enrollment objects to render
  *
  * @see deleteEnrollment
  * @see reloadClassDropdowns
  */
-function renderEnrollmentTable(userCourses) {
+function renderEnrollmentTable(enrollmentList) {
     const tbodyenrollments = document.getElementById('enrollmentsTable');
     if (tbodyenrollments) {
         tbodyenrollments.innerHTML = ''; // Clears existing rows
 
-        userCourses.forEach(userCourse => {
+        enrollmentList.forEach(enrollment => {
             const tr = document.createElement('tr');
-            const courseCodeDisplay = userCourse.courseCode ? ` (${userCourse.courseCode})` : '';
+            const courseCodeDisplay = enrollment.courseCode ? ` (${enrollment.courseCode})` : '';
             tr.innerHTML = `
                 <td data-label="Class Name">
                     <div class="main-line">
-                        ${userCourse.name}${courseCodeDisplay}
+                        ${enrollment.className}${courseCodeDisplay}
                     </div>
                     <div class="subheader-line">
-                        Created by: ${userCourse.createdByUsername}
+                        Created by: ${enrollment.createdByUsername}
                     </div>
                 </td>
-                <td data-label="User">${userCourse.username}</td>
-                <td data-label="Role">${userCourse.role}</td>
+                <td data-label="User">${enrollment.username}</td>
+                <td data-label="Role">${enrollment.roleOfClass}</td>
                 <td data-label="Actions">
                     <button class="btn btn-sm btn-primary m-0 edit-enrollment-btn"
-                        data-usercourse-id="${userCourse.userCoursesId}"
-                        data-usercourse-name="${userCourse.name}"
-                        data-usercourse-user="${userCourse.username}"
-                        data-usercourse-role="${userCourse.role}"
-                        data-course-id="${userCourse.courseId}"
-                        data-user-id="${userCourse.userId}"
-                        data-created-by-username="${userCourse.createdByUsername}"
-                        data-course-code="${userCourse.courseCode}">
+                        data-enrollment-id="${enrollment.enrollment_id}"
+                        data-enrollment-name="${enrollment.className}"
+                        data-enrollment-user="${enrollment.username}"
+                        data-enrollment-role="${enrollment.roleOfClass}"
+                        data-class-id="${enrollment.class_id}"
+                        data-user-id="${enrollment.user_id}"
+                        data-created-by-username="${enrollment.createdByUsername}"
+                        data-course-code="${enrollment.courseCode}">
                         Edit
                     </button>
-                    <button class="btn btn-sm btn-danger m-0" onclick="deleteEnrollment(${userCourse.userCoursesId})">
+                    <button class="btn btn-sm btn-danger m-0" onclick="deleteEnrollment(${enrollment.enrollment_id})">
                         Delete
                     </button>
                 </td>
@@ -1381,16 +1388,16 @@ document.addEventListener('click', function (e) {
     
     if (e.target.classList.contains('edit-enrollment-btn')) {
         const btn = e.target;
-        document.getElementById('edit_enrollment_id').value = btn.dataset.usercourseId;
-        document.getElementById('edit_class_id').value = btn.dataset.courseId;
+        document.getElementById('edit_enrollment_id').value = btn.dataset.enrollmentId;
+        document.getElementById('edit_className_id').value = btn.dataset.classId;
         document.getElementById('edit_user_id').value = btn.dataset.userId;
-        document.getElementById('edit_roleOfClass').value = btn.dataset.role;
+        document.getElementById('edit_roleOfClass').value = btn.dataset.enrollmentRole;
 
-        let mainDisplayText = btn.dataset.usercourseName + ' ';
+        let mainDisplayText = btn.dataset.enrollmentName + ' ';
         if (btn.dataset.courseCode && btn.dataset.courseCode !== 'null') mainDisplayText += '(' + (btn.dataset.courseCode) + ') '
         document.getElementById('selectedEditClassText').textContent = mainDisplayText;
-        document.getElementById('selectedEditUserText').textContent = btn.dataset.usercourseUser;
-        document.getElementById('selectedEditRoleText').textContent = btn.dataset.usercourseRole;
+        document.getElementById('selectedEditUserText').textContent = btn.dataset.enrollmentUser;
+        document.getElementById('selectedEditRoleText').textContent = btn.dataset.enrollmentRole;
 
         hideAllBanners();
         enrollmentModal.show();
@@ -1502,7 +1509,7 @@ function deleteClass(classId) {
         document.getElementById('loading-spinner').classList.remove('hidden');
         showSuccessBanner("Deleting class...");
         // First delete all files from class
-        fetch(`${FLASK_API}/delete-course`, {
+        fetch(`${FLASK_API}/delete-class`, {
             method: 'DELETE',
             credentials: 'include',
             headers: {
@@ -1511,7 +1518,7 @@ function deleteClass(classId) {
                 'X-User-Role': userRole,
                 'X-Username': username
             },
-            body: JSON.stringify({ courseId: classId})
+            body: JSON.stringify({ classId: classId})
         })
         .then(response => response.json())
         .then(data => {
@@ -1566,7 +1573,7 @@ function deleteEnrollment(enrollmentId) {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ userCoursesId: enrollmentId })
+            body: JSON.stringify({ enrollment_id: enrollmentId })
         })
         .then(response => response.json())
         .then(data => {
@@ -2074,10 +2081,10 @@ function renderUserMultipleList() {
         allUsers.forEach(user => {
             const div = document.createElement('div');
             div.classList.add('dropdown-item');
-            if (selectedUsers.has(String(user.id))) {
+            if (selectedUsers.has(String(user.user_id))) {
                 div.classList.add('active');
             }
-            div.dataset.value = user.id;
+            div.dataset.value = user.user_id;
             div.textContent = user.username;
             currentListContainer.appendChild(div);
         });
@@ -2096,8 +2103,6 @@ function renderUserMultipleList() {
  *   • `.class-multiple-list` – for multi-enrollment class selection
  * - Each dropdown item includes a main line (class name + optional course code)
  *   and a subheader line ("Created by: ...").
- *
- * @global {HTMLElement} classEditDropdown – Container for class edit dropdown.
  * 
  * @see ../data_src/api/ai_tutor_api/classes/read_by_professor.php
  */
@@ -2120,12 +2125,12 @@ function reloadClassDropdowns() {
                     courses.forEach(classItem => {
                         const dropdownItem = document.createElement('div');
                         dropdownItem.className = 'dropdown-item';
-                        dropdownItem.dataset.value = classItem.id;
+                        dropdownItem.dataset.value = classItem.class_id;
 
                         const mainLineDiv = document.createElement('div');
                         mainLineDiv.className = 'main-line';
 
-                        let mainDisplayText = classItem.name + ' ';
+                        let mainDisplayText = classItem.className + ' ';
                         if (classItem.courseCode) {
                             mainDisplayText += `(${classItem.courseCode}) `;
                         }
@@ -2169,11 +2174,11 @@ function reloadClassDropdowns() {
                     courses.forEach(classItem => {
                         const dropdownItem = document.createElement('div');
                         dropdownItem.className = 'dropdown-item';
-                        dropdownItem.dataset.value = classItem.id;
+                        dropdownItem.dataset.value = classItem.class_id;
 
                         const mainLineDiv = document.createElement('div');
                         mainLineDiv.className = 'main-line';
-                        let mainDisplayText = classItem.name;
+                        let mainDisplayText = classItem.className;
                         if (classItem.courseCode) {
                             mainDisplayText += ` (${classItem.courseCode})`;
                         }
@@ -2192,18 +2197,19 @@ function reloadClassDropdowns() {
             }
 
             // Update class edit list dropdown menu
+            const classEditDropdown = document.querySelector('.class-edit-list');
             if (classEditDropdown) {
                 classEditDropdown.innerHTML = '';
                 if (Array.isArray(courses)) {
                     courses.forEach(classItem => {
                         const dropdownItem = document.createElement('div');
                         dropdownItem.className = 'dropdown-item';
-                        dropdownItem.dataset.value = classItem.id;
+                        dropdownItem.dataset.value = classItem.class_id;
 
                         const mainLineDiv = document.createElement('div');
                         mainLineDiv.className = 'main-line';
 
-                        let mainDisplayText = classItem.name + ' ';
+                        let mainDisplayText = classItem.className + ' ';
                         if (classItem.courseCode) {
                             mainDisplayText += `(${classItem.courseCode}) `;
                         }
@@ -2229,12 +2235,12 @@ function reloadClassDropdowns() {
                     courses.forEach(classItem => {
                         const dropdownItem = document.createElement('div');
                         dropdownItem.className = 'dropdown-item';
-                        dropdownItem.dataset.value = classItem.id;
+                        dropdownItem.dataset.value = classItem.class_id;
 
                         const mainLineDiv = document.createElement('div');
                         mainLineDiv.className = 'main-line';
 
-                        let mainDisplayText = classItem.name + ' ';
+                        let mainDisplayText = classItem.className + ' ';
                         if (classItem.courseCode) {
                             mainDisplayText += `(${classItem.courseCode})`;
                         }
@@ -2260,12 +2266,12 @@ function reloadClassDropdowns() {
                     courses.forEach(classItem => {
                         const dropdownItem = document.createElement('div');
                         dropdownItem.className = 'dropdown-item';
-                        dropdownItem.dataset.value = classItem.id;
+                        dropdownItem.dataset.value = classItem.class_id;
 
                         const mainLineDiv = document.createElement('div');
                         mainLineDiv.className = 'main-line';
 
-                        let mainDisplayText = classItem.name + ' ';
+                        let mainDisplayText = classItem.className + ' ';
                         if (classItem.courseCode) {
                             mainDisplayText += `(${classItem.courseCode}) `;
                         }
@@ -2316,7 +2322,7 @@ function reloadUserDropdowns() {
                     users.forEach(user => {
                         const dropdownItem = document.createElement('div');
                         dropdownItem.className = 'dropdown-item';
-                        dropdownItem.dataset.value = user.id;
+                        dropdownItem.dataset.value = user.user_id;
                         dropdownItem.textContent = user.username;
 
                         userDropdown.appendChild(dropdownItem);
@@ -2332,7 +2338,7 @@ function reloadUserDropdowns() {
                     users.forEach(user => {
                         const dropdownItem = document.createElement('div');
                         dropdownItem.className = 'dropdown-item';
-                        dropdownItem.dataset.value = user.id;
+                        dropdownItem.dataset.value = user.user_id;
                         dropdownItem.textContent = user.username;
 
                         userEditDropdown.appendChild(dropdownItem);
@@ -2356,7 +2362,7 @@ function reloadUserDropdowns() {
                     users.forEach(user => {
                         const dropdownItem = document.createElement('div');
                         dropdownItem.className = 'dropdown-item';
-                        dropdownItem.dataset.value = user.id;
+                        dropdownItem.dataset.value = user.user_id;
                         dropdownItem.textContent = user.username;
 
                         userDashListContainer.appendChild(dropdownItem);
@@ -2405,7 +2411,6 @@ function reloadFilterDropdowns() {
                     option.textContent = discipline;
                     dropdown.appendChild(option);
                 });
-
             }
             
             const dropdown2 = document.getElementById('filter-by-btn-2');
@@ -2512,10 +2517,10 @@ async function handleFiles(event) {
  * @global {string} userRole – Current user's role.
  * @global {string} username – Current user's username.
  */
-function saveFileToDocsFolder(file, courseId) {
+function saveFileToDocsFolder(file, classId) {
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("courseId", courseId);
+    formData.append("classId", classId);
 
     return fetch(`${FLASK_API}/upload`, {
         method: "POST",
@@ -2530,7 +2535,7 @@ function saveFileToDocsFolder(file, courseId) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            console.log(`${file.name} saved to course id ${courseId}.`);
+            console.log(`${file.name} saved to course id ${classId}.`);
             return true;
         } else {
             console.error(`Error saving ${file.name}: ${data.message}`);
@@ -2557,7 +2562,7 @@ function saveFileToDocsFolder(file, courseId) {
  *
  * @param {string} fileName – The full file name or path (used to generate name and download URL).
  * @param {string} fileType – The MIME type or extension (e.g., `"application/pdf"`, `"application/vnd.openxmlformats-officedocument.presentationml.presentation"`).
- * @param {string|number} courseId – The ID of the course this file is associated with.
+ * @param {string|number} classId – The ID of the course this file is associated with.
  *
  * @see removeFileFromDocsFolder
  * @global {HTMLElement} pdfDiv – Container for PDF file previews.
@@ -2565,7 +2570,7 @@ function saveFileToDocsFolder(file, courseId) {
  * @global {HTMLElement} pngDiv – Container for all other file previews.
  * @global {string} FLASK_API – Base URL for the Flask backend API.
  */
-function displayFilePreview(fileName, fileType, courseId) {
+function displayFilePreview(fileName, fileType, classId) {
     const preview = document.createElement('div');
     preview.className = 'file-preview flex flex-col items-center gap-1 p-0 rounded bg-gray-200 text-white w-40';
 
@@ -2577,7 +2582,7 @@ function displayFilePreview(fileName, fileType, courseId) {
     console.log(coursesDropdownUpload.textContent)
     const selectedCourseName = document.getElementById('selectedNotesClassText').innerText || '';
     const link = document.createElement('a');
-    link.href = `${FLASK_API}/download?file=${encodeURIComponent(fileName)}&courseId=${encodeURIComponent(courseId)}`;
+    link.href = `${FLASK_API}/download?file=${encodeURIComponent(fileName)}&courseId=${encodeURIComponent(classId)}`;
     link.title = "Download file";
     link.setAttribute('download', fileName);
 

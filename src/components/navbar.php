@@ -2,7 +2,7 @@
 require_once __DIR__ . '/../data_src/includes/session_handler.php';
 require_once __DIR__ . '/../data_src/includes/db_connect.php';
 ?>
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
     <div class="container-fluid">
         <a class="navbar-brand" href="/jaywing-academy/index.php">JayWing Academy</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -54,7 +54,7 @@ require_once __DIR__ . '/../data_src/includes/db_connect.php';
 
                 <?php if(isset($_SESSION['user_id'])): ?>
                     <div class="dropdown">
-                        <button class="btn btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button class="btn btn-outline-light dropdown-toggle navbar-dropdown-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <?php echo htmlspecialchars($_SESSION['username']); ?>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">

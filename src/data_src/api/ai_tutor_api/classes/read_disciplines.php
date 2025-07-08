@@ -1,6 +1,6 @@
 <?php
-require_once '../../includes/session_handler.php';
-require_once '../../includes/db_connect.php';
+require_once '../../../includes/session_handler.php';
+require_once '../../../includes/db_connect.php';
 
 header('Content-Type: application/json');
 
@@ -15,9 +15,9 @@ $loggedInUserId = $_SESSION['user_id'];
 try {
     $query = "
         SELECT DISTINCT c.courseCode
-        FROM courses c
-        JOIN user_courses uc ON uc.courseId = c.id
-        WHERE uc.userId = ?
+        FROM class c
+        JOIN enrollment e ON e.class_id = c.class_id
+        WHERE e.user_id = ?
     ";
 
     $stmt = $connection->prepare($query);

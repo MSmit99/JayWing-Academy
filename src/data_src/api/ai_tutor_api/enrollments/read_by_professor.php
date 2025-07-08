@@ -1,6 +1,6 @@
 <?php
-require_once '../../includes/session_handler.php';
-require_once '../../includes/db_connect.php';
+require_once '../../../includes/session_handler.php';
+require_once '../../../includes/db_connect.php';
 
 header('Content-Type: application/json');
 
@@ -15,26 +15,27 @@ $loggedInUserId = $_SESSION['user_id'];
 try {
     $query = "
         SELECT 
-            uc.userCoursesId, 
-            uc.courseId, 
-            uc.userId, 
-            c.name, 
+            e.enrollment_id, 
+            e.class_id, 
+            e.user_id,
+            e.roleOfClass,
+            c.className, 
             c.courseCode, 
             u.username, 
-            u.role,
+            u.admin,
             creator_user.username AS createdByUsername 
-        FROM user_courses uc
-        JOIN courses c ON uc.courseId = c.id
-        JOIN users u ON uc.userId = u.id
-        LEFT JOIN users creator_user ON c.createdBy = creator_user.id
+        FROM enrollment e
+        JOIN class c ON e.class_id = c.class_id
+        JOIN user u ON e.user_id = u.user_id
+        LEFT JOIN user creator_user ON c.createdBy = creator_user.user_id
         WHERE 
-            uc.courseId IN (
-                SELECT courseId 
-                FROM user_courses 
-                WHERE userId = ? 
+            e.class_id IN (
+                SELECT class_id 
+                FROM enrollment 
+                WHERE user_id = ? 
             )
-            AND uc.userId != ?
-            AND uc.userId != c.createdBy
+            AND e.user_id != ?
+            AND e.user_id != c.createdBy
     ";
 
     $stmt = $connection->prepare($query);

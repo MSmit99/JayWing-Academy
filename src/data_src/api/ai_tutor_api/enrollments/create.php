@@ -1,6 +1,6 @@
 <?php
-require_once '../../includes/session_handler.php';
-require_once '../../includes/db_connect.php';
+require_once '../../../includes/session_handler.php';
+require_once '../../../includes/db_connect.php';
 
 header('Content-Type: application/json');
 
@@ -13,20 +13,20 @@ if (!isAdmin()) {
 try {
     $data = json_decode(file_get_contents('php://input'), true);
     
-    if (!isset($data['courseId']) || !isset($data['userId'])) {     // || !isset($data['roleOfClass']
+    if (!isset($data['class_id']) || !isset($data['user_id']) || !isset($data['roleOfClass'])) {
         throw new Exception('Missing required fields');
     }
 
-    $stmt = $connection->prepare("INSERT INTO user_courses (courseId, userId) VALUES (?, ?)");   // roleOfClass - , ?
+    $stmt = $connection->prepare("INSERT INTO enrollment (class_id, user_id, roleOfClass) VALUES (?, ?, ?)");
     
     if (!$stmt) {
         throw new Exception("Prepare failed: " . $connection->error);
     }
 
-    $stmt->bind_param("ii", 
-        $data['courseId'],
-        $data['userId'],
-        // $data['roleOfClass']
+    $stmt->bind_param("iis", 
+        $data['class_id'],
+        $data['user_id'],
+        $data['roleOfClass']
     );
 
     if (!$stmt->execute()) {

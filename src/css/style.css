@@ -3,13 +3,38 @@
 /*--------------------- Global Styling ------------------------*/
 /* container to flex and center everything within inside a main tag */
 /* takes up window space minus header and footer */
+
+
+html {
+    height: 100%; /* Ensures the html element takes the full viewport height */
+}
+
+body {
+    display: flex; /* Make the body a flex container */
+    flex-direction: column; /* Stack children (header, main, footer) vertically */
+    min-height: 100vh; /* Ensures the body always takes at least the full viewport height */
+    margin: 0; /* Remove default body margin */
+    /* Keep your existing padding-top and padding-bottom here if your header/footer are fixed or are intended to take up that space */
+    padding-top: 56px; /* Height of your header */
+    padding-bottom: 50px; /* Height of your footer */
+    box-sizing: border-box; /* Important for padding to not add to total height */
+}
+
+main {
+    flex-grow: 1; /* This is the key: makes the main element expand to fill all available vertical space */
+    display: flex; /* Make main a flex container itself */
+    flex-direction: column; /* Stack its own children (like .center-container) vertically */
+}
+
+/* Your .center-container CSS can remain largely the same, as it will now have enough height to work with */
 .center-container {
-    flex: auto; 
+    flex: auto; /* Allows it to grow and shrink */
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 84vh;
+    align-items: center; /* Centers horizontally when flex-direction is column */
+    justify-content: center; /* Centers vertically when flex-direction is column */
+    height: 100%; /* Now this will be 100% of the expanded main */
+    width: 100%;
 }
 
 /* Hides objects and items */
@@ -224,4 +249,33 @@
 
 #newChatModal {
     z-index: 100000;
+}
+
+/*--------------------- Navbar ---------------------------*/
+
+/* Override styles for the navbar dropdown button */
+.navbar-dropdown-btn {
+    display: inline-block !important;
+    width: auto !important;
+    background-image: none !important;
+    border: 1px solid var(--bs-btn-border-color) !important;
+    border-radius: var(--bs-btn-border-radius) !important;
+    background-color: transparent !important;
+    color: white !important;
+    /* Add transition property for smooth animations */
+    transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out !important;
+}
+
+/* Ensure the Bootstrap dropdown arrow is visible again */
+.navbar-dropdown-btn.dropdown-toggle::after {
+    display: inline-block !important;
+}
+
+/* Re-enable hover color for the navbar dropdown button */
+.navbar-dropdown-btn:hover,
+.navbar-dropdown-btn:focus,
+.navbar-dropdown-btn:active {
+    color: #0A2240 !important;
+    background-color: #f8f9fa !important;
+    border-color: #f8f9fa !important;
 }

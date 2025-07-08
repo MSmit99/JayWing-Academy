@@ -1,6 +1,6 @@
 <?php
-require_once '../../includes/session_handler.php';
-require_once '../../includes/db_connect.php';
+require_once '../../../includes/session_handler.php';
+require_once '../../../includes/db_connect.php';
 
 header('Content-Type: application/json');
 
@@ -13,17 +13,17 @@ if (!isAdmin()) {
 try {
     $data = json_decode(file_get_contents('php://input'), true);
     
-    if (!isset($data['userCoursesId'])) {
+    if (!isset($data['enrollment_id'])) {
         throw new Exception('Enrollment ID is required');
     }
 
-    $stmt = $connection->prepare("DELETE FROM user_courses WHERE userCoursesId = ?");
+    $stmt = $connection->prepare("DELETE FROM enrollment WHERE enrollment_id = ?");
     
     if (!$stmt) {
         throw new Exception("Prepare failed: " . $connection->error);
     }
 
-    $stmt->bind_param("i", $data['userCoursesId']);
+    $stmt->bind_param("i", $data['enrollment_id']);
 
     if (!$stmt->execute()) {
         throw new Exception("Execution failed: " . $stmt->error);

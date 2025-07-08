@@ -1,6 +1,6 @@
 <?php
-require_once '../../includes/session_handler.php';
-require_once '../../includes/db_connect.php';
+require_once '../../../includes/session_handler.php';
+require_once '../../../includes/db_connect.php';
 
 header('Content-Type: application/json');
 
@@ -38,28 +38,28 @@ try {
     $params = [$feedbackRating, $loggedInUserId];
 
     if ($userFilter !== 'All') {
-        $conditions[] = "AND userId = ?";
+        $conditions[] = "AND user_id = ?";
         $paramTypes .= 'i';
         $params[] = $userFilter;
     }
 
     if ($classFilter !== 'All') {
-        $conditions[] = "AND courseId = ?";
+        $conditions[] = "AND class_id = ?";
         $paramTypes .= 'i';
         $params[] = $classFilter;
     }
 
     if ($startDate && $endDate) {
-        $dateCondition = "AND m.feedbackTimestamp BETWEEN ? AND ?";
+        $dateCondition = "AND ai.feedbackTimestamp BETWEEN ? AND ?";
         $paramTypes .= 'ss';
         $params[] = $startDate;
         $params[] = $endDate;
     } elseif ($startDate) {
-        $dateCondition = "AND m.feedbackTimestamp >= ?";
+        $dateCondition = "AND ai.feedbackTimestamp >= ?";
         $paramTypes .= 's';
         $params[] = $startDate;
     } elseif ($endDate) {
-        $dateCondition = "AND m.feedbackTimestamp <= ?";
+        $dateCondition = "AND ai.feedbackTimestamp <= ?";
         $paramTypes .= 's';
         $params[] = $endDate;
     } else {
@@ -71,25 +71,25 @@ try {
 
     $sql = "
         SELECT 
-            m.messageId,
-            m.question,
-            m.answer,
-            m.feedbackRating,
-            m.feedbackExplanation,
-            m.feedbackTimestamp,
+            ai.message_id,
+            ai.question,
+            ai.answer,
+            ai.feedbackRating,
+            ai.feedbackExplanation,
+            ai.feedbackTimestamp,
             u.username,
-            m.timestamp AS messageTimestamp
-        FROM messages m
-        JOIN user_courses uc ON m.userCoursesId = uc.userCoursesId
-        JOIN users u ON uc.userId = u.id
-        WHERE m.feedbackRating = ?
-        AND m.userCoursesId IN (
-            SELECT userCoursesId
-            FROM user_courses
-            WHERE courseId IN (
-                SELECT courseId
-                FROM user_courses
-                WHERE userId = ?
+            ai.timestamp AS messageTimestamp
+        FROM ai_messages ai
+        JOIN enrollment e ON ai.enrollment_id = e.enrollment_id
+        JOIN user u ON e.user_id = u.user_id
+        WHERE ai.feedbackRating = ?
+        AND ai.enrollment_id IN (
+            SELECT enrollment_id
+            FROM enrollment
+            WHERE class_id IN (
+                SELECT class_id
+                FROM enrollment
+                WHERE user_id = ?
             )
             $userClassConditions
         )
