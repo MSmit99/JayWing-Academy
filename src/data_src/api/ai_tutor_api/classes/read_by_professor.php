@@ -1,6 +1,6 @@
 <?php
-require_once '../../includes/session_handler.php';
-require_once '../../includes/db_connect.php';
+require_once '../../../includes/session_handler.php';
+require_once '../../../includes/db_connect.php';
 
 header('Content-Type: application/json');
 
@@ -17,10 +17,10 @@ try {
         SELECT 
             c.*, 
             u.username AS createdByUsername 
-        FROM courses c
-        JOIN user_courses uc ON c.id = uc.courseId
-        JOIN users u ON c.createdBy = u.id
-        WHERE uc.userId = ?
+        FROM class c
+        JOIN enrollment e ON c.class_id = e.class_id
+        JOIN user u ON c.createdBy = u.user_id
+        WHERE e.user_id = ?
     ");
     $stmt->bind_param("i", $loggedInUserId);
     $stmt->execute();

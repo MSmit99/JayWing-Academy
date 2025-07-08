@@ -29,9 +29,9 @@ if ($isUserLoggedIn) {
     $query = "
         SELECT c.*, u.username AS created_by_username
         FROM enrollment e
-        JOIN class c ON e.classId = c.id
-        LEFT JOIN users u ON c.createdBy = u.id
-        WHERE uc.userId = ?
+        JOIN class c ON e.class_id = c.class_id
+        LEFT JOIN user u ON c.createdBy = u.user_id
+        WHERE e.user_id = ?
     ";
     
     $stmt = $connection->prepare($query);
@@ -52,9 +52,9 @@ if ($isUserLoggedIn) {
 
 // Modify the query to exclude the current user if logged in
 if ($currentUserId) {
-    $users = $connection->query("SELECT * FROM users WHERE id != " . (int)$currentUserId);
+    $users = $connection->query("SELECT * FROM user WHERE user_id != " . (int)$currentUserId);
 } else {
-    $users = $connection->query("SELECT * FROM users");
+    $users = $connection->query("SELECT * FROM user");
 }
 ?>
 
@@ -134,7 +134,7 @@ if ($currentUserId) {
             <div id="sidebar-options" class="space-y-2 flex-grow p-3 overflow-y-auto overflow-x-hidden">
         
                 <div id="sidebar-div" class="d-grid gap-2">
-                    <a href="proctor.php" class="block p-3 rounded bg-gray-100 <?php echo $currentPage == "Dashboard" ? 'bg-gray-200' : ''; ?> hover:bg-gray-250 message-container w-full overflow-hidden">
+                    <a href="?" class="block p-3 rounded bg-gray-100 <?php echo $currentPage == "Dashboard" ? 'bg-gray-200' : ''; ?> hover:bg-gray-250 message-container w-full overflow-hidden">
                         <div class="font-medium truncate">Dashboard</div>
                     </a>
                     <a href="?manageclasses" class="block p-3 rounded bg-gray-100 <?php echo $currentPage == "Manage Classes" ? 'bg-gray-200' : ''; ?> hover:bg-gray-250 message-container w-full overflow-hidden">
@@ -169,7 +169,7 @@ if ($currentUserId) {
             <div id="dropdown-sidebar" class="hidden bg-gray-100 overflow-x-auto p-2">
             <!-- Inner flex container that centers content when there's room -->
             <div class="flex flex-row gap-2 min-w-max justify-center">
-                <a href="proctor.php" class="block p-3 rounded bg-gray-100 <?php echo $currentPage == "Dashboard" ? 'bg-gray-200' : ''; ?> hover:bg-gray-250 message-container flex-shrink-0">
+                <a href="?" class="block p-3 rounded bg-gray-100 <?php echo $currentPage == "Dashboard" ? 'bg-gray-200' : ''; ?> hover:bg-gray-250 message-container flex-shrink-0">
                     <div class="font-medium">Dashboard</div>
                 </a>
                 <a href="?manageclasses" class="block p-3 rounded bg-gray-100 <?php echo $currentPage == "Manage Classes" ? 'bg-gray-200' : ''; ?> hover:bg-gray-250 message-container flex-shrink-0">
@@ -435,9 +435,9 @@ if ($currentUserId) {
                                                 <?php
                                                     $query = "
                                                         SELECT DISTINCT c.courseCode
-                                                        FROM classes c
-                                                        JOIN enrollments e ON e.classId = c.id
-                                                        WHERE e.userId = ?
+                                                        FROM class c
+                                                        JOIN enrollment e ON e.class_id = c.class_id
+                                                        WHERE e.user_id = ?
                                                     ";
 
                                                     $stmt = $connection->prepare($query);
@@ -590,7 +590,7 @@ if ($currentUserId) {
                                                 />
                                             </th>
                                             <th>
-                                                Role (JayWing)
+                                                Role
                                                 <input
                                                     type="text"
                                                     class="form-control"
@@ -603,9 +603,9 @@ if ($currentUserId) {
                                                 <?php
                                                     $query = "
                                                         SELECT DISTINCT c.courseCode
-                                                        FROM classes c
-                                                        JOIN enrollments e ON e.classId = c.id
-                                                        WHERE e.userId = ?
+                                                        FROM class c
+                                                        JOIN enrollment e ON e.class_id = c.class_id
+                                                        WHERE e.user_id = ?
                                                     ";
 
                                                     $stmt = $connection->prepare($query);
@@ -771,7 +771,7 @@ if ($currentUserId) {
                                         <!-- JavaScript -->
                                     </div>
                                 </div>
-                                <input type="hidden" id="edit_class_id" name="edit_class_id" required>
+                                <input type="hidden" id="edit_className_id" name="edit_className_id" required>
                             </div>
                         </div>
                         <!-- Edit User Dropdown -->
@@ -798,7 +798,7 @@ if ($currentUserId) {
                         <!-- Edit Class Role Dropdown -->
                         <div class="mb-3">
                             <label for="roleEditDropdownBtn" class="form-label">
-                                Role (JayWing)
+                                Role
                             </label>
                             <div class="dropdown">
                                 <button id="roleEditDropdownBtn" class="btn dropdown-toggle w-100 text-start d-flex justify-content-between align-items-center m-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -810,7 +810,7 @@ if ($currentUserId) {
                                         <div class="dropdown-item" data-value="Tutee">Tutee</div>
                                     </div>
                                 </div>
-                                <input type="hidden" id="edit_roleOfClass" name="edit_roleOfClass" value="Tutor">
+                                <input type="hidden" id="edit_roleOfClass" name="edit_roleOfClass" required>
                             </div>
                         </div>
                         <button type="submit" class="btn btn-primary w-full mb-0">Save Changes</button>
@@ -879,7 +879,7 @@ if ($currentUserId) {
                         <!-- Class Role Dropdown -->
                         <div class="mb-3">
                             <label for="roleMultipleDropdownBtn" class="form-label">
-                                Role (JayWing)
+                                Role
                             </label>
                             <div class="dropdown">
                                 <button id="roleMultipleDropdownBtn" class="btn dropdown-toggle w-100 text-start d-flex justify-content-between align-items-center m-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">

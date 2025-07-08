@@ -1,6 +1,6 @@
 <?php
-require_once '../../includes/session_handler.php';
-require_once '../../includes/db_connect.php';
+require_once '../../../includes/session_handler.php';
+require_once '../../../includes/db_connect.php';
 
 header('Content-Type: application/json');
 
@@ -25,7 +25,7 @@ if ($professorId === null) {
 try {
     $data = json_decode(file_get_contents('php://input'), true);
 
-    if (!isset($data['name'])) {
+    if (!isset($data['className'])) {
         throw new Exception('Class name is required');
     }
 
@@ -34,12 +34,12 @@ try {
     if (!$userId) {
         throw new Exception("User ID not found in session");
     }
-    $name = $data['name'];
+    $name = $data['className'];
     $courseCode = $data['courseCode'] ?? null;
-    $description = $data['description'] ?? null;
+    $description = $data['classDescription'] ?? null;
 
     // Get user name from ID
-    $stmt = $connection->prepare("SELECT username FROM users WHERE id = ?");
+    $stmt = $connection->prepare("SELECT username FROM user WHERE user_id = ?");
     $stmt->bind_param("i", $userId);
     if (!$stmt->execute()) {
         throw new Exception("Execution failed: " . $stmt->error);
@@ -54,7 +54,7 @@ try {
 
     // Get user id
 
-    $stmt = $connection->prepare("INSERT INTO courses (name, filepath, courseCode, description, createdBy) VALUES (?, ?, ?, ?, ?)"); // TODO: Add filepath
+    $stmt = $connection->prepare("INSERT INTO class (className, filepath, courseCode, classDescription, createdBy) VALUES (?, ?, ?, ?, ?)"); // TODO: Add filepath
     
     if (!$stmt) {
         throw new Exception("Prepare failed: " . $connection->error);
@@ -73,7 +73,7 @@ try {
     $newId = $connection->insert_id;
     // Create filepath
     $filepath = "" . $username . "_" . $userId . "/" . $name . "_" . $newId . "/";
-    $stmt = $connection->prepare("UPDATE courses SET filepath = ? WHERE id = ?");
+    $stmt = $connection->prepare("UPDATE class SET filepath = ? WHERE class_id = ?");
     if (!$stmt) {
         throw new Exception("Prepare failed: " . $connection->error);
     }
@@ -84,11 +84,12 @@ try {
     $stmt->close();
 
     // Enroll the professor in the newly created class
-    $stmt = $connection->prepare("INSERT INTO user_courses (courseId, userId) VALUES (?, ?)");
+    $stmt = $connection->prepare("INSERT INTO enrollment (class_id, user_id, roleOfClass) VALUES (?, ?, ?)");
     if (!$stmt) {
         throw new Exception("Prepare failed: " . $connection->error);
     }
-    $stmt->bind_param("ii", $newId, $professorId);
+    $role = "Tutee";
+    $stmt->bind_param("iis", $newId, $professorId, $role);
     if (!$stmt->execute()) {
         throw new Exception("Execution failed: " . $stmt->error);
     }

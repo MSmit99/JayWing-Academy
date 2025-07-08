@@ -1,6 +1,6 @@
 <?php
-require_once '../../includes/session_handler.php';
-require_once '../../includes/db_connect.php';
+require_once '../../../includes/session_handler.php';
+require_once '../../../includes/db_connect.php';
 
 header('Content-Type: application/json');
 
@@ -37,7 +37,7 @@ try {
     if ($userFilter === 'All') {
         $userCondition = "";
     } else {
-        $userCondition = "AND userId = ?";
+        $userCondition = "AND user_id = ?";
         $paramTypes .= 'i';
         $params[] = $userFilter;
     }
@@ -45,7 +45,7 @@ try {
     if ($classFilter === 'All') {
         $classCondition = "";
     } else {
-        $classCondition = "AND courseId = ?";
+        $classCondition = "AND class_id = ?";
         $paramTypes .= 'i';
         $params[] = $classFilter;
     }
@@ -69,17 +69,17 @@ try {
 
     // Query for message counts
     $messageCounts = "SELECT 
-            SUM(CASE WHEN m.feedbackRating = 'up' THEN 1 ELSE 0 END) AS liked_messages,
-            SUM(CASE WHEN m.feedbackRating = 'down' THEN 1 ELSE 0 END) AS disliked_messages,
+            SUM(CASE WHEN ai.feedbackRating = 'up' THEN 1 ELSE 0 END) AS liked_messages,
+            SUM(CASE WHEN ai.feedbackRating = 'down' THEN 1 ELSE 0 END) AS disliked_messages,
             COUNT(*) AS message_count
-        FROM messages m
-        WHERE m.userCoursesId IN (
-            SELECT userCoursesId
-            FROM user_courses
-            WHERE courseId IN (
-                SELECT courseId
-                FROM user_courses
-                WHERE userId = ? -- prof user
+        FROM ai_messages ai
+        WHERE ai.enrollment_id IN (
+            SELECT enrollment_id
+            FROM enrollment
+            WHERE class_id IN (
+                SELECT class_id
+                FROM enrollment
+                WHERE user_id = ? -- prof user
             )
             $userCondition
             $classCondition
@@ -113,15 +113,15 @@ try {
         // Query for most active hour
         $mostActiveHourQuery = "
             SELECT 
-                DATE_FORMAT(m.timestamp, '%Y-%m-%d %H:00:00') AS message_hour, COUNT(*) AS total_messages
-            FROM messages m
-            WHERE m.userCoursesId IN (
-                SELECT userCoursesId
-                FROM user_courses
-                WHERE courseId IN (
-                    SELECT courseId
-                    FROM user_courses
-                    WHERE userId = ? -- prof user
+                DATE_FORMAT(ai.timestamp, '%Y-%m-%d %H:00:00') AS message_hour, COUNT(*) AS total_messages
+            FROM ai_messages ai
+            WHERE ai.enrollment_id IN (
+                SELECT enrollment_id
+                FROM enrollment
+                WHERE class_id IN (
+                    SELECT class_id
+                    FROM enrollment
+                    WHERE user_id = ? -- prof user
                 )
                 $userCondition
                 $classCondition
@@ -154,15 +154,15 @@ try {
         // Query for most active day
         $mostActiveDayQuery = "
             SELECT 
-                DATE(m.timestamp) AS message_day, COUNT(*) AS total_messages
-            FROM messages m
-            WHERE m.userCoursesId IN (
-                SELECT userCoursesId
-                FROM user_courses
-                WHERE courseId IN (
-                    SELECT courseId
-                    FROM user_courses
-                    WHERE userId = ? -- prof user
+                DATE(ai.timestamp) AS message_day, COUNT(*) AS total_messages
+            FROM ai_messages ai
+            WHERE ai.enrollment_id IN (
+                SELECT enrollment_id
+                FROM enrollment
+                WHERE class_id IN (
+                    SELECT class_id
+                    FROM enrollment
+                    WHERE user_id = ? -- prof user
                 )
                 $userCondition
                 $classCondition
@@ -198,16 +198,16 @@ try {
         // Average words per message for user in a specific course
         $avgMessageQuery = "
             SELECT
-                ROUND(AVG(CHAR_LENGTH(m.question) - CHAR_LENGTH(REPLACE(m.question, ' ', '')) + 1), 1) AS student_avg_words,
+                ROUND(AVG(CHAR_LENGTH(ai.question) - CHAR_LENGTH(REPLACE(ai.question, ' ', '')) + 1), 1) AS student_avg_words,
                 (
-                    SELECT ROUND(AVG(CHAR_LENGTH(m2.question) - CHAR_LENGTH(REPLACE(m2.question, ' ', '')) + 1), 1)
-                    FROM messages m2
-                    JOIN user_courses uc2 ON m2.userCoursesId = uc2.userCoursesId
-                    WHERE uc2.courseId = ?
+                    SELECT ROUND(AVG(CHAR_LENGTH(ai2.question) - CHAR_LENGTH(REPLACE(ai2.question, ' ', '')) + 1), 1)
+                    FROM ai_messages ai2
+                    JOIN enrollment e2 ON ai2.enrollment_id = e2.enrollment_id
+                    WHERE e2.class_id = ?
                 ) AS course_avg_words
-            FROM messages m
-            JOIN user_courses uc ON m.userCoursesId = uc.userCoursesId
-            WHERE uc.userId = ? AND uc.courseId = ?
+            FROM ai_messages ai
+            JOIN enrollment e ON ai.enrollment_id = e.enrollment_id
+            WHERE e.user_id = ? AND e.class_id = ?
             ";
 
         $stmt = $connection->prepare($avgMessageQuery);
@@ -227,20 +227,20 @@ try {
         // Query for most active user in a specific course
         $mostActiveUserQuery = "
             SELECT 
-                u.id AS user_id,
+                u.user_id AS user_id,
                 u.username AS user_name,
-                COUNT(m.messageId) AS total_messages
-            FROM messages m
-            JOIN user_courses uc ON m.userCoursesId = uc.userCoursesId
-            JOIN users u ON uc.userId = u.id
-            WHERE uc.courseId IN (
-                SELECT courseId
-                FROM user_courses
-                WHERE userId = ? -- professor's user ID
+                COUNT(ai.message_id) AS total_messages
+            FROM ai_messages ai
+            JOIN enrollment e ON ai.enrollment_id = e.enrollment_id
+            JOIN user u ON e.user_d = u.user_id
+            WHERE e.class_id IN (
+                SELECT class_id
+                FROM enrollment
+                WHERE user_id = ? -- professor's user ID
             ) -- Maybe not necessary
             $classCondition
             $dateCondition
-            GROUP BY u.id, u.username
+            GROUP BY u.user_id, u.username
             ORDER BY total_messages DESC
             LIMIT 1;
         ";
@@ -267,23 +267,23 @@ try {
         // No specific filters applied, most active course query
         $mostActiveCourseQuery = "
             SELECT 
-                c.name AS course_name, COUNT(*) AS total_messages
-            FROM messages m
-            JOIN user_courses uc ON m.userCoursesId = uc.userCoursesId
-            JOIN courses c ON uc.courseId = c.id
-            WHERE m.userCoursesId IN (
-                SELECT userCoursesId
-                FROM user_courses
-                WHERE courseId IN (
-                    SELECT courseId
-                    FROM user_courses
-                    WHERE userId = ? -- prof user
+                c.className AS class_name, COUNT(*) AS total_messages
+            FROM ai_messages ai
+            JOIN enrollment e ON ai.enrollment_id = e.enrollment_id
+            JOIN class c ON e.class_id = c.class_id
+            WHERE ai.enrollment_id IN (
+                SELECT enrollment_id
+                FROM enrollment
+                WHERE class_id IN (
+                    SELECT class_id
+                    FROM enrollment
+                    WHERE user_id = ? -- prof user
                 )
                 $userCondition
                 $classCondition
             )
             $dateCondition
-            GROUP BY c.id
+            GROUP BY c.class_id
             ORDER BY total_messages DESC
             LIMIT 1;
         ";
@@ -301,7 +301,7 @@ try {
         }
         $mostActiveCourse = $result->fetch_assoc();
         $stats['most_active_course'] = [
-            'course_name' => $mostActiveCourse['course_name'],
+            'class_name' => $mostActiveCourse['class_name'],
             'total_messages' => (int)$mostActiveCourse['total_messages']
         ];
         $stmt->close();

@@ -1,19 +1,19 @@
 /*--------------------- Body and Global Settings ------------------------*/
-body {
+/* body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
     background-color: #C8C8C8;
     color: #0A2240;
-}
+} */
 
-/* Header and Footer */
+/* Header and Footer
 header, footer {
     background-color: #004B98;
     color: white;
     text-align: center;
     padding: 20px 0;
-}
+} */
 
 /* Main Content Container */
 .container {

@@ -1,6 +1,6 @@
 <?php
-require_once '../../includes/session_handler.php';
-require_once '../../includes/db_connect.php';
+require_once '../../../includes/session_handler.php';
+require_once '../../../includes/db_connect.php';
 
 header('Content-Type: application/json');
 
@@ -13,7 +13,7 @@ if (!isAdmin()) {
 try {
     $data = json_decode(file_get_contents('php://input'), true);
     
-    if (!isset($data['courseId']) || !isset($data['name'])) {
+    if (!isset($data['class_id']) || !isset($data['className'])) {
         throw new Exception('Class ID and name are required');
     }
 
@@ -21,13 +21,13 @@ try {
     if (!$userId) {
         throw new Exception("User ID not found in session");
     }
-    $name = $data['name'];
+    $name = $data['className'];
     $courseCode = $data['courseCode'] ?? null;
-    $description = $data['description'] ?? null; 
-    $courseId = $data['courseId'];
+    $description = $data['classDescription'] ?? null; 
+    $classId = $data['class_id'];
 
     // File path is not being updated because it is impossible to change the namespace names in Pinecone
-    $stmt = $connection->prepare("UPDATE courses SET name = ?, courseCode = ?, description = ? WHERE id = ?");
+    $stmt = $connection->prepare("UPDATE class SET className = ?, courseCode = ?, classDescription = ? WHERE class_id = ?");
     
     if (!$stmt) {
         throw new Exception("Prepare failed: " . $connection->error);
@@ -37,7 +37,7 @@ try {
         $name,
         $courseCode,
         $description,
-        $courseId
+        $classId
     );
 
     if (!$stmt->execute()) {
