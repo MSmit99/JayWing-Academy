@@ -29,7 +29,7 @@ require_once __DIR__ . '/../data_src/includes/db_connect.php';
                     <a class="nav-link" href="/jaywing-academy/src/pages/message.php">Messages</a>
                 </li>
                 <li class="nav-item <?php echo (isAdmin() || !isLoggedIn()) ? 'hidden' : ''; ?>">
-                    <a class="nav-link" href="/jaywing-academy/src/pages/student.php">JayBot</a>
+                    <a class="nav-link" href="/jaywing-academy/src/pages/jaybot.php">JayBot</a>
                 </li>
                 <li class="nav-item <?php echo (!isLoggedIn()) ? 'hidden' : ''; ?>" id="profile-tab">
                     <a class="nav-link" href="/jaywing-academy/src/pages/profile.php">Profile</a>

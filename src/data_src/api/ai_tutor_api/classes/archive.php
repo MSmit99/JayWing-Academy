@@ -1,6 +1,6 @@
 <?php
-require_once '../../includes/session_handler.php';
-require_once '../../includes/db_connect.php';
+require_once '../../../includes/session_handler.php';
+require_once '../../../includes/db_connect.php';
 
 header('Content-Type: application/json');
 
@@ -22,11 +22,11 @@ switch ($action) {
     case 'get':
         // Return archived courses
         $stmt = $connection->prepare("
-            SELECT c.name AS courseName, uc.userCoursesId
-            FROM user_courses uc
-            JOIN courses c ON c.id = uc.courseId
-            WHERE uc.userId = ? AND uc.archived = 1
-            ORDER BY c.name ASC
+            SELECT c.className AS className, e.enrollment_id
+            FROM Enrollment e
+            JOIN Class c ON c.class_id = e.class_id
+            WHERE e.user_id = ? AND e.archived = 1
+            ORDER BY c.className ASC
         ");
         $stmt->bind_param("i", $userId);
         $stmt->execute();
@@ -35,8 +35,8 @@ switch ($action) {
         $archivedCourses = [];
         while ($row = $result->fetch_assoc()) {
             $archivedCourses[] = [
-                'id' => $row['userCoursesId'],
-                'name' => $row['courseName']
+                'id' => $row['enrollment_id'],
+                'name' => $row['className']
             ];
         }
 
@@ -45,19 +45,19 @@ switch ($action) {
 
     case 'restore':
         // Change archived status to false (0)
-        $name = $input['courseName'] ?? null;
+        $name = $input['className'] ?? null;
         if (!$name) {
             http_response_code(400);
             echo json_encode(['success' => false, 'message' => 'Missing Name']);
             break;
         }
 
-        // Get userCoursesId based on course name and userId
+        // Get enrollment_id based on course name and userId
         $stmt = $connection->prepare("
-            SELECT uc.userCoursesId, c.id AS courseId
-            FROM user_courses uc
-            JOIN courses c ON uc.courseId = c.id
-            WHERE c.name = ? AND uc.userId = ? AND uc.archived = 1
+            SELECT e.enrollment_id, c.id AS class_id
+            FROM Enrollment e
+            JOIN Class c ON e.class_id = c.class_id
+            WHERE c.className = ? AND e.user_id = ? AND e.archived = 1
             LIMIT 1
         ");
         $stmt->bind_param("si", $name, $userId);
@@ -70,24 +70,24 @@ switch ($action) {
             break;
         }
 
-        $userCoursesId = $row['userCoursesId'];
-        $courseId = $row['courseId'];
+        $enrollment_id = $row['enrollment_id'];
+        $class_id = $row['class_id'];
 
         // Update archived status to false (0)
         $stmt = $connection->prepare("
-            UPDATE user_courses SET archived = 0 WHERE userCoursesId = ?
+            UPDATE enrollment SET archived = 0 WHERE enrollment_id = ?
         ");
-        $stmt->bind_param("i", $userCoursesId);
+        $stmt->bind_param("i", $enrollment_id);
         $success = $stmt->execute();
 
         // Get latest message from course
         $stmt = $connection->prepare("
-            SELECT question FROM messages
-            WHERE userCoursesId = ?
+            SELECT question FROM ai_messages
+            WHERE enrollment_id = ?
             ORDER BY timestamp DESC
             LIMIT 1
         ");
-        $stmt->bind_param("i", $userCoursesId);
+        $stmt->bind_param("i", $enrollment_id);
         $stmt->execute();
         $msgResult = $stmt->get_result();
         $messageRow = $msgResult->fetch_assoc();
@@ -96,15 +96,15 @@ switch ($action) {
         // Return relevant information for the restored course
         echo json_encode([
             'success' => $success,
-            'userCoursesId' => $userCoursesId,
+            'enrollment_id' => $enrollment_id,
             'latestMessage' => $latestMessage,
-            'courseName' => $name
+            'className' => $name
         ]);
         break;
 
     case 'archive':
         // Change archived status to true (1)
-        $id = $input['userCoursesId'] ?? null;
+        $id = $input['enrollment_id'] ?? null;
         if (!$id) {
             http_response_code(400);
             echo json_encode(['success' => false, 'message' => 'Missing ID']);
@@ -113,7 +113,7 @@ switch ($action) {
 
         $stmt = $connection->prepare("
             UPDATE user_courses SET archived = 1
-            WHERE userCoursesId = ? AND userId = ?
+            WHERE enrollment_id = ? AND userId = ?
         ");
         $stmt->bind_param("ii", $id, $userId);
         $success = $stmt->execute();

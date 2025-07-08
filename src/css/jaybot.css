@@ -1,0 +1,342 @@
+/* --------------------- General CSS Styling ------------------------ */
+
+
+html, body {
+    height: 100%;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box;
+}
+
+/* Inherit box-sizing for all elements */
+*, *::before, *::after {
+    box-sizing: inherit;
+}
+
+/* Ensure no default gaps from Bootstrap's grid system if used on body/main containers */
+.row, .container, .container-fluid {
+    --bs-gutter-x: 0;
+    --bs-gutter-y: 0;
+    margin-right: 0;
+    margin-left: 0;
+    padding-right: 0;
+    padding-left: 0;
+}
+
+/* --- Core Layout Fixes --- */
+
+body {
+    display: flex;
+    flex-direction: column; /* Stacks header, content, and (potential) footer vertically */
+    height: 100vh; /* Ensures body takes full viewport height */
+}
+
+#header {
+    flex-shrink: 0; /* Prevents header from shrinking */
+}
+
+
+/* --------------------- Scrollbar Padding Adjustment CSS Styling ------------------------ */
+
+
+/* Padding Adjustments for Main Chat Area */
+.p-chat-scroll {
+    padding-right: 0rem; /* When scrollbar is visible */
+}
+
+.p-chat-noshow {
+    padding-right: 1rem; /* When scrollbar is not visible */
+}
+
+/* Padding Adjustments for Sidebar */
+.p-sidebar-scroll {
+    padding-right: 0rem; /* When scrollbar is visible */
+}
+
+.p-sidebar-noshow {
+    padding-right: 1rem; /* When scrollbar is not visible */
+}
+
+
+/* --------------------- Sidebar and Chat Window CSS Styling ------------------------ */
+
+
+#my-content {
+    display: grid;
+    /* Define initial grid columns explicitly here, instead of relying on Tailwind's grid-cols-4 */
+    grid-template-columns: 350px 1fr 250px; /* Sidebar (1 part) and Chat (3 parts) */
+    flex-grow: 1; /* Allows #my-content to take up all available vertical space */
+    width: 100%; /* Ensures it spans the full width */
+    margin-top: 0; /* Remove any top margin that might be causing a gap */
+    overflow: hidden; /* Crucial for containing content and preventing unwanted scrollbars */
+}
+
+#left-sidebar {
+    /* Initial state, its width is managed by the grid-template-columns of #my-content */
+    flex-shrink: 0; /* Prevents sidebar from shrinking horizontally beyond its content */
+    height: 100%; /* Ensures sidebar fills its grid cell vertically */
+    overflow: hidden; /* Keep this to hide overflowing content when collapsed */
+}
+
+#chat-container {
+    /* This element will now naturally take the remaining 3fr (or 1fr when collapsed)
+       from #my-content's grid definition, so you don't need 'col-span-3' on it.
+    */
+    height: 100%; /* Ensure chat container fills its grid cell vertically */
+    overflow: hidden; /* Manages its own overflow for chat messages */
+}
+
+/* --- Collapsed States --- */
+
+#my-content.left-collapsed {
+    /* When collapsed, set the grid to a fixed width for the sidebar and 1fr for chat */
+    grid-template-columns: 60px 1fr 250px !important; /* Force sidebar to 60px */
+}
+
+#left-sidebar.collapsed {
+    /* This width is set to match the grid column for consistency */
+    width: 60px !important;
+}
+
+/* --- Hiding Sidebar Content --- */
+
+#left-sidebar.collapsed .left-sidebar-content-hide {
+    display: none !important; /* Force hide the elements */
+}
+
+/* --- Toggle Button Styling within Collapsed Sidebar --- */
+
+#left-sidebar #toggle-left-sidebar {
+    margin-left: auto; /* Push button to the right, in conjunction with flexbox parent */
+    margin-right: auto; /* Center it within the small width */
+    padding-left: 0.5rem; /* Adjust internal padding if icon isn't centered */
+    padding-right: 0.5rem;
+}
+
+#left-sidebar.collapsed .px-3.pt-3.d-flex.align-items-center.w-full {
+    padding-left: 0; /* Remove horizontal padding from the button's parent div */
+    padding-right: 0;
+    justify-content: center; /* Center content (the button) in the collapsed state */
+}
+
+/* When right sidebar is collapsed */
+#right-sidebar.collapsed {
+    width: 60px !important;
+}
+
+/* When right sidebar is collapsed, reduce the grid layout */
+#my-content.right-collapsed {
+    grid-template-columns: 350px 1fr 60px !important;
+}
+
+/* Hide content inside the right sidebar */
+#right-sidebar.collapsed .right-sidebar-content-hide {
+    display: none !important;
+}
+
+/* When both sidebars are collapsed */
+#my-content.left-collapsed.right-collapsed {
+    grid-template-columns: 60px 1fr 60px !important;
+}
+
+/* When screen size is small */
+#my-content.mobile {
+    grid-template-columns: 1fr !important;
+}
+#left-sidebar.mobile {
+    grid-template-columns: 1fr !important;
+}
+#right-sidebar.mobile {
+    grid-template-columns: 1fr !important;
+}
+
+
+
+/* --------------------- User Text Input CSS Styling ------------------------ */
+
+
+textarea {
+    resize: none;
+    overflow: hidden;
+    min-height: 44px;
+    width: 80%;
+    display: block;
+    margin: 20px auto;
+    padding: 10px;
+    border: 1px solid #ccc;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    box-sizing: border-box;
+}
+
+textarea.overflow-y-auto::-webkit-scrollbar-track {
+    /* This is the key for shortening the scrollbar */
+    margin-bottom: 5px; /* Adjust this value to control how much space to leave at the bottom */
+    margin-top: 20px; /* Optional: also shorten from the top if desired */
+}
+
+.flex {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.flex-1 {
+    flex: 1;
+}
+
+.border {
+    border: 1px solid #e5e7eb;
+}
+
+.rounded-lg {
+    border-radius: 0.5rem;
+}
+
+.p-2 {
+    padding: 0.5rem;
+}
+
+textarea:focus {
+    outline: none !important; /* Ensure no default outline */
+    box-shadow: none !important; /* Remove the blue box-shadow focus ring */
+}
+.focus\:ring-2:focus {
+    box-shadow: 0 0 0 2px rgba(96, 165, 250, 1);
+}
+
+.focus\:ring-blue-500:focus {
+    --tw-ring-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+}
+
+.break-words{
+    word-wrap: break-word;
+}
+
+.bg-blue-500 {
+    background-color: #3b82f6;
+}
+
+.text-white {
+    color: #fff;
+}
+
+.px-4 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.py-2 {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+.py-3 {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+}
+/* Duplicate rounded-lg in original file, keeping for context but only one needed */
+.rounded-lg {
+    border-radius: 0.5rem;
+}
+
+.hover\:bg-blue-600:hover {
+    background-color: #2563eb;
+}
+
+.focus\:outline-none:focus {
+    outline: none;
+}
+
+.focus\:ring-2:focus {
+    box-shadow: 0 0 0 2px rgba(96, 165, 250, 1);
+}
+.focus\:ring-blue-500:focus {
+    --tw-ring-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+}
+.mt-auto {
+    margin-top: auto;
+}
+.ai-message-content ul {
+    list-style-type: disc;    /* Or circle/square */
+    margin-left: 1.5rem;      /* Add left margin for indentation */
+    padding-left: 0.5rem;     /* Optional: adjust padding */
+}
+
+.ai-message-content li {
+    margin-bottom: 0.5rem;    /* Optional: control spacing between items */
+}
+
+.relative:hover .hover-child {
+    opacity: 1 !important;
+}
+
+.hover\:bg-gray-250:hover {
+    background-color: #d8dbe3;
+}
+
+
+/* --------------------- Archival CSS Styling ------------------------ */
+
+
+.archive-icon {
+    background-image: url('../images/archive.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.archive-button:hover .archive-icon {
+    background-image: url('../images/open_archive.png');
+}
+
+.archive-icon:hover .archive-icon {
+    background-image: url('../images/open_archive.png');
+    opacity: 1;
+}
+
+/* Default: hidden */
+.archive-icon-button {
+    opacity: 0;
+    background-image: url('../images/archive.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* Show icon when hovering over the course card */
+.group:hover .archive-icon-button {
+    opacity: 1;
+}
+
+/* Change icon when hovering directly over the icon */
+.archive-icon-button:hover {
+    background-image: url('../images/open_archive.png');
+}
+
+/* --------------------- JayWing Navbar/Footer ------------------------ */
+
+.navbar .container-fluid {
+    --bs-gutter-x: 1.5rem;
+    --bs-gutter-y: 0;
+    width: 100%;
+    padding-right: calc(var(--bs-gutter-x) * 0.5);
+    padding-left: calc(var(--bs-gutter-x) * 0.5);
+    margin-right: auto;
+    margin-left: auto;
+}
+
+#cs341 {
+    height: 50px;
+    width: 50px;
+}
+
+
+/* --------------------- Other CSS Styling ------------------------ */
+
+.hidden {
+    display: none !important;
+}
