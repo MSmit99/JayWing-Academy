@@ -1093,7 +1093,7 @@ const coursesList = document.getElementById('archived-courses-list');
  * - Allows restoring a course which updates the backend and UI.
  */
 archiveButton.addEventListener('click', () => {
-    fetch('../backend/api/classes/archive.php?action=get')
+    fetch('../data_src/api/ai_tutor_api/classes/archive.php?action=get')
         .then(res => res.json())
         .then(data => {
             const list = document.getElementById('archived-courses-list');

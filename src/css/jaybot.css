@@ -317,9 +317,12 @@ textarea:focus {
     background-image: url('../images/open_archive.png');
 }
 
+/* --------------------- JayWing Navbar ------------------------ */
+
+
+
 
 /* --------------------- Other CSS Styling ------------------------ */
-
 
 .hidden {
     display: none !important;
