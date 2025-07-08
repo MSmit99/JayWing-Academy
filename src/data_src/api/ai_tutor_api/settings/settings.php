@@ -1,6 +1,6 @@
 <?php
-require_once '../../includes/session_handler.php';
-require_once '../../includes/db_connect.php';
+require_once '../../../includes/session_handler.php';
+require_once '../../../includes/db_connect.php';
 
 header('Content-Type: application/json');
 
@@ -34,8 +34,8 @@ switch ($action) {
 
         // Update settings
         $stmt = $connection->prepare("
-            UPDATE user_courses SET responseLength = ?, interest = ?
-            WHERE userCoursesId = ?
+            UPDATE enrollment SET responseLength = ?, interest = ?
+            WHERE enrollment_id = ?
         ");
         $stmt->bind_param("ssi", $responseLength, $interestInput, $chatId);
         $success = $stmt->execute();
@@ -58,8 +58,8 @@ switch ($action) {
 
         $stmt = $connection->prepare("
             SELECT responseLength, interest
-            FROM user_courses
-            WHERE userCoursesId = ?
+            FROM enrollment
+            WHERE enrollment_id = ?
         ");
         $stmt->bind_param("i", $chatId);
         $stmt->execute();

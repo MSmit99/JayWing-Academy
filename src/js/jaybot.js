@@ -538,7 +538,7 @@ function storeFeedback(messageId, feedback=null) {
     // Ask the user if they'd like to add a comment
     if (feedback) {
         showFeedbackBanner(messageId);
-        fetch('../backend/api/feedback/update.php', {
+        fetch('../data_src/api/ai_tutor_api/feedback/update.php', {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json'
@@ -563,7 +563,7 @@ function storeFeedback(messageId, feedback=null) {
     } else {
         // Delete feedback
         console.log("Removing feedback for messageId:", messageId);
-        fetch('../backend/api/feedback/update.php', {
+        fetch('../data_src/api/ai_tutor_api/feedback/update.php', {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'
@@ -860,13 +860,13 @@ document.addEventListener('DOMContentLoaded', () => {
  *
  * @param {string} messageId - The ID of the message to fetch.
  * @returns {Promise<Array>} Resolves to an array containing:
- *  [messageId, userCoursesId, question, answer, timestamp, sourceName, feedbackRating, feedbackExplanation, feedbackTimestamp]
+ *  [messageId, enrollment_id, question, answer, timestamp, sourceName, feedbackRating, feedbackExplanation, feedbackTimestamp]
  * 
  * @throws Will throw an error if the fetch fails or response is not successful.
  */
 async function getMessageContent(messageId) {
     try {
-        const response = await fetch(`../backend/api/messages/messages.php?messageId=${encodeURIComponent(messageId)}`, {
+        const response = await fetch(`../data_src/api/ai_tutor_api/messages/messages.php?messageId=${encodeURIComponent(messageId)}`, {
             method: 'getMessages',
             headers: {
                 'Content-Type': 'application/json',
@@ -876,8 +876,8 @@ async function getMessageContent(messageId) {
         const data = await response.json();
 
         if (data.success) {
-            const { userCoursesId, question, answer, timestamp, sourceName, feedbackRating, feedbackExplanation, feedbackTimestamp } = data.message;
-            return [messageId, userCoursesId, question, answer, timestamp, sourceName, feedbackRating, feedbackExplanation, feedbackTimestamp];
+            const { enrollment_id, question, answer, timestamp, sourceName, feedbackRating, feedbackExplanation, feedbackTimestamp } = data.message;
+            return [messageId, enrollment_id, question, answer, timestamp, sourceName, feedbackRating, feedbackExplanation, feedbackTimestamp];
         } else {
             throw new Error(data.message || "Message fetch unsuccessful");
         }
@@ -979,7 +979,7 @@ function showFeedbackBanner(messageId) {
         banner.classList.add('hidden');
 
         if (explanation) {
-            fetch('../backend/api/feedback/list.php', {
+            fetch('../data_src/api/ai_tutor_api/feedback/read.php', {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json'
@@ -1113,7 +1113,7 @@ archiveButton.addEventListener('click', () => {
                     restoreButton.textContent = 'Restore';
                     restoreButton.className = 'bg-blue-500 hover:bg-blue-600 text-white text-sm px-3 py-1 rounded';
                     restoreButton.onclick = () => {
-                        fetch('../backend/api/classes/archive.php', {
+                        fetch('../data_src/api/ai_tutor_api/classes/archive.php', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ action: 'restore', courseName: course.name})
@@ -1126,8 +1126,8 @@ archiveButton.addEventListener('click', () => {
 
                                 const sidebar = document.getElementById('chat-div');
                                 const newCourse = document.createElement('div');
-                                newCourse.className = "relative group bg-gray-100 p-3 rounded <?php echo $currentChat == $chat['userCoursesId'] ? 'bg-gray-200' : ''; ?> w-full overflow-hidden hover:bg-gray-200";
-                                newCourse.setAttribute('data-chat-id', "php echo htmlspecialchars($chat['userCoursesId'], ENT_QUOTES, 'UTF-8');");
+                                newCourse.className = "relative group bg-gray-100 p-3 rounded <?php echo $currentChat == $chat['enrollment_id'] ? 'bg-gray-200' : ''; ?> w-full overflow-hidden hover:bg-gray-200";
+                                newCourse.setAttribute('data-chat-id', "php echo htmlspecialchars($chat['enrollment_id'], ENT_QUOTES, 'UTF-8');");
 
                                 // Get the current sortBy value from the URL, fallback to 'sortRecent'
                                 const urlParams = new URLSearchParams(window.location.search);
@@ -1135,7 +1135,7 @@ archiveButton.addEventListener('click', () => {
 
                                 const link = document.createElement('a');
                                 link.className = 'block w-full';
-                                link.href = `?chatId=${data.userCoursesId}&sortBy=${encodeURIComponent(currentSort)}`;
+                                link.href = `?chatId=${data.enrollment_id}&sortBy=${encodeURIComponent(currentSort)}`;
 
                                 const courseTitle = document.createElement('div');
                                 courseTitle.className = 'font-medium truncate';
@@ -1150,7 +1150,7 @@ archiveButton.addEventListener('click', () => {
 
                                 const archiveBtn = document.createElement('div');
                                 archiveBtn.className = 'hover-child archive-icon-button absolute top-2 right-2 w-4 h-4 opacity-0 group-hover:opacity-100 cursor-pointer transition-all';
-                                archiveBtn.setAttribute('onclick', `archiveCourse(${data.userCoursesId})`);
+                                archiveBtn.setAttribute('onclick', `archiveCourse(${data.enrollment_id})`);
 
                                 newCourse.appendChild(link);
                                 newCourse.appendChild(archiveBtn);
@@ -1184,29 +1184,29 @@ archiveButton.addEventListener('click', () => {
 });
 
 /**
- * Archives a course by its userCoursesId.
+ * Archives a course by its enrollment_id.
  * Sends a POST request to the backend API to archive the course.
  * On success, removes the course from the UI and redirects
  * if the archived course is currently selected.
  *
- * @param {number} userCoursesId - The ID of the course to archive.
+ * @param {number} enrollment_id - The ID of the course to archive.
  */
-function archiveCourse(userCoursesId) {
-    fetch('../backend/api/classes/archive.php', {
+function archiveCourse(enrollment_id) {
+    fetch('../data_src/api/ai_tutor_api/classes/archive.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'archive', userCoursesId: userCoursesId })
+        body: JSON.stringify({ action: 'archive', enrollment_id: enrollment_id })
     })
     .then(response => response.json())
     .then(data => {
         if (data.success) {
             showErrorBanner('Class archived.');
             // Remove the archived course from UI
-            const chatItem = document.querySelector(`[onclick="archiveCourse(${userCoursesId})"]`).closest('.relative');
+            const chatItem = document.querySelector(`[onclick="archiveCourse(${enrollment_id})"]`).closest('.relative');
             if (chatItem) chatItem.remove();
 
             // If this was the currently selected chat, redirect to blank view
-            if (typeof currentChatId !== 'undefined' && userCoursesId == currentChatId) {
+            if (typeof currentChatId !== 'undefined' && enrollment_id == currentChatId) {
                 // Redirect to the same page without the chatId
                 const urlParams = new URLSearchParams(window.location.search);
                 if (urlParams.has('chatId')) {
@@ -1312,7 +1312,7 @@ if (saveBtn) {
         console.log("Response Length:", responseLength.value);
         console.log("Interest Input:", interestInput.value);
         urlParams = new URLSearchParams(window.location.search);
-        fetch('../backend/api/settings/settings.php', {
+        fetch('../data_src/api/ai_tutor_api/settings/settings.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -1576,7 +1576,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const chatId = new URLSearchParams(window.location.search).get('chatId');
     if (!chatId) return;
 
-    fetch('../backend/api/settings/settings.php?action=getSettings&chatId=' + encodeURIComponent(chatId), {
+    fetch('../data_src/api/ai_tutor_api/settings/settings.php?action=getSettings&chatId=' + encodeURIComponent(chatId), {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' }
     })
