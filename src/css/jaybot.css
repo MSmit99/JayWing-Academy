@@ -317,9 +317,22 @@ textarea:focus {
     background-image: url('../images/open_archive.png');
 }
 
-/* --------------------- JayWing Navbar ------------------------ */
+/* --------------------- JayWing Navbar/Footer ------------------------ */
 
+.navbar .container-fluid {
+    --bs-gutter-x: 1.5rem;
+    --bs-gutter-y: 0;
+    width: 100%;
+    padding-right: calc(var(--bs-gutter-x) * 0.5);
+    padding-left: calc(var(--bs-gutter-x) * 0.5);
+    margin-right: auto;
+    margin-left: auto;
+}
 
+#cs341 {
+    height: 50px;
+    width: 50px;
+}
 
 
 /* --------------------- Other CSS Styling ------------------------ */

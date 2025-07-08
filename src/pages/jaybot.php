@@ -16,7 +16,7 @@ if (isset($_GET['chatId']) && filter_var($_GET['chatId'], FILTER_VALIDATE_INT)) 
     $stmt = $connection->prepare("
         SELECT 1
         FROM Enrollment e
-        WHERE e.userId = ?
+        WHERE e.user_id = ?
         AND e.enrollment_id = ?;
     ");
     $stmt->bind_param("ii", $userId, $currentChat);
@@ -32,12 +32,12 @@ if (isset($_GET['chatId']) && filter_var($_GET['chatId'], FILTER_VALIDATE_INT)) 
     // User is validated at this point
     // Get course name chat is for
     $stmt = $connection->prepare("
-        SELECT c.name, u.username, u.role
+        SELECT c.className, u.username, u.admin
         FROM Enrollment e
         JOIN Class c ON c.class_id = e.class_id
-        JOIN users u ON u.id = e.userId
+        JOIN User u ON u.user_id = e.user_id
         WHERE e.enrollment_id = ?
-        AND e.userId = ?;
+        AND e.user_id = ?;
     ");
     $stmt->bind_param("ii", $currentChat, $userId);
     $stmt->execute();
@@ -114,7 +114,7 @@ if (isset($_GET['chatId']) && filter_var($_GET['chatId'], FILTER_VALIDATE_INT)) 
 </head>
 
 <body>
-    <iframe src='../components/navbar_frame.php' style="width: 100%; height: 60px; border: none;"></iframe>
+    <?php include '../components/navbar.php'; ?>
 
     <main class="flex flex-col h-screen gap-0 overflow-hidden">
         <div id="feedback-banner" class="fixed top-0 left-1/2 transform -translate-x-1/2 mt-4 bg-blue-100 text-blue-800 px-4 py-2 rounded shadow hidden z-50 text-sm">
@@ -225,7 +225,7 @@ if (isset($_GET['chatId']) && filter_var($_GET['chatId'], FILTER_VALIDATE_INT)) 
                             $sortBy = $_GET['sortBy'] ?? 'sortRecent';
 
                             $orderClause = match($sortBy) {
-                                'sortAlphabetical' => 'ORDER BY c.name ASC',
+                                'sortAlphabetical' => 'ORDER BY c.className ASC',
                                 default => 'ORDER BY 
                                                 latest.latestTimestamp IS NULL,
                                                 latest.latestTimestamp DESC'
@@ -309,7 +309,7 @@ if (isset($_GET['chatId']) && filter_var($_GET['chatId'], FILTER_VALIDATE_INT)) 
                 <?php if ($currentChat): ?>
                     <?php
                     // Get chat details
-                    $stmt = $connection->prepare("SELECT * FROM user_courses WHERE enrollment_id = ?");
+                    $stmt = $connection->prepare("SELECT * FROM enrollment WHERE enrollment_id = ?");
                     $stmt->bind_param("i", $currentChat);
                     $stmt->execute();
                     $chatDetails = $stmt->get_result()->fetch_assoc();
@@ -339,8 +339,8 @@ if (isset($_GET['chatId']) && filter_var($_GET['chatId'], FILTER_VALIDATE_INT)) 
                             <div id="chat-location" class="sm:px-3 md:px-12 lg:px-24 xl:px-36 space-y-2">
                                 <?php
                                 $stmt = $connection->prepare("
-                                    SELECT m.messageId, m.question, m.answer, m.sourceName, m.feedbackRating
-                                    FROM messages m
+                                    SELECT m.message_id, m.question, m.answer, m.sourceName, m.feedbackRating
+                                    FROM ai_messages m
                                     JOIN enrollment e ON e.enrollment_id = m.enrollment_id
                                     WHERE e.enrollment_id = ?
                                     ORDER BY m.timestamp ASC;
@@ -577,14 +577,15 @@ if (isset($_GET['chatId']) && filter_var($_GET['chatId'], FILTER_VALIDATE_INT)) 
             </div>
         </div>
     </main>
-
-
-    <!-- <footer id="footer"></footer> -->
+    
+    <div style="height: 58px;"></div> <!-- Spacer for fixed footer - footer is 59px high -->
+    <footer id="footer"></footer>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <!-- Custom JS -->
     <script src="../js/jaybot.js"></script>
+    <script src="../js/global.js"></script>
 </body>
 </html>
