@@ -152,7 +152,7 @@ if ($currentUserId) {
             </div>
         </div>
 
-        <div id="chat-container" class="flex flex-col bg-white pb-2 overflow-hidden">
+        <div id="chat-container" class="flex flex-col bg-white overflow-hidden">
             <!-- Chat header -->
             <div id="chat-header" class="flex items-center justify-start p-3 w-full gap-2 border-b-4 border-gray-50">
                 <button
@@ -539,7 +539,7 @@ if ($currentUserId) {
                                         </label>
                                         <div class="dropdown">
                                             <button id="roleDropdownBtn" class="btn dropdown-toggle w-100 text-start d-flex justify-content-between align-items-center m-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                                <span id="selectedRoleText">Tutor</span>
+                                                <span id="selectedRoleText">Tutee</span>
                                             </button>
                                             <div class="dropdown-menu w-100 p-2">
                                                 <div class="role-list -p-2" style="max-height: 200px; overflow-y: auto; margin: 0 -0.5rem;">
@@ -547,7 +547,7 @@ if ($currentUserId) {
                                                     <div class="dropdown-item" data-value="Tutee">Tutee</div>
                                                 </div>
                                             </div>
-                                            <input type="hidden" id="roleOfClass" name="roleOfClass" value="Tutor">
+                                            <input type="hidden" id="roleOfClass" name="roleOfClass" value="Tutee">
                                         </div>
                                     </div>
                                 </div>

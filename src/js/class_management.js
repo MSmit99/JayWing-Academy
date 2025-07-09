@@ -1438,8 +1438,8 @@ function clearEnrollmentInputs() {
     }
     const roleOfClassDropdown = document.querySelector('.role-list');
     if (roleOfClassDropdown) {
-        document.getElementById('roleOfClass').value = "Tutor";
-        document.getElementById('selectedRoleText').textContent = 'Tutor';
+        document.getElementById('roleOfClass').value = "Tutee";
+        document.getElementById('selectedRoleText').textContent = 'Tutee';
     }
 }
 
