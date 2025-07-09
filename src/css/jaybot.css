@@ -317,6 +317,11 @@ textarea:focus {
     background-image: url('../images/open_archive.png');
 }
 
+/* --------------------- Banners ------------------------ */
+.banner {
+    z-index: 10000000000;
+}
+
 /* --------------------- JayWing Navbar/Footer ------------------------ */
 
 .navbar .container-fluid {

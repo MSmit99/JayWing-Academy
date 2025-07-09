@@ -122,7 +122,7 @@ def get_user_info_from_headers():
     """
     user_id = request.headers.get("X-User-Id")
     username = request.headers.get("X-Username")
-    if (request.headers.get("X-User-Role") is None):
+    if (request.headers.get("X-User-Role") is None or request.headers.get("X-User-Role") == ""):
         user_role = 0  # Default to student role if not provided
     else:
         user_role = request.headers.get("X-User-Role")

@@ -80,10 +80,10 @@ def chat_info(chatId):
     conn = get_db_connection()
     cursor = conn.cursor()
     query = """
-        SELECT c.name
-        FROM user_courses uc
-        JOIN courses c ON c.id = uc.courseId
-        WHERE uc.userCoursesId = %s;
+        SELECT c.className
+        FROM enrollment e
+        JOIN class c ON c.class_id = e.class_id
+        WHERE e.enrollment_id = %s;
     """
     cursor.execute(query, (chatId,))
     result = cursor.fetchone()
@@ -104,25 +104,25 @@ def construct_initial_prompt(userId, chatId):
     Constructs the initial prompt using database information.
     Args:
         userId (int): The user ID.
-        chatId (int): The userCoursesId or session/chat context.
+        chatId (int): The enrollment_id or session/chat context.
     Returns:
         List[dict]: A list of message dictionaries for the LLM.
     '''
     print("Constructing initial prompt...")
 
     if not chatId:
-        raise ValueError("No userCoursesId found for the given user and course.")
+        raise ValueError("No enrollment_id found for the given user and course.")
     
     courseName = chat_info(chatId)
     if not courseName:
-        raise ValueError("No course name found for the given userCoursesId.")
+        raise ValueError("No course name found for the given enrollment_id.")
     
     conn = get_db_connection()
     cursor = conn.cursor()
     query = """
         SELECT responseLength, interest
-        FROM user_courses
-        WHERE userCoursesId = %s;
+        FROM enrollment
+        WHERE enrollment_id = %s;
     """
     cursor.execute(query, (chatId,))
     result = cursor.fetchone()
@@ -130,7 +130,7 @@ def construct_initial_prompt(userId, chatId):
     conn.close()
 
     if not result:
-        raise ValueError("No interaction settings found for the given userCoursesId.")
+        raise ValueError("No interaction settings found for the given enrollment_id.")
     
     # Use extracted settings to construct the prompt
     response_length, interest = result
@@ -209,10 +209,10 @@ def get_recent_chat_history(user_id, course_name, memory_limit=5):
 
     query = """
         SELECT m.question, m.answer
-        FROM messages m
-        JOIN user_courses uc ON uc.userCoursesId = m.userCoursesId
-        JOIN courses c ON c.id = uc.courseId
-        WHERE uc.userId = %s AND c.name = %s
+        FROM ai_messages m
+        JOIN enrollment e ON e.enrollment_id = m.enrollment_id
+        JOIN class c ON c.class_id = e.class_id
+        WHERE e.user_id = %s AND c.className = %s
         ORDER BY m.timestamp DESC
         LIMIT %s;
     """
@@ -265,10 +265,10 @@ def get_docs(user_id, course, chatId, question):
     conn = get_db_connection()
     cursor = conn.cursor()
     query = """
-        SELECT c.id
-        FROM user_courses uc
-        JOIN courses c ON c.id = uc.courseId
-        WHERE uc.userCoursesId = %s;
+        SELECT c.class_id
+        FROM enrollment e
+        JOIN class c ON c.class_id = e.class_id
+        WHERE e.enrollment_id = %s;
     """
     cursor.execute(query, (chatId,))
     result = cursor.fetchone()
@@ -316,8 +316,8 @@ def get_docs(user_id, course, chatId, question):
         conn = get_db_connection()
         cursor = conn.cursor()
         query = """
-            SELECT sourceName FROM messages 
-            WHERE userCoursesId = (SELECT userCoursesId FROM user_courses WHERE userId = %s AND courseId = (SELECT id FROM courses WHERE name = %s))
+            SELECT sourceName FROM ai_messages 
+            WHERE enrollment_id = (SELECT enrollment_id FROM enrollment WHERE user_id = %s AND class_id = (SELECT class_id FROM class WHERE className = %s))
             ORDER BY timestamp DESC LIMIT 1;
         """
         cursor.execute(query, (user_id, course))
@@ -384,7 +384,7 @@ def update_chat_logs(student_id, chatId, user_question, tutor_response, source_n
     
     args:
         student_id (str): The ID of the student.
-        chatId (str): The ID of the chat (from userCoursesId).
+        chatId (str): The ID of the chat (from enrollment_id).
         user_question (str): The user's question.
         tutor_response (str): The AI's response to the user's question.
         source_names (list): List of document names used to generate the response.
@@ -412,9 +412,9 @@ def update_chat_logs(student_id, chatId, user_question, tutor_response, source_n
             source_names_str = ", ".join(str(name) for name in source_names) if source_names else ""
             print("Source names string:", source_names_str)
 
-            # Insert the new message into the messages table
+            # Insert the new message into the ai_messages table
             insert_query = """
-                INSERT INTO messages (userCoursesId, question, answer, sourceName)
+                INSERT INTO ai_messages (enrollment_id, question, answer, sourceName)
                 VALUES (%s, %s, %s, %s);
             """
             cursor.execute(insert_query, (chatId, user_question, tutor_response, source_names_str))
@@ -422,7 +422,7 @@ def update_chat_logs(student_id, chatId, user_question, tutor_response, source_n
             message_id = cursor.lastrowid
             print("✅ Chat logs updated successfully.")
         else:
-            print("⚠️ No userCoursesId found for the given student and course.")
+            print("⚠️ No enrollment_id found for the given student and course.")
     except Exception as e:
         print(f"❌ Error inserting chat logs: {e}")
     finally:
@@ -438,7 +438,7 @@ def generate_gpt_response(user_id, chatId, user_question, originalAnswer=None):
 
     Args:
         student_id (str): The ID of the student.
-        chat_id (str): The ID of the chat (from userCoursesId).
+        chat_id (str): The ID of the chat (from enrollment_id).
         user_question (str): The user's question.
         originalAnswer (str, optional): The original answer provided by the AI previously - only occurs if the user asks for a deeper explanation.
     Returns:
