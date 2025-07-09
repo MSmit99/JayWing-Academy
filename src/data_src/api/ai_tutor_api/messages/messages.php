@@ -1,6 +1,6 @@
 <?php
-require_once '../../includes/session_handler.php';
-require_once '../../includes/db_connect.php';
+require_once '../../../includes/session_handler.php';
+require_once '../../../includes/db_connect.php';
 
 header('Content-Type: application/json');
 
@@ -24,7 +24,7 @@ switch ($method) {
         }
 
         // Get message content
-        $stmt = $connection->prepare("SELECT * FROM messages WHERE messageId = ?");
+        $stmt = $connection->prepare("SELECT * FROM ai_messages WHERE message_id = ?");
         $stmt->bind_param("i", $messageId);
         $stmt->execute();
         $result = $stmt->get_result();
