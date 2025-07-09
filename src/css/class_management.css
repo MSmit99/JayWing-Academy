@@ -377,6 +377,16 @@ tr.hidden {
     }
 }
 
+/*--------------------- Loading Spinner ------------------------*/
+#loading-spinner {
+  z-index: 9999 !important;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
 /*--------------------- Dashboard Settings ------------------------*/
 /* Carousel */
 /* Lock the height of the carousel */
