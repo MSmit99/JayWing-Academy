@@ -94,7 +94,7 @@ try {
             $userClassConditions
         )
         $dateCondition
-        ORDER BY m.feedbackTimestamp DESC;
+        ORDER BY ai.feedbackTimestamp DESC;
     ";
 
     $stmt = $connection->prepare($sql);

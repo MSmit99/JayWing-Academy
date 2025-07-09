@@ -283,7 +283,7 @@ if ($currentUserId) {
 
                             <!-- Right: Word Cloud -->                                    
                             <div class="wordcloud-container">
-                                <img id='word_cloud_img' src="static/img/word_cloud_placeholder.png" alt="Word Cloud" class="w-full h-auto rounded border border-gray-300" />
+                                <img id='word_cloud_img' alt="Word Cloud" class="w-full h-auto rounded border border-gray-300" />
                             </div>
                         </div>
 
