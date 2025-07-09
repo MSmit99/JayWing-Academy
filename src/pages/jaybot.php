@@ -114,22 +114,28 @@ if (isset($_GET['chatId']) && filter_var($_GET['chatId'], FILTER_VALIDATE_INT)) 
 </head>
 
 <body>
-    <?php include '../components/navbar.php'; ?>
+    <header>
+        <?php include '../components/navbar.php'; ?>
+    </header>
+    <!-- Spacer for fixed header - header is 56px high -->
+    <div style="height: 56px;"></div>
+    <!-- Banners -->
+    <div id="feedback-banner" class="banner fixed top-0 left-1/2 transform -translate-x-1/2 mt-4 bg-blue-100 text-blue-800 px-4 py-2 rounded shadow hidden z-50 text-sm">
+        Thank you for your feedback!
+        <button id="add-comment-btn" class="ml-2 underline hover:text-blue-900">Add a comment?</button>
+    </div>
+
+    <div id="success-banner" class="banner fixed top-0 left-1/2 transform -translate-x-1/2 mt-4 bg-green-100 text-green-800 px-4 py-2 rounded shadow hidden z-50 text-sm">
+        Changes saved successfully!
+    </div>
+
+    <div id="error-banner" class="banner fixed top-0 left-1/2 transform -translate-x-1/2 mt-4 bg-red-100 text-red-800 px-4 py-2 rounded shadow hidden z-50 text-sm">
+        <!-- JavaScript -->
+    </div>
+
+
 
     <main class="flex flex-col h-screen gap-0 overflow-hidden">
-        <div id="feedback-banner" class="fixed top-0 left-1/2 transform -translate-x-1/2 mt-4 bg-blue-100 text-blue-800 px-4 py-2 rounded shadow hidden z-50 text-sm">
-            Thank you for your feedback!
-            <button id="add-comment-btn" class="ml-2 underline hover:text-blue-900">Add a comment?</button>
-        </div>
-
-        <div id="success-banner" class="fixed top-0 left-1/2 transform -translate-x-1/2 mt-4 bg-green-100 text-green-800 px-4 py-2 rounded shadow hidden text-sm">
-            Changes saved successfully!
-        </div>
-
-        <div id="error-banner" class="fixed top-0 left-1/2 transform -translate-x-1/2 mt-4 bg-red-100 text-red-800 px-4 py-2 rounded shadow hidden text-sm">
-            <!-- JavaScript -->
-        </div>
-
         <div id="my-content" class="right-collapsed flex flex-row flex-grow w-full mt-0 overflow-hidden">
             
             <!-- Left sidebar with chats list -->
@@ -407,7 +413,7 @@ if (isset($_GET['chatId']) && filter_var($_GET['chatId'], FILTER_VALIDATE_INT)) 
                                                         }
                                                     ?>"
                                                     title="This response was helpful"
-                                                    data-message-id="<?php echo $message['messageId']; ?>"><i class="fas fa-thumbs-up"></i></button>
+                                                    data-message-id="<?php echo $message['message_id']; ?>"><i class="fas fa-thumbs-up"></i></button>
 
                                                     <button class="thumbs-down px-2 py-1 text-xs rounded transition-colors duration-150 <?php 
                                                         if ($message['feedbackRating'] === 'down') {
@@ -417,20 +423,20 @@ if (isset($_GET['chatId']) && filter_var($_GET['chatId'], FILTER_VALIDATE_INT)) 
                                                         }
                                                     ?>"
                                                     title="This response was not helpful"
-                                                    data-message-id="<?php echo $message['messageId']; ?>"><i class="fas fa-thumbs-down"></i></button>
+                                                    data-message-id="<?php echo $message['message_id']; ?>"><i class="fas fa-thumbs-down"></i></button>
 
                                                     <div class="flex gap-2 w-full md:w-auto">
                                                         <button class="simplify px-2 py-1 text-xs text-gray-600 rounded hover:text-blue-600 hover:bg-blue-100 transition-colors duration-150"
                                                                 title="Simplify this response"
-                                                                data-message-id="<?php echo $message['messageId']; ?>">Simplify</button>
+                                                                data-message-id="<?php echo $message['message_id']; ?>">Simplify</button>
 
                                                         <button class="examples px-2 py-1 text-xs text-gray-600 rounded hover:text-blue-600 hover:bg-blue-100 transition-colors duration-150"
                                                                 title="Get more examples"
-                                                                data-message-id="<?php echo $message['messageId']; ?>">Examples</button>
-                                                        
+                                                                data-message-id="<?php echo $message['message_id']; ?>">Examples</button>
+
                                                         <button class="explain px-2 py-1 text-xs text-gray-600 rounded hover:text-blue-600 hover:bg-blue-100 transition-colors duration-150"
                                                                 title="Get a deeper explanation"
-                                                                data-message-id="<?php echo $message['messageId']; ?>">Explain</button>
+                                                                data-message-id="<?php echo $message['message_id']; ?>">Explain</button>
                                                     </div>
                                                 </div>
                                             </div>
