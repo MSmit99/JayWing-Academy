@@ -166,7 +166,7 @@ def upload_file():
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
 
-        cursor.execute("SELECT filepath FROM classes WHERE class_id = %s", (classId,))
+        cursor.execute("SELECT filepath FROM class WHERE class_id = %s", (classId,))
         result = cursor.fetchone()
         conn.close()
         if not classId:
@@ -220,7 +220,7 @@ def load_docs():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
-    cursor.execute("SELECT filepath FROM classes WHERE class_id = %s", (classId,))
+    cursor.execute("SELECT filepath FROM class WHERE class_id = %s", (classId,))
     result = cursor.fetchone()
     conn.close()
     if not classId:
@@ -276,7 +276,7 @@ def download_file():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
-    cursor.execute("SELECT filepath FROM classes WHERE class_id = %s", (classId,))
+    cursor.execute("SELECT filepath FROM class WHERE class_id = %s", (classId,))
     result = cursor.fetchone()
     conn.close()
     if not classId:
@@ -331,18 +331,18 @@ def delete_file():
     # Get class name from the classId
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT name FROM classes WHERE class_id = %s", (classId,))
+    cursor.execute("SELECT className FROM class WHERE class_id = %s", (classId,))
     result = cursor.fetchone()
     conn.close()
     if result:
-        className = result['name']
+        className = result['className']
     else:
         return jsonify(success=False, message="Class not found"), 404
 
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
-    cursor.execute("SELECT filepath FROM classes WHERE class_id = %s", (classId,))
+    cursor.execute("SELECT filepath FROM class WHERE class_id = %s", (classId,))
     result = cursor.fetchone()
     conn.close()
     if not classId:
@@ -614,7 +614,7 @@ def generate_report():
         SELECT {qa_filter}
         FROM ai_messages
         WHERE enrollment_id IN (
-            SELECT enrollment
+            SELECT enrollment_id
             FROM enrollment
             WHERE class_id IN (
                 SELECT class_id
