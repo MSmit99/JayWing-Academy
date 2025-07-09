@@ -538,7 +538,7 @@ function storeFeedback(messageId, feedback=null) {
     // Ask the user if they'd like to add a comment
     if (feedback) {
         showFeedbackBanner(messageId);
-        fetch('../data_src/api/ai_tutor_api/feedback/update.php', {
+        fetch('../data_src/api/feedback/update.php', {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json'
@@ -563,7 +563,7 @@ function storeFeedback(messageId, feedback=null) {
     } else {
         // Delete feedback
         console.log("Removing feedback for messageId:", messageId);
-        fetch('../data_src/api/ai_tutor_api/feedback/update.php', {
+        fetch('../data_src/api/feedback/update.php', {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'
@@ -1093,7 +1093,7 @@ const coursesList = document.getElementById('archived-courses-list');
  * - Allows restoring a course which updates the backend and UI.
  */
 archiveButton.addEventListener('click', () => {
-    fetch('../data_src/api/ai_tutor_api/classes/archive.php?action=get')
+    fetch('../data_src/api/classes/archive.php?action=get')
         .then(res => res.json())
         .then(data => {
             const list = document.getElementById('archived-courses-list');
@@ -1113,7 +1113,7 @@ archiveButton.addEventListener('click', () => {
                     restoreButton.textContent = 'Restore';
                     restoreButton.className = 'bg-blue-500 hover:bg-blue-600 text-white text-sm px-3 py-1 rounded';
                     restoreButton.onclick = () => {
-                        fetch('../data_src/api/ai_tutor_api/classes/archive.php', {
+                        fetch('../data_src/api/classes/archive.php', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ action: 'restore', courseName: course.name})
@@ -1192,7 +1192,7 @@ archiveButton.addEventListener('click', () => {
  * @param {number} enrollment_id - The ID of the course to archive.
  */
 function archiveCourse(enrollment_id) {
-    fetch('../data_src/api/ai_tutor_api/classes/archive.php', {
+    fetch('../data_src/api/classes/archive.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'archive', enrollment_id: enrollment_id })
