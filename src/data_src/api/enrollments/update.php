@@ -13,29 +13,40 @@ if (!isAdmin()) {
 try {
     $data = json_decode(file_get_contents('php://input'), true);
     
-    if (!isset($data['enrollment_id'])) {
-        throw new Exception('Enrollment ID is required');
+    if (!isset($data['enrollment_id']) || !isset($data['class_id']) || 
+        !isset($data['user_id']) || !isset($data['roleOfClass'])) {
+        throw new Exception('Missing required fields');
     }
 
-    $stmt = $connection->prepare("DELETE FROM Enrollment WHERE enrollment_id = ?");
-    
+    $stmt = $connection->prepare("UPDATE enrollment SET class_id = ?, user_id = ?, roleOfClass = ? WHERE enrollment_id = ?");
+
     if (!$stmt) {
         throw new Exception("Prepare failed: " . $connection->error);
     }
 
-    $stmt->bind_param("i", $data['enrollment_id']);
+    $stmt->bind_param("iisi", 
+        $data['class_id'],
+        $data['user_id'],
+        $data['roleOfClass'],
+        $data['enrollment_id']
+    );
 
     if (!$stmt->execute()) {
         throw new Exception("Execution failed: " . $stmt->error);
     }
 
     if ($stmt->affected_rows === 0) {
-        throw new Exception("No enrollment found with the given ID");
+        echo json_encode([
+            'success' => false,
+            'message' => 'Enrollment already exists.'
+        ]);
+        $stmt->close();
+        exit();
     }
 
     echo json_encode([
         'success' => true,
-        'message' => 'Enrollment deleted successfully'
+        'message' => 'Enrollment updated successfully'
     ]);
 
     $stmt->close();
@@ -44,7 +55,7 @@ try {
     http_response_code(500);
     echo json_encode([
         'success' => false,
-        'message' => 'Error deleting enrollment: ' . $e->getMessage()
+        'message' => 'Error updating enrollment: ' . $e->getMessage()
     ]);
 } finally {
     $connection->close();

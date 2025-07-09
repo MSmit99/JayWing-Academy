@@ -332,11 +332,11 @@ if ($currentUserId) {
                                 </div>
                             </div> -->
 
-                            <div class="item w-full flex flex-col most-active-course-card">
+                            <div class="item w-full flex flex-col most-active-class-card">
                                 <div class="bg-gray-200 p-6 rounded shadow text-center flex flex-col justify-between h-48 w-full">
-                                    <h3 class="text-xl font-semibold mb-2 active-course-title">Most Active Class</h3>
-                                    <p class="text-3xl font-bold active-course">(Placeholder)</p>
-                                    <p class="text-sm mt-2 inline-block active-course-subtext"></p>
+                                    <h3 class="text-xl font-semibold mb-2 active-class-title">Most Active Class</h3>
+                                    <p class="text-3xl font-bold active-class">(Placeholder)</p>
+                                    <p class="text-sm mt-2 inline-block active-class-subtext"></p>
                                 </div>
                             </div>
                         </div>

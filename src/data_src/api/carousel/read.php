@@ -1,6 +1,6 @@
 <?php
-require_once '../../../includes/session_handler.php';
-require_once '../../../includes/db_connect.php';
+require_once '../../includes/session_handler.php';
+require_once '../../includes/db_connect.php';
 
 header('Content-Type: application/json');
 
@@ -193,9 +193,9 @@ try {
         $stmt->close();
     }
     
-    // Determine which query to do next based on course and user filters
+    // Determine which query to do next based on class and user filters
     if ($userFilter !== 'All' && $classFilter !== 'All') {
-        // Average words per message for user in a specific course
+        // Average words per message for user in a specific class
         $avgMessageQuery = "
             SELECT
                 ROUND(AVG(CHAR_LENGTH(ai.question) - CHAR_LENGTH(REPLACE(ai.question, ' ', '')) + 1), 1) AS student_avg_words,
@@ -204,7 +204,7 @@ try {
                     FROM ai_messages ai2
                     JOIN enrollment e2 ON ai2.enrollment_id = e2.enrollment_id
                     WHERE e2.class_id = ?
-                ) AS course_avg_words
+                ) AS class_avg_words
             FROM ai_messages ai
             JOIN enrollment e ON ai.enrollment_id = e.enrollment_id
             WHERE e.user_id = ? AND e.class_id = ?
@@ -218,13 +218,13 @@ try {
         
         $stats['average_words_per_message'] = [
             'student_avg_words' => (float)$avgMessages['student_avg_words'],
-            'course_avg_words' => (float)$avgMessages['course_avg_words']
+            'class_avg_words' => (float)$avgMessages['class_avg_words']
         ];
 
         $stmt->close();
     } else if ($userFilter === 'All' && $classFilter !== 'All') {
         // Only class filter is applied so multiple users can be queried
-        // Query for most active user in a specific course
+        // Query for most active user in a specific class
         $mostActiveUserQuery = "
             SELECT 
                 u.user_id AS user_id,
@@ -264,8 +264,8 @@ try {
         ];
         $stmt->close();
     } else {
-        // No specific filters applied, most active course query
-        $mostActiveCourseQuery = "
+        // No specific filters applied, most active class query
+        $mostActiveClassQuery = "
             SELECT 
                 c.className AS class_name, COUNT(*) AS total_messages
             FROM ai_messages ai
@@ -287,7 +287,7 @@ try {
             ORDER BY total_messages DESC
             LIMIT 1;
         ";
-        $stmt = $connection->prepare($mostActiveCourseQuery);
+        $stmt = $connection->prepare($mostActiveClassQuery);
         if (!$stmt) {
             throw new Exception("Prepare failed: " . $connection->error);
         }
@@ -299,10 +299,10 @@ try {
         if (!$result) {
             throw new Exception("Query failed: " . $stmt->error);
         }
-        $mostActiveCourse = $result->fetch_assoc();
-        $stats['most_active_course'] = [
-            'class_name' => $mostActiveCourse['class_name'],
-            'total_messages' => (int)$mostActiveCourse['total_messages']
+        $mostActiveClass = $result->fetch_assoc();
+        $stats['most_active_class'] = [
+            'class_name' => $mostActiveClass['class_name'],
+            'total_messages' => (int)$mostActiveClass['total_messages']
         ];
         $stmt->close();
     }

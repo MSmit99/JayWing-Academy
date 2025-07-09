@@ -79,10 +79,10 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     if (classNotesId) {
-        const courseId = classNotesId.value;
-        const courseName = document.getElementById('selectedNotesClassText').innerText;
+        const classId = classNotesId.value;
+        const className = document.getElementById('selectedNotesClassText').innerText;
 
-        if (courseId && courseName && courseName !== "Select Class") {
+        if (classId && className && className !== "Select Class") {
             loadExistingFiles();
         }
     }
@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Modify loaded files when a new course is selected
+    // Modify loaded files when a new class is selected
     if (classNotesId) {
         classNotesId.addEventListener('change', () => {
             const selectedOption = document.querySelector('#notes_class_id option:checked');
@@ -186,7 +186,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (classDescription === '') classDescription = null;
 
                 // Fetch all classes to check for duplicates
-                fetch('../data_src/api/ai_tutor_api/classes/read_by_professor.php')
+                fetch('../data_src/api/classes/read_by_professor.php')
                     .then(response => response.json())
                     .then(result => {
                         if (!result.success) {
@@ -231,7 +231,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             classDescription: classDescription
                         };
 
-                        fetch('../data_src/api/ai_tutor_api/classes/create.php', {
+                        fetch('../data_src/api/classes/create.php', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json'
@@ -269,9 +269,9 @@ document.addEventListener('DOMContentLoaded', function () {
      * 
      * On form submission:
      * - Prevents the default form submission behavior.
-     * - Validates that the course, user, and role selections are made.
+     * - Validates that the class, user, and role selections are made.
      * - Fetches all existing enrollments to check for duplicates.
-     * - If the user is already enrolled in the selected course, shows an error banner.
+     * - If the user is already enrolled in the selected class, shows an error banner.
      * - Otherwise, sends a POST request to create the enrollment.
      * - On success, shows a success banner, reloads enrollment data and tables, and resets the form.
      * - Handles and logs errors appropriately.
@@ -298,11 +298,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            fetch('../data_src/api/ai_tutor_api/enrollments/read_by_professor.php')
+            fetch('../data_src/api/enrollments/read_by_professor.php')
                 .then(response => response.json())
                 .then(result => {
                     if (!result.success) {
-                        console.error('Error loading user courses:', result.message);
+                        console.error('Error loading enrollments:', result.message);
                         return;
                     }
 
@@ -326,7 +326,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
 
                     // Proceed with enrollment
-                    fetch('../data_src/api/ai_tutor_api/enrollments/create.php', {
+                    fetch('../data_src/api/enrollments/create.php', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -404,7 +404,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
 
             const createEnrollmentPromises = enrollmentsToCreate.map(data => {
-                return fetch('../data_src/api/ai_tutor_api/enrollments/create.php', {
+                return fetch('../data_src/api/enrollments/create.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -501,7 +501,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (classDescription === '') classDescription = null;
 
                 // Fetch all classes to check for duplicates (excluding the current one)
-                fetch('../data_src/api/ai_tutor_api/classes/read_by_professor.php')
+                fetch('../data_src/api/classes/read_by_professor.php')
                     .then(response => response.json())
                     .then(result => {
                         if (!result.success) {
@@ -551,7 +551,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             classDescription: classDescription
                         };
                         
-                        fetch('../data_src/api/ai_tutor_api/classes/update.php', {
+                        fetch('../data_src/api/classes/update.php', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json'
@@ -589,9 +589,9 @@ document.addEventListener('DOMContentLoaded', function () {
      * 
      * On submission:
      * - Prevents default form behavior.
-     * - Retrieves input values including enrollment ID, course ID, user ID, and role.
+     * - Retrieves input values including enrollment ID, class ID, user ID, and role.
      * - Fetches all existing enrollments to check for duplicates (excluding the one being edited).
-     * - If the same user is already enrolled in the selected course, shows an error banner and aborts.
+     * - If the same user is already enrolled in the selected class, shows an error banner and aborts.
      * - If validation passes:
      *   • Sends a POST request to update the enrollment record.
      *   • On success, shows a success banner, refreshes enrollments and UI elements, and closes the modal.
@@ -610,7 +610,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const userId = document.getElementById('edit_user_id').value;
             const roleOfClass = document.getElementById('edit_roleOfClass').value;
 
-            fetch('../data_src/api/ai_tutor_api/enrollments/read_by_professor.php')
+            fetch('../data_src/api/enrollments/read_by_professor.php')
                 .then(response => response.json())
                 .then(result => {
                     if (!result.success) {
@@ -640,7 +640,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         roleOfClass: roleOfClass
                     };
 
-                    fetch('../data_src/api/ai_tutor_api/enrollments/update.php', {
+                    fetch('../data_src/api/enrollments/update.php', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -737,7 +737,7 @@ function validateDates() {
  * - Sends a POST to the backend to generate the report and, on success, updates the word‑cloud
  *   image and dashboard statistics; shows error banners on failure.
  *
- * @param {string} [classFilter='All']          - The course ID to filter by, or 'All' for no filter.
+ * @param {string} [classFilter='All']          - The class ID to filter by, or 'All' for no filter.
  * @param {string} [userFilter='All']           - The user ID to filter by, or 'All' for no filter.
  * @param {?string} [startDate=null]            - The start date in 'YYYY-MM-DD' format; empty string is treated as null.
  * @param {?string} [endDate=null]              - The end date in 'YYYY-MM-DD' format; empty string is treated as null.
@@ -750,7 +750,7 @@ function generateReport(classFilter='All', userFilter='All', startDate=null, end
 
     if (classFilter === 'All' && userFilter === 'All' && !startDate && !endDate && qaFilter === 'Both') {
         if (document.getElementById('carousel-description')) {
-            document.getElementById('carousel-description').textContent = `*Showing stats for all ${username}'s courses`;
+            document.getElementById('carousel-description').textContent = `*Showing stats for all ${username}'s classes`;
         }
     } else {
         if (document.getElementById('carousel-description')) {
@@ -813,7 +813,7 @@ function generateReport(classFilter='All', userFilter='All', startDate=null, end
                 container.classList.remove('shimmer');
 
                 // Load carousel data
-                fetch(`../data_src/api/ai_tutor_api/carousel/read.php?${params}`)
+                fetch(`../data_src/api/carousel/read.php?${params}`)
                     .then(response => response.json())
                     .then(stats => {
                         if (!stats.success) {
@@ -857,34 +857,34 @@ function generateReport(classFilter='All', userFilter='All', startDate=null, end
                                 }
                             }
                         });
-                        document.querySelectorAll('.active-course').forEach(el => {
-                            if (data.most_active_course) {
-                                el.textContent = data.most_active_course.class_name ?? 'N/A';
+                        document.querySelectorAll('.active-class').forEach(el => {
+                            if (data.most_active_class) {
+                                el.textContent = data.most_active_class.class_name ?? 'N/A';
                                 if (el.textContent !== 'N/A') {
-                                    document.querySelectorAll('.active-course-title').forEach(titleEl => {
-                                        titleEl.textContent = 'Most Active Course';
+                                    document.querySelectorAll('.active-class-title').forEach(titleEl => {
+                                        titleEl.textContent = 'Most Active Class';
                                     });
-                                    document.querySelectorAll('.active-course-subtext').forEach(subtext => {
-                                        subtext.textContent = 'Messages: ' + data.most_active_course.total_messages ?? 'N/A';
+                                    document.querySelectorAll('.active-class-subtext').forEach(subtext => {
+                                        subtext.textContent = 'Messages: ' + data.most_active_class.total_messages ?? 'N/A';
                                     });
                                 }
                             } else if (data.most_active_user) {
                                 el.textContent = data.most_active_user.user_name ?? 'N/A';
                                 if (el.textContent !== 'N/A') {
-                                    document.querySelectorAll('.active-course-title').forEach(titleEl => {
+                                    document.querySelectorAll('.active-class-title').forEach(titleEl => {
                                         titleEl.textContent = 'Most Active User';
                                     });
-                                    document.querySelectorAll('.active-course-subtext').forEach(subtext => {
+                                    document.querySelectorAll('.active-class-subtext').forEach(subtext => {
                                         subtext.textContent = 'Messages: ' + data.most_active_user.total_messages ?? 'N/A';
                                     });
                                 }
                             } else if (data.average_words_per_message) {
                                 el.textContent = data.average_words_per_message.student_avg_words + ' words';
-                                document.querySelectorAll('.active-course-title').forEach(titleEl => {
+                                document.querySelectorAll('.active-class-title').forEach(titleEl => {
                                     titleEl.textContent = 'Average Message Length';
                                 });
-                                document.querySelectorAll('.active-course-subtext').forEach(subtext => {
-                                    subtext.textContent = 'Class Average: ' + data.average_words_per_message.course_avg_words + ' words';
+                                document.querySelectorAll('.active-class-subtext').forEach(subtext => {
+                                    subtext.textContent = 'Class Average: ' + data.average_words_per_message.class_avg_words + ' words';
                                 });
                             }
                             
@@ -945,7 +945,7 @@ function clearDashboardFilters() {
  * 
  * @param {'up'|'down'} feedbackRating - Whether the student liked ('up') or disliked ('down') the message
  * 
- * @see ../data_src/api/ai_tutor_api/feedback/read.php
+ * @see ../data_src/api/feedback/read.php
  */
 function openFeedbackModal(feedbackRating) {
     const classId = document.getElementById('class_id').value || 'All';
@@ -961,7 +961,7 @@ function openFeedbackModal(feedbackRating) {
         rating: feedbackRating
     });
 
-    fetch(`../data_src/api/ai_tutor_api/feedback/read.php?${params.toString()}`, {
+    fetch(`../data_src/api/feedback/read.php?${params.toString()}`, {
         method: 'GET',
         credentials: 'include',
         headers: {
@@ -1048,16 +1048,16 @@ let allClasses = []; // Store full class list globally
 /**
  * Loads all classes a professor is enrolled in.
  * 
- * - Sends a GET request to retrieve the professor’s courses from the backend.
+ * - Sends a GET request to retrieve the professor’s classes from the backend.
  * - On success, stores the full list in the global `allClasses` variable.
  * 
- * @global {Array<Object>} allClasses - holds the fetched list of course objects
+ * @global {Array<Object>} allClasses - holds the fetched list of class objects
  * 
- * @see '../data_src/api/ai_tutor_api/classes/read_by_professor.php'
+ * @see ../data_src/api/classes/read_by_professor.php
  * @see renderClassTable
  */
 function loadClasses() {
-    fetch('../data_src/api/ai_tutor_api/classes/read_by_professor.php')
+    fetch('../data_src/api/classes/read_by_professor.php')
         .then(response => response.json())
         .then(result => {
             if (!result.success) {
@@ -1130,11 +1130,11 @@ function renderClassTable(classList) {
 }
 
 /**
- * Filters courses based on their discipline and re-renders the class table.
+ * Filters classes based on their discipline and re-renders the class table.
  * 
- * @param {string} discipline - The discipline of a given course, e.g. "CS" for Computer Science.
+ * @param {string} discipline - The discipline of a given class, e.g. "CS" for Computer Science.
  * 
- * @global {Array<Object>} allClasses - holds the fetched list of course objects
+ * @global {Array<Object>} allClasses - holds the fetched list of class objects
  * 
  * @see renderClassTable
  */
@@ -1213,15 +1213,15 @@ let allEnrollments = []; // Store full enrollment list globally
  * 
  * @global {Array<Object>} allEnrollments - holds the fetched list of enrollment objects
  * 
- * @see '../data_src/api/ai_tutor_api/enrollments/read_by_professor.php'
+ * @see ../data_src/api/enrollments/read_by_professor.php
  * @see renderEnrollmentTable
  */
 function loadEnrollments() {
-    fetch('../data_src/api/ai_tutor_api/enrollments/read_by_professor.php')
+    fetch('../data_src/api/enrollments/read_by_professor.php')
         .then(response => response.json())
         .then(result => {
             if (!result.success) {
-                console.error('Error loading user courses:', result.message);
+                console.error('Error loading enrollments:', result.message);
                 return;
             }
 
@@ -1298,7 +1298,7 @@ function renderEnrollmentTable(enrollmentList) {
 /**
  * Filters enrollments based on their class discipline and re-renders the enrollments table.
  * 
- * @param {string} discipline - The discipline of a given course, e.g. "CS" for Computer Science.
+ * @param {string} discipline - The discipline of a given class, e.g. "CS" for Computer Science.
  * 
  * @global {Array<Object>} allEnrollments - holds the fetched list of enrollment objects
  * 
@@ -1528,7 +1528,7 @@ function deleteClass(classId) {
             }
             console.log(`Files for class ${classId} deleted successfully.`);
             // Now delete the class itself
-            fetch('../data_src/api/ai_tutor_api/classes/delete.php', {
+            fetch('../data_src/api/classes/delete.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -1568,7 +1568,7 @@ function deleteClass(classId) {
  */
 function deleteEnrollment(enrollmentId) {
     if (confirm('Are you sure you want to delete this enrollment?')) {
-        fetch('../data_src/api/ai_tutor_api/enrollments/delete.php', {
+        fetch('../data_src/api/enrollments/delete.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -1933,7 +1933,7 @@ function initializeSearchableDropdowns() {
                 const value = dropdownItem.dataset.value;
                 let text = dropdownItem.textContent.trim();
                 text = text.replace(/Created by: .*/, '').trim();
-                text = text.replace(/Includes all courses/, '').trim();
+                text = text.replace(/Includes all classes/, '').trim();
                 document.getElementById('class_id').value = value;
                 document.getElementById('selectedDashboardClassText').textContent = text;
 
@@ -2040,7 +2040,7 @@ function loadAllUsersForMultipleSelect() {
         return;
     }
 
-    fetch('../data_src/api/ai_tutor_api/user/read.php')
+    fetch('../data_src/api/users/read.php')
         .then(response => response.json())
         .then(data => {
             if (data.success) {
@@ -2104,10 +2104,10 @@ function renderUserMultipleList() {
  * - Each dropdown item includes a main line (class name + optional course code)
  *   and a subheader line ("Created by: ...").
  * 
- * @see ../data_src/api/ai_tutor_api/classes/read_by_professor.php
+ * @see ../data_src/api/classes/read_by_professor.php
  */
 function reloadClassDropdowns() {
-    fetch('../data_src/api/ai_tutor_api/classes/read_by_professor.php')
+    fetch('../data_src/api/classes/read_by_professor.php')
         .then(response => response.json())
         .then(result => {
             if (!result.success) {
@@ -2115,14 +2115,14 @@ function reloadClassDropdowns() {
                 return;
             }
 
-            const courses = result.data;
+            const classes = result.data;
 
             // Update class list dropdown menu
             const classDropdown = document.querySelector('.class-list');
             if (classDropdown) {
                 classDropdown.innerHTML = '';
-                if (Array.isArray(courses)) {
-                    courses.forEach(classItem => {
+                if (Array.isArray(classes)) {
+                    classes.forEach(classItem => {
                         const dropdownItem = document.createElement('div');
                         dropdownItem.className = 'dropdown-item';
                         dropdownItem.dataset.value = classItem.class_id;
@@ -2164,14 +2164,14 @@ function reloadClassDropdowns() {
 
                 const subAllDiv = document.createElement('div');
                 subAllDiv.className = 'subheader-line';
-                subAllDiv.textContent = 'Includes all courses';
+                subAllDiv.textContent = 'Includes all classes';
 
                 allOption.appendChild(mainAllDiv);
                 allOption.appendChild(subAllDiv);
                 classDashListContainer.appendChild(allOption);
 
-                if (Array.isArray(courses)) {
-                    courses.forEach(classItem => {
+                if (Array.isArray(classes)) {
+                    classes.forEach(classItem => {
                         const dropdownItem = document.createElement('div');
                         dropdownItem.className = 'dropdown-item';
                         dropdownItem.dataset.value = classItem.class_id;
@@ -2200,8 +2200,8 @@ function reloadClassDropdowns() {
             const classEditDropdown = document.querySelector('.class-edit-list');
             if (classEditDropdown) {
                 classEditDropdown.innerHTML = '';
-                if (Array.isArray(courses)) {
-                    courses.forEach(classItem => {
+                if (Array.isArray(classes)) {
+                    classes.forEach(classItem => {
                         const dropdownItem = document.createElement('div');
                         dropdownItem.className = 'dropdown-item';
                         dropdownItem.dataset.value = classItem.class_id;
@@ -2231,8 +2231,8 @@ function reloadClassDropdowns() {
             const classNotesDropdown = document.querySelector('.class-notes-list');
             if (classNotesDropdown) {
                 classNotesDropdown.innerHTML = '';
-                if (Array.isArray(courses)) {
-                    courses.forEach(classItem => {
+                if (Array.isArray(classes)) {
+                    classes.forEach(classItem => {
                         const dropdownItem = document.createElement('div');
                         dropdownItem.className = 'dropdown-item';
                         dropdownItem.dataset.value = classItem.class_id;
@@ -2262,8 +2262,8 @@ function reloadClassDropdowns() {
             const classMultipleDropdown = document.querySelector('.class-multiple-list');
             if (classMultipleDropdown) {
                 classMultipleDropdown.innerHTML = '';
-                if (Array.isArray(courses)) {
-                    courses.forEach(classItem => {
+                if (Array.isArray(classes)) {
+                    classes.forEach(classItem => {
                         const dropdownItem = document.createElement('div');
                         dropdownItem.className = 'dropdown-item';
                         dropdownItem.dataset.value = classItem.class_id;
@@ -2301,10 +2301,10 @@ function reloadClassDropdowns() {
  *   • `.user-dash-list` – dashboard filter menu, including an "All" option
  * - Each dropdown item is assigned the user’s ID as `data-value` and displays the username.
  *
- * @see ../data_src/api/ai_tutor_api/user/read.php
+ * @see ../data_src/api/users/read.php
  */
 function reloadUserDropdowns() {
-    fetch('../data_src/api/ai_tutor_api/user/read.php')
+    fetch('../data_src/api/users/read.php')
         .then(response => response.json())
         .then(result => {
             if (!result.success) {
@@ -2383,10 +2383,10 @@ function reloadUserDropdowns() {
  *   • A default "All" option.
  *   • An `<option>` for each discipline received from the backend.
  *
- * @see ../data_src/api/ai_tutor_api/classes/read_disciplines.php
+ * @see ../data_src/api/classes/read_disciplines.php
  */
 function reloadFilterDropdowns() {
-    fetch('../data_src/api/ai_tutor_api/classes/read_disciplines.php')
+    fetch('../data_src/api/classes/read_disciplines.php')
         .then(response => response.json())
         .then(result => {
             if (!result.success) {
@@ -2419,7 +2419,7 @@ function reloadFilterDropdowns() {
 
                 // Add "All" option
                 const allOption2 = document.createElement('option');
-                allOption2.value = 'allCourses';
+                allOption2.value = 'allClasses';
                 allOption2.textContent = 'All';
                 if (dropdown2) dropdown2.appendChild(allOption2);
 
@@ -2451,12 +2451,12 @@ if (fileUploadDiv) {
 }
 
 /**
- * Handles file selection and uploads files to the selected course’s documents folder.
+ * Handles file selection and uploads files to the selected class’s documents folder.
  *
- * - Validates that a course is selected before proceeding.
+ * - Validates that a class is selected before proceeding.
  * - Displays a loading spinner during upload.
  * - Iterates through each selected file:
- *   • Uploads it using `saveFileToDocsFolder(file, courseId)`.
+ *   • Uploads it using `saveFileToDocsFolder(file, class_id)`.
  *   • If successful, displays a file preview with `displayFilePreview()`.
  * - Once all uploads are complete:
  *   • Reloads the list of existing files using `loadExistingFiles()`.
@@ -2470,13 +2470,13 @@ if (fileUploadDiv) {
  * @see loadExistingFiles
  */
 async function handleFiles(event) {
-    const coursesDropdownUpload = document.getElementById('notes_class_id');
+    const classesDropdownUpload = document.getElementById('notes_class_id');
     const files = Array.from(event.target.files);
-    const selectedCourse = coursesDropdownUpload.value;
-    const selectedCourseName = document.getElementById('selectedNotesClassText').innerText;
+    const selectedClass = classesDropdownUpload.value;
+    const selectedClassName = document.getElementById('selectedNotesClassText').innerText;
 
-    if (!selectedCourseName || selectedCourseName === "Select Class") {
-        showErrorBanner("Please select a course before uploading files.");
+    if (!selectedClassName || selectedClassName === "Select Class") {
+        showErrorBanner("Please select a class before uploading files.");
         return;
     }
 
@@ -2484,9 +2484,9 @@ async function handleFiles(event) {
 
     const uploadPromises = files.map(async (file) => {
         try {
-            const success = await saveFileToDocsFolder(file, selectedCourse);
+            const success = await saveFileToDocsFolder(file, selectedClass);
             if (success) {
-                displayFilePreview(file.name, file.type, selectedCourse);
+                displayFilePreview(file.name, file.type, selectedClass);
             }
         } catch (err) {
             console.error(`Failed to upload ${file.name}:`, err);
@@ -2496,20 +2496,20 @@ async function handleFiles(event) {
     await Promise.all(uploadPromises);
     loadExistingFiles(); // call after all uploads
 
-    showSuccessBanner(`Successfully uploaded ${files.length} file(s) to ${selectedCourseName}.`);
+    showSuccessBanner(`Successfully uploaded ${files.length} file(s) to ${selectedClassName}.`);
     document.getElementById('loading-spinner').classList.add('hidden');
 }
 
 /**
- * Uploads a single file to the documents folder for a given course via the Flask backend.
+ * Uploads a single file to the documents folder for a given class via the Flask backend.
  *
- * - Constructs a `FormData` payload with the file and course ID.
+ * - Constructs a `FormData` payload with the file and class ID.
  * - Sends a POST request to the Flask `/upload` endpoint with authentication headers.
  * - On success, logs a confirmation and returns `true`.
  * - On failure, logs the error, displays an error banner, and returns `false`.
  *
  * @param {File} file – The file object to upload.
- * @param {number} courseId – The ID of the course the file should be associated with.
+ * @param {number} classId – The ID of the class the file should be associated with.
  * @returns {Promise<boolean>} Resolves to `true` if upload succeeds; otherwise `false`.
  *
  * @global {string} FLASK_API – Base URL for the Flask backend API.
@@ -2535,7 +2535,7 @@ function saveFileToDocsFolder(file, classId) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            console.log(`${file.name} saved to course id ${classId}.`);
+            console.log(`${file.name} saved to class id ${classId}.`);
             return true;
         } else {
             console.error(`Error saving ${file.name}: ${data.message}`);
@@ -2562,7 +2562,7 @@ function saveFileToDocsFolder(file, classId) {
  *
  * @param {string} fileName – The full file name or path (used to generate name and download URL).
  * @param {string} fileType – The MIME type or extension (e.g., `"application/pdf"`, `"application/vnd.openxmlformats-officedocument.presentationml.presentation"`).
- * @param {string|number} classId – The ID of the course this file is associated with.
+ * @param {string|number} classId – The ID of the class this file is associated with.
  *
  * @see removeFileFromDocsFolder
  * @global {HTMLElement} pdfDiv – Container for PDF file previews.
@@ -2578,11 +2578,11 @@ function displayFilePreview(fileName, fileType, classId) {
     const abbreviatedFileName = fileName.split("/").pop().split(".")[0].replace(/_/g, " ");
 
     // Create download link
-    const coursesDropdownUpload = document.getElementById('notes_class_id');
-    console.log(coursesDropdownUpload.textContent)
-    const selectedCourseName = document.getElementById('selectedNotesClassText').innerText || '';
+    const classesDropdownUpload = document.getElementById('notes_class_id');
+    console.log(classesDropdownUpload.textContent)
+    const selectedClassName = document.getElementById('selectedNotesClassText').innerText || '';
     const link = document.createElement('a');
-    link.href = `${FLASK_API}/download?file=${encodeURIComponent(fileName)}&courseId=${encodeURIComponent(classId)}`;
+    link.href = `${FLASK_API}/download?file=${encodeURIComponent(fileName)}&classId=${encodeURIComponent(classId)}`;
     link.title = "Download file";
     link.setAttribute('download', fileName);
 
@@ -2631,10 +2631,10 @@ function displayFilePreview(fileName, fileType, classId) {
 }
 
 /**
- * Removes a file from the documents folder of the selected course.
+ * Removes a file from the documents folder of the selected class.
  *
  * Sends a DELETE request to the server to remove the specified file
- * from the course folder identified by the selected course ID.
+ * from the class folder identified by the selected class ID.
  * On success, removes the file preview element from the DOM and shows a success banner.
  * On failure, logs an error to the console.
  *
@@ -2642,15 +2642,15 @@ function displayFilePreview(fileName, fileType, classId) {
  * @param {HTMLElement} preview - The DOM element representing the file preview to remove upon success.
  */
 function removeFileFromDocsFolder(fileName, preview) {
-    const coursesDropdownUpload = document.getElementById('notes_class_id');
-    const selectedCourse = coursesDropdownUpload.value;
-    const selectedCourseName = document.getElementById('selectedNotesClassText').innerText;
+    const classesDropdownUpload = document.getElementById('notes_class_id');
+    const selectedClass = classesDropdownUpload.value;
+    const selectedClassName = document.getElementById('selectedNotesClassText').innerText;
 
-    if (!selectedCourseName) {
-        showErrorBanner("Please select a course."); 
+    if (!selectedClassName) {
+        showErrorBanner("Please select a class."); 
         return;
     }
-    fetch(`${FLASK_API}/delete?file=${fileName}&courseId=${selectedCourse}`, {
+    fetch(`${FLASK_API}/delete?file=${fileName}&classId=${selectedClass}`, {
         method: "DELETE",
         credentials: 'include',
         headers: {
@@ -2662,8 +2662,8 @@ function removeFileFromDocsFolder(fileName, preview) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            console.log(`${fileName} removed from ${selectedCourseName} folder.`);
-            showSuccessBanner(`Successfully removed ${fileName} from ${selectedCourseName}.`);
+            console.log(`${fileName} removed from ${selectedClassName} folder.`);
+            showSuccessBanner(`Successfully removed ${fileName} from ${selectedClassName}.`);
             preview.remove();
         } else {
             console.error(`Error removing ${fileName}: ${data.message}`);
@@ -2683,24 +2683,24 @@ function updateTrainedFiles() {
 }
 
 /**
- * Loads and displays existing files for the selected course.
+ * Loads and displays existing files for the selected class.
  * 
- * Fetches files from the server based on the selected course ID,
+ * Fetches files from the server based on the selected class ID,
  * clears any existing file previews, and displays the files grouped
  * by type (PDF, PPTX, and others) in their respective containers.
  * Adds headings above each file group if files of that type exist.
  */
 function loadExistingFiles() {
-    const coursesDropdownUpload = document.getElementById('notes_class_id');
-    const selectedCourse = coursesDropdownUpload.value; // This is the course ID
+    const classesDropdownUpload = document.getElementById('notes_class_id');
+    const selectedClass = classesDropdownUpload.value; // This is the class ID
 
-    if (!selectedCourse) {
-        console.warn("No course selected, skipping file load.");
+    if (!selectedClass) {
+        console.warn("No class selected, skipping file load.");
         return;
     }
 
-    console.log(`Loading files for course ID: ${selectedCourse}`);
-    fetch(`${FLASK_API}/load-docs?courseId=${encodeURIComponent(selectedCourse)}`, {
+    console.log(`Loading files for class ID: ${selectedClass}`);
+    fetch(`${FLASK_API}/load-docs?classId=${encodeURIComponent(selectedClass)}`, {
         method: "GET",
         credentials: 'include',
         headers: {
@@ -2717,7 +2717,7 @@ function loadExistingFiles() {
             pptxDiv.innerHTML = '';
             pngDiv.innerHTML = '';
             files.forEach(file => {
-                displayFilePreview(file.name, file.type, selectedCourse);
+                displayFilePreview(file.name, file.type, selectedClass);
             });
         })
         .finally(() => {
