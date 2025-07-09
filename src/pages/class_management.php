@@ -82,11 +82,7 @@ if ($currentUserId) {
 </head>
 <body class="flex flex-col h-screen gap-0 overflow-hidden">
 
-    <!-- Loading Spinner -->
-    <div id="loading-spinner" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-        <div class="loader border-4 border-t-4 border-gray-200 rounded-full w-12 h-12 animate-spin"></div>
-    </div>
-
+    
 
     <style>
         /* Spinner customization (optional) */
@@ -917,6 +913,10 @@ if ($currentUserId) {
     </div>
 
     <footer id="footer"></footer>
+    <!-- Loading Spinner -->
+    <div id="loading-spinner" class="fixed inset-0 z-[99999] bg-black bg-opacity-50 flex justify-center items-center hidden">
+        <div class="loader border-4 border-t-4 border-gray-200 rounded-full w-12 h-12 animate-spin"></div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
