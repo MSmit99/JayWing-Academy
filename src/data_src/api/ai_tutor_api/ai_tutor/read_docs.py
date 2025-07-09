@@ -192,7 +192,7 @@ def to_pinecone(text_dict, classId):
         class_name (str): The class name.
     """
     embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
-    index_name = "ai-tutor-index"
+    index_name = "jaywing-index"
 
     if index_name not in pc.list_indexes().names():
         pc.create_index(
