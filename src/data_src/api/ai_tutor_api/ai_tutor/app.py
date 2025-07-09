@@ -12,7 +12,7 @@
         b. /load-docs
         c. /download
         d. /delete
-        e. /delete-course
+        e. /delete-class
     4. Student-Specific Endpoints
         a. /ask-question
     5. Report Generation Functions + Endpoint
@@ -142,7 +142,7 @@ def upload_file():
     """
     Uploads a file to the Google Cloud Storage bucket and processes it with Pinecone.
 
-    Requires: headers, courseId, and file(s)
+    Requires: headers, classId, and file(s)
 
     Return: success message or error message.
     """
@@ -151,26 +151,26 @@ def upload_file():
     if not user_id or user_role != 1:
         return jsonify(success=False, message="Unauthorized"), 401
     
-    # Check for file and course parameters
+    # Check for file and class parameters
     if 'file' not in request.files:
         return jsonify(success=False, message="No file part")
     
-    course = request.form.get('courseId')  # Get course from form data
-    if not course:
-        return jsonify(success=False, message="No course specified")
+    classId = request.form.get('classId')  # Get class from form data
+    if not classId:
+        return jsonify(success=False, message="No class specified")
 
     file = request.files['file']
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
-        # Construct the file path with course included
+        # Construct the file path with class included
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
 
-        cursor.execute("SELECT filepath FROM courses WHERE id = %s", (course,))
+        cursor.execute("SELECT filepath FROM classes WHERE class_id = %s", (classId,))
         result = cursor.fetchone()
         conn.close()
-        if not course:
-            return jsonify(success=False, message="Course not found"), 404
+        if not classId:
+            return jsonify(success=False, message="Class not found"), 404
 
         filepath = result['filepath']
         filepath = f"{filepath}{filename}"
@@ -183,7 +183,7 @@ def upload_file():
         try:
             subprocess.run(['python', 'read_docs.py',
                             username, 
-                            course, 
+                            classId, 
                             user_id,
                             filename], 
                             check=True)
@@ -196,9 +196,9 @@ def upload_file():
 @app.route('/load-docs', methods=['GET'])
 def load_docs():
     """
-    Loads documents for a specified course from Google Cloud Storage.
+    Loads documents for a specified class from Google Cloud Storage.
 
-    Requires: headers and courseId
+    Requires: headers and classId
 
     Return: a list of files with their names and types.
     """
@@ -211,20 +211,20 @@ def load_docs():
     storage_client = storage.Client()
     bucket = storage_client.bucket(bucket_name)
 
-    courseId = request.args.get('courseId')  # <-- get selected course
+    classId = request.args.get('classId')  # <-- get selected class
 
-    if not folder_prefix or not courseId:
-        return jsonify({'error': 'Missing folder prefix or course name'}), 400
+    if not folder_prefix or not classId:
+        return jsonify({'error': 'Missing folder prefix or class name'}), 400
 
-    # Combine to target specific course folder
+    # Combine to target specific class folder
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
-    cursor.execute("SELECT filepath FROM courses WHERE id = %s", (courseId,))
+    cursor.execute("SELECT filepath FROM classes WHERE class_id = %s", (classId,))
     result = cursor.fetchone()
     conn.close()
-    if not courseId:
-        return jsonify(success=False, message="Course not found"), 404
+    if not classId:
+        return jsonify(success=False, message="Class not found"), 404
 
     filepath = result['filepath']
 
@@ -245,9 +245,9 @@ def load_docs():
 @app.route('/download')
 def download_file():
     """
-    Downloads a file from Google Cloud Storage for a specified course.
+    Downloads a file from Google Cloud Storage for a specified class.
 
-    Requires: file name, courseId, and chatId
+    Requires: file name, classId, and chatId
 
     Return: the file as an attachment or an error message.
     """
@@ -258,33 +258,33 @@ def download_file():
     #     return jsonify(success=False, message="Unauthorized"), 401
     file_name = request.args.get('file')
     chatId = request.args.get('chatId')
-    courseId = request.args.get('courseId') 
-    print(f"File name: {file_name}, Chat ID: {chatId}, Course ID: {courseId}")
-    if not file_name or (not chatId and not courseId):
-        return jsonify(success=False, message="Missing file or course"), 400
-    if not courseId:
-        # Get course id from chatId
+    classId = request.args.get('classId') 
+    print(f"File name: {file_name}, Chat ID: {chatId}, Class ID: {classId}")
+    if not file_name or (not chatId and not classId):
+        return jsonify(success=False, message="Missing file or class"), 400
+    if not classId:
+        # Get class id from chatId
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT courseId FROM user_courses WHERE userCoursesId = %s", (chatId,))
+        cursor.execute("SELECT class_id FROM enrollments WHERE enrollment_id = %s", (chatId,))
         result = cursor.fetchone()
         conn.close()
         if not result:
             return jsonify(success=False, message="Chat not found"), 404
-        courseId = result['courseId']
+        classId = result['classId']
 
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
-    cursor.execute("SELECT filepath FROM courses WHERE id = %s", (courseId,))
+    cursor.execute("SELECT filepath FROM classes WHERE class_id = %s", (classId,))
     result = cursor.fetchone()
     conn.close()
-    if not courseId:
-        return jsonify(success=False, message="Course not found"), 404
+    if not classId:
+        return jsonify(success=False, message="Class not found"), 404
 
     filepath = result['filepath']
 
-    print(f"Downloading file: {file_name} for course: {courseId} at file path: {filepath}")
+    print(f"Downloading file: {file_name} for class: {classId} at file path: {filepath}")
 
     blob_path = f"{filepath}{file_name}"
     blob = bucket.blob(blob_path)
@@ -308,9 +308,9 @@ def download_file():
 @app.route('/delete', methods=['DELETE'])
 def delete_file():
     """
-    Deletes a file from Google Cloud Storage and Pinecone for a specified course.
+    Deletes a file from Google Cloud Storage and Pinecone for a specified class.
 
-    Requires: headers, file name and courseId
+    Requires: headers, file name and classId
 
     Return: success message or error message.
     """
@@ -321,32 +321,32 @@ def delete_file():
         return jsonify(success=False, message="Unauthorized"), 401
     
     file_name = request.args.get('file')
-    courseId = request.args.get('courseId')
+    classId = request.args.get('classId')
 
     if not file_name:
         return jsonify(success=False, message="No file specified")
-    if not courseId:
-        return jsonify(success=False, message="No course specified")
+    if not classId:
+        return jsonify(success=False, message="No class specified")
     
-    # Get course name from the courseId
+    # Get class name from the classId
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT name FROM courses WHERE id = %s", (courseId,))
+    cursor.execute("SELECT name FROM classes WHERE class_id = %s", (classId,))
     result = cursor.fetchone()
     conn.close()
     if result:
-        course = result['name']
+        className = result['name']
     else:
-        return jsonify(success=False, message="Course not found"), 404
+        return jsonify(success=False, message="Class not found"), 404
 
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
-    cursor.execute("SELECT filepath FROM courses WHERE id = %s", (courseId,))
+    cursor.execute("SELECT filepath FROM classes WHERE class_id = %s", (classId,))
     result = cursor.fetchone()
     conn.close()
-    if not courseId:
-        return jsonify(success=False, message="Course not found"), 404
+    if not classId:
+        return jsonify(success=False, message="Class not found"), 404
 
     filepath = result['filepath']
     filepath = f"{filepath}{file_name}"
@@ -387,11 +387,11 @@ def delete_file():
             return jsonify(success=False, message="Pinecone index does not exist"), 404
         
         # Create namespace
-        namespace = f"{course}_{courseId}"
+        namespace = f"{className}_{classId}"
 
         # Delete vectors by metadata filter
         index.delete(
-            filter={"filename": file_name, "course_name": course},
+            filter={"filename": file_name, "class_name": className},
             namespace=namespace
         )
 
@@ -545,7 +545,7 @@ def generate_report():
         return jsonify(success=False, message="Unauthorized"), 401
     
     # Filters have F in front to differentiate from local variables
-    FcourseId = request.args.get('class_id')
+    FclassId = request.args.get('class_id')
     FuserId = request.args.get('user_id')
     Fstart_date = request.args.get('start_date')
     Fend_date = request.args.get('end_date')
@@ -553,9 +553,9 @@ def generate_report():
     Fstop_words = request.args.get('stop_words')
 
     # Check required parameters - these should never be None because their defaults are set in the frontend
-    print(f"Class ID: {FcourseId}, User ID: {FuserId}, Start: {Fstart_date}, End: {Fend_date}, QA Filter: {Fqa_filter}")
-    if not FcourseId or not FuserId or not Fqa_filter:
-        return jsonify(success=False, message="Missing course, user ID, or qa filter"), 400
+    print(f"Class ID: {FclassId}, User ID: {FuserId}, Start: {Fstart_date}, End: {Fend_date}, QA Filter: {Fqa_filter}")
+    if not FclassId or not FuserId or not Fqa_filter:
+        return jsonify(success=False, message="Missing class, user ID, or qa filter"), 400
     
     # Format filters + constructing parameters for the query - MUST BE DONE IN THIS ORDER
     params = [user_id]
@@ -572,15 +572,15 @@ def generate_report():
     if FuserId == 'All':
         user_filter = ""
     else:
-        user_filter = "AND userId = %s"
+        user_filter = "AND user_id = %s"
         params.append(FuserId)
 
-    # Course filter
-    if FcourseId == 'All':
-        course_filter = ""
+    # Class filter
+    if FclassId == 'All':
+        class_filter = ""
     else:
-        course_filter = "AND courseId = %s"
-        params.append(FcourseId)
+        class_filter = "AND class_id = %s"
+        params.append(FclassId)
 
     # Format start and end dates
     if (Fstart_date and not Fend_date):
@@ -612,17 +612,17 @@ def generate_report():
     # Construct the SQL query
     query = f"""
         SELECT {qa_filter}
-        FROM messages
-        WHERE userCoursesId IN (
-            SELECT userCoursesId
-            FROM user_courses
-            WHERE courseId IN (
-                SELECT courseId
-                FROM user_courses
-                WHERE userId = %s
+        FROM ai_messages
+        WHERE enrollment_id IN (
+            SELECT enrollments
+            FROM enrollments
+            WHERE class_id IN (
+                SELECT class_id
+                FROM enrollments
+                WHERE user_id = %s
             )
             {user_filter}
-            {course_filter}
+            {class_filter}
 
         )
         {ts_filter}
