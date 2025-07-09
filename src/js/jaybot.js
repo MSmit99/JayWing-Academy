@@ -979,7 +979,7 @@ function showFeedbackBanner(messageId) {
         banner.classList.add('hidden');
 
         if (explanation) {
-            fetch('../data_src/api/ai_tutor_api/feedback/read.php', {
+            fetch('../data_src/api/feedback/update.php', {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json'
