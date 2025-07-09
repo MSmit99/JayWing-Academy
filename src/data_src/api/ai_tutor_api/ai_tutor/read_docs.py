@@ -69,45 +69,45 @@ GCS_BUCKET_NAME = 'ai-tutor-docs-bucket'
 storage_client = storage.Client()
 bucket = storage_client.bucket(GCS_BUCKET_NAME)
 
-def get_course_name(courseId):
+def get_class_name(classId):
     """
-    Retrieves the course name from the database based on courseId.
+    Retrieves the class name from the database based on classId.
     
     Args:
-        courseId (int): The ID of the course.
+        classId (int): The ID of the class.
 
     Returns:
-        str: The name of the course.
+        str: The name of the class.
     """
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT name FROM courses WHERE id = %s", (courseId,))
+    cursor.execute("SELECT className FROM class WHERE class_id = %s", (classId,))
     result = cursor.fetchone()
     conn.close()
     
     if not result:
-        raise ValueError(f"Course with ID {courseId} not found.")
+        raise ValueError(f"Class with ID {classId} not found.")
     
-    return result['name']
+    return result['className']
 
-def get_filepath_from_db(courseId):
+def get_filepath_from_db(classId):
     """
-    Retrieves the file path from the database based on courseId.
+    Retrieves the file path from the database based on classId.
     
     Args:
-        courseId (int): The ID of the course.
+        classId (int): The ID of the class.
 
     Returns:
-        str: The file path of the course.
+        str: The file path of the class.
     """
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT filepath FROM courses WHERE id = %s", (courseId,))
+    cursor.execute("SELECT filepath FROM class WHERE class_id = %s", (classId,))
     result = cursor.fetchone()
     conn.close()
     
     if not result:
-        raise ValueError(f"Course with ID {courseId} not found.")
+        raise ValueError(f"Class with ID {classId} not found.")
     
     return result['filepath']
 
@@ -183,13 +183,13 @@ def chunk_text(text, chunk_size=500, chunk_overlap=100):
     return chunks
 
 # Function to embed and store text in Pinecone
-def to_pinecone(text_dict, courseId):
+def to_pinecone(text_dict, classId):
     """
     Embeds and stores text in Pinecone vector database.
 
     Args:
         text_dict (dict): Dictionary of filenames and their extracted text.
-        course_name (str): The course name.
+        class_name (str): The class name.
     """
     embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
     index_name = "jaywing-index"
@@ -204,10 +204,10 @@ def to_pinecone(text_dict, courseId):
 
     index = pc.Index(index_name)
 
-    # Get course name from database
-    course_name = get_course_name(courseId)
+    # Get class name from database
+    class_name = get_class_name(classId)
     # Create namespace name
-    namespace = f"{course_name}_{courseId}"
+    namespace = f"{class_name}_{classId}"
 
     for filename, text in text_dict.items():
         # Creating chunks
@@ -216,12 +216,12 @@ def to_pinecone(text_dict, courseId):
 
         vectors = embeddings.embed_documents(chunks)
         metadatas = [
-            {"course_name": course_name, "filename": filename, "chunk_text": chunk}
+            {"class_name": class_name, "filename": filename, "chunk_text": chunk}
             for chunk in chunks
         ]
 
         for idx, (vector, metadata) in enumerate(zip(vectors, metadatas)):
-            chunk_id = f"{course_name}-{metadata['filename']}-{idx}"
+            chunk_id = f"{class_name}-{metadata['filename']}-{idx}"
             index.upsert(
                 vectors=[{
                     "id": chunk_id,
@@ -240,30 +240,30 @@ def to_pinecone(text_dict, courseId):
 def main():
     """
     Main function to process files and store them in Pinecone.
-    This function expects command-line arguments for username, courseId, proctor_id, and an optional specific file.
+    This function expects command-line arguments for username, classId, proctor_id, and an optional specific file.
     """
 
     if len(sys.argv) < 4:
-        raise ValueError("Username, Course Name, and Proctor ID are required as command-line arguments.")
+        raise ValueError("Username, Class Name, and Proctor ID are required as command-line arguments.")
     
     username = sys.argv[1]
-    courseId = sys.argv[2]
+    classId = sys.argv[2]
     proctor_id = int(sys.argv[3])
     specific_file = sys.argv[4] if len(sys.argv) > 4 else None
 
-    print(f"Training context for user: {username}, courseId: {courseId}, proctor ID: {proctor_id}")
+    print(f"Training context for user: {username}, classId: {classId}, proctor ID: {proctor_id}")
 
     if specific_file:
         print(f"📂 Processing only file: {specific_file}")
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
 
-        # This is not a valid way to find filepath, should be based on course id - name is not unique
-        cursor.execute("SELECT filepath FROM courses WHERE id = %s", (courseId,))
+        # This is not a valid way to find filepath, should be based on class id - name is not unique
+        cursor.execute("SELECT filepath FROM class WHERE class_id = %s", (classId,))
         result = cursor.fetchone()
         conn.close()
-        if not courseId:
-            print("Error: Course ID not found.")
+        if not classId:
+            print("Error: Class ID not found.")
             sys.exit(1)
 
         filepath = result['filepath']
@@ -280,7 +280,7 @@ def main():
             print("Error: Unsupported file type")
             sys.exit(1)
 
-        to_pinecone({specific_file: text}, courseId)
+        to_pinecone({specific_file: text}, classId)
 
     else:
         print("ERROR: No specific file provided.")
