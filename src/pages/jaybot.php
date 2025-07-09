@@ -45,7 +45,7 @@ if (isset($_GET['chatId']) && filter_var($_GET['chatId'], FILTER_VALIDATE_INT)) 
 
     // Store results
     $row = $result->fetch_assoc();
-    $chatCourseName = $row['name'] ?? '';
+    $chatCourseName = $row['className'] ?? '';
     $username = $row['username'] ?? '';
     $userRole = $row['role'] ?? '';
 
@@ -304,14 +304,14 @@ if (isset($_GET['chatId']) && filter_var($_GET['chatId'], FILTER_VALIDATE_INT)) 
                 <hr class="border-t-2 border-gray-300 mx-3 mb-2 mt-0 left-sidebar-content-hide">
 
                 <!-- Archive Button -->
-                <div id="archive-button" class="archive-button relative bg-gray-100 p-3 rounded mx-3 mb-4 hover:bg-gray-200 cursor-pointer flex items-center gap-2 left-sidebar-content-hide">
+                <div id="archive-button" class="archive-button relative bg-gray-100 p-3 rounded mx-3 mb-2 hover:bg-gray-200 cursor-pointer flex items-center gap-2 left-sidebar-content-hide">
                     <div class="archive-icon w-6 h-6"></div>
                     <span class="text-gray-700 font-medium text-lg">Archived</span>
                 </div>
             </div>
 
             <!-- Main chat area JAYWING -->
-            <div id="chat-container" class="flex flex-col bg-white pb-2 overflow-hidden">
+            <div id="chat-container" class="flex flex-col bg-white overflow-hidden">
                 <?php if ($currentChat): ?>
                     <?php
                     // Get chat details
@@ -549,7 +549,7 @@ if (isset($_GET['chatId']) && filter_var($_GET['chatId'], FILTER_VALIDATE_INT)) 
                         </div>
 
                         <!-- Archive Button Stuck to Bottom -->
-                        <div class="px-3 pb-3 right-sidebar-content-hide">
+                        <div class="px-3 pb-2 right-sidebar-content-hide">
                             <button
                                 id="archive-chat-button"
                                 class="w-full bg-red-500 hover:bg-red-600 active:bg-red-700 text-white font-medium py-2 px-4 rounded-lg"
