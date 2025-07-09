@@ -1533,7 +1533,7 @@ function deleteClass(classId) {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ id: classId })
+                body: JSON.stringify({ classId: classId })
             })
             .then(response => response.json())
             .then(data => {

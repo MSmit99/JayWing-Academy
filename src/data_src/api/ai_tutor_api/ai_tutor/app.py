@@ -614,11 +614,11 @@ def generate_report():
         SELECT {qa_filter}
         FROM ai_messages
         WHERE enrollment_id IN (
-            SELECT enrollments
-            FROM enrollments
+            SELECT enrollment
+            FROM enrollment
             WHERE class_id IN (
                 SELECT class_id
-                FROM enrollments
+                FROM enrollment
                 WHERE user_id = %s
             )
             {user_filter}

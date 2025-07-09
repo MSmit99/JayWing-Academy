@@ -88,7 +88,7 @@ try {
     if (!$stmt) {
         throw new Exception("Prepare failed: " . $connection->error);
     }
-    $role = "Tutee";
+    $role = "Tutor";
     $stmt->bind_param("iis", $newId, $professorId, $role);
     if (!$stmt->execute()) {
         throw new Exception("Execution failed: " . $stmt->error);

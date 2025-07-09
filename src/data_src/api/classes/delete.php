@@ -12,39 +12,37 @@ if (!isAdmin()) {
 
 try {
     $data = json_decode(file_get_contents('php://input'), true);
-    
-    if (!isset($data['id'])) {
+
+    if (!isset($data['classId'])) {
         throw new Exception('Class ID is required');
     }
 
-    // TODO: Delete all related files before deleting the class
-
     $connection->begin_transaction();
 
-    // First delete related enrollments
+    // Delete related enrollments
     $stmt1 = $connection->prepare("DELETE FROM enrollment WHERE class_id = ?");
     if (!$stmt1) {
         throw new Exception("Prepare failed for enrollment deletion: " . $connection->error);
     }
-    
-    $stmt1->bind_param("i", $data['class_id']);
+
+    $stmt1->bind_param("i", $data['classId']);
     if (!$stmt1->execute()) {
         throw new Exception("Failed to delete enrollments: " . $stmt1->error);
     }
-    
-    // Then delete the class
+
+    // Delete the class itself
     $stmt2 = $connection->prepare("DELETE FROM class WHERE class_id = ?");
     if (!$stmt2) {
         throw new Exception("Prepare failed for class deletion: " . $connection->error);
     }
-    
-    $stmt2->bind_param("i", $data['id']);
+
+    $stmt2->bind_param("i", $data['classId']);
     if (!$stmt2->execute()) {
         throw new Exception("Failed to delete class: " . $stmt2->error);
     }
 
     $connection->commit();
-    
+
     echo json_encode([
         'success' => true,
         'message' => 'Class and related enrollments deleted successfully'
@@ -54,9 +52,7 @@ try {
     $stmt2->close();
 
 } catch (Exception $e) {
-    if ($connection->connect_errno) {
-        $connection->rollback();
-    }
+    $connection->rollback();
     http_response_code(500);
     echo json_encode([
         'success' => false,
