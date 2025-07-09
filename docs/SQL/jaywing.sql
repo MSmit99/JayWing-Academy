@@ -51,7 +51,7 @@ DROP TABLE IF EXISTS `jaywing`.`Class` ;
 CREATE TABLE IF NOT EXISTS `jaywing`.`Class` (
   `class_id` INT NOT NULL AUTO_INCREMENT,
   `className` VARCHAR(45) NOT NULL,
-  `courseCode` VARCHAR(7) NULL,
+  `courseCode` VARCHAR(20) NULL,
   `classDescription` TEXT(500) NULL,
   `createdBy` INT NOT NULL,
   `filepath` VARCHAR(100),

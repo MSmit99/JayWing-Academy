@@ -375,29 +375,23 @@ function updateConversationAI(text, sourceName, currentCourseName, messageId) {
         const isSelected = thumbsUpBtn.classList.contains('bg-green-600');
 
         // Reset both buttons
-        thumbsUpBtn.classList.remove('bg-green-600', 'hover:bg-green-700', 'rounded-full');
-        thumbsDownBtn.classList.remove('bg-red-600', 'hover:bg-red-700', 'rounded-full');
-        thumbsDownBtn.classList.add('hover:bg-red-100');
+        thumbsUpBtn.classList.remove('bg-green-600', 'hover:bg-green-700', 'rounded-full', 'text-white', 'hover:bg-green-100');
+        thumbsDownBtn.classList.remove('bg-red-600', 'hover:bg-red-700', 'rounded-full', 'text-white', 'hover:bg-red-100');
 
         if (!isSelected) {
             // Activate thumbs up
-            thumbsUpBtn.classList.add('bg-green-600', 'hover:bg-green-700', 'rounded-full');
-            thumbsUpBtn.classList.remove('hover:bg-green-100');
+            thumbsUpBtn.classList.add('bg-green-600', 'hover:bg-green-700', 'rounded-full', 'text-white');
+            thumbsDownBtn.classList.add('hover:bg-red-100');
 
-            // Store feedback
             storeFeedback(messageId, 'up');
         } else {
-            // Reset hover if unselected
+            // Neutral state
             thumbsUpBtn.classList.add('hover:bg-green-100');
 
-            // Store feedback
             storeFeedback(messageId, null);
 
-            // Set feedback banner to hidden
             const banner = document.getElementById('feedback-banner');
-            if (banner) {
-                banner.classList.add('hidden');
-            }
+            if (banner) banner.classList.add('hidden');
         }
     };
 
@@ -405,29 +399,23 @@ function updateConversationAI(text, sourceName, currentCourseName, messageId) {
         const isSelected = thumbsDownBtn.classList.contains('bg-red-600');
 
         // Reset both buttons
-        thumbsDownBtn.classList.remove('bg-red-600', 'hover:bg-red-700', 'rounded-full');
-        thumbsUpBtn.classList.remove('bg-green-600', 'hover:bg-green-700', 'rounded-full');
-        thumbsUpBtn.classList.add('hover:bg-green-100');
+        thumbsDownBtn.classList.remove('bg-red-600', 'hover:bg-red-700', 'rounded-full', 'text-white', 'hover:bg-red-100');
+        thumbsUpBtn.classList.remove('bg-green-600', 'hover:bg-green-700', 'rounded-full', 'text-white', 'hover:bg-green-100');
 
         if (!isSelected) {
             // Activate thumbs down
-            thumbsDownBtn.classList.add('bg-red-600', 'hover:bg-red-700', 'rounded-full');
-            thumbsDownBtn.classList.remove('hover:bg-red-100');
+            thumbsDownBtn.classList.add('bg-red-600', 'hover:bg-red-700', 'rounded-full', 'text-white');
+            thumbsUpBtn.classList.add('hover:bg-green-100');
 
-            // Store feedback
             storeFeedback(messageId, 'down');
         } else {
-            // Reset hover if unselected
+            // Neutral state
             thumbsDownBtn.classList.add('hover:bg-red-100');
 
-            // Store feedback
             storeFeedback(messageId, null);
 
-            // Set feedback banner to hidden
             const banner = document.getElementById('feedback-banner');
-            if (banner) {
-                banner.classList.add('hidden');
-            }
+            if (banner) banner.classList.add('hidden');
         }
     };
 
@@ -701,58 +689,48 @@ document.addEventListener('DOMContentLoaded', () => {
         const messageId = thumbsUpBtn.dataset.messageId;
 
         thumbsUpBtn.addEventListener('click', () => {
-            const isSelected = thumbsUpBtn.classList.contains('bg-green-600');
+            const isUpSelected = thumbsUpBtn.classList.contains('bg-green-600');
 
-            // Reset both
-            thumbsUpBtn.classList.remove('bg-green-600', 'hover:bg-green-700', 'rounded-full');
-            thumbsDownBtn.classList.remove('bg-red-600', 'hover:bg-red-700', 'rounded-full');
-            thumbsDownBtn.classList.add('hover:bg-red-100');
+            // Clear both buttons first
+            thumbsUpBtn.classList.remove('bg-green-600', 'hover:bg-green-700', 'rounded-full', 'text-white', 'hover:bg-green-100');
+            thumbsDownBtn.classList.remove('bg-red-600', 'hover:bg-red-700', 'rounded-full', 'text-white', 'hover:bg-red-100');
 
-            if (!isSelected) {
-                thumbsUpBtn.classList.add('bg-green-600', 'hover:bg-green-700', 'rounded-full');
-                thumbsUpBtn.classList.remove('hover:bg-green-100');
+            if (!isUpSelected) {
+                // Activate thumbs up
+                thumbsUpBtn.classList.add('bg-green-600', 'hover:bg-green-700', 'rounded-full', 'text-white');
+                thumbsDownBtn.classList.add('hover:bg-red-100');
 
-                // Store feedback
                 storeFeedback(messageId, 'up');
             } else {
+                // Restore neutral state
                 thumbsUpBtn.classList.add('hover:bg-green-100');
-
-                // Store feedback
                 storeFeedback(messageId, null);
 
-                // Set feedback banner to hidden
                 const banner = document.getElementById('feedback-banner');
-                if (banner) {
-                    banner.classList.add('hidden');
-                }
+                if (banner) banner.classList.add('hidden');
             }
         });
 
         thumbsDownBtn.addEventListener('click', () => {
-            const isSelected = thumbsDownBtn.classList.contains('bg-red-600');
+            const isDownSelected = thumbsDownBtn.classList.contains('bg-red-600');
 
-            // Reset both
-            thumbsDownBtn.classList.remove('bg-red-600', 'hover:bg-red-700', 'rounded-full');
-            thumbsUpBtn.classList.remove('bg-green-600', 'hover:bg-green-700', 'rounded-full');
-            thumbsUpBtn.classList.add('hover:bg-green-100');
+            // Clear both buttons first
+            thumbsDownBtn.classList.remove('bg-red-600', 'hover:bg-red-700', 'rounded-full', 'text-white', 'hover:bg-red-100');
+            thumbsUpBtn.classList.remove('bg-green-600', 'hover:bg-green-700', 'rounded-full', 'text-white', 'hover:bg-green-100');
 
-            if (!isSelected) {
-                thumbsDownBtn.classList.add('bg-red-600', 'hover:bg-red-700', 'rounded-full');
-                thumbsDownBtn.classList.remove('hover:bg-red-100');
+            if (!isDownSelected) {
+                // Activate thumbs down
+                thumbsDownBtn.classList.add('bg-red-600', 'hover:bg-red-700', 'rounded-full', 'text-white');
+                thumbsUpBtn.classList.add('hover:bg-green-100');
 
-                // Store feedback
                 storeFeedback(messageId, 'down');
             } else {
+                // Restore neutral state
                 thumbsDownBtn.classList.add('hover:bg-red-100');
-
-                // Store feedback
                 storeFeedback(messageId, null);
 
-                // Set feedback banner to hidden
                 const banner = document.getElementById('feedback-banner');
-                if (banner) {
-                    banner.classList.add('hidden');
-                }
+                if (banner) banner.classList.add('hidden');
             }
         });
     });
