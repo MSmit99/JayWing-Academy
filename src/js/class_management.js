@@ -2589,9 +2589,9 @@ function displayFilePreview(fileName, fileType, classId) {
     // File icon
     const img = document.createElement('img');
     img.className = 'w-16 h-16 object-contain';  // Fixes size & prevents stretching
-    img.src = fileType.includes("pdf") ? "static/img/pdf-new.png" :
-              fileType.includes("pptx") ? "static/img/pptx.png" :
-              "static/img/default.png";
+    img.src = fileType.includes("pdf") ? "../images/pdf-new.png" :
+              fileType.includes("pptx") ? "../images/pptx.png" :
+              "../images/default.png";
 
     link.appendChild(img);
 
