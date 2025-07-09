@@ -192,7 +192,7 @@ def to_pinecone(text_dict, courseId):
         course_name (str): The course name.
     """
     embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
-    index_name = "ai-tutor-index"
+    index_name = "jaywing-index"
 
     if index_name not in pc.list_indexes().names():
         pc.create_index(

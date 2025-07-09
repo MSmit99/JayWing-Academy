@@ -368,7 +368,7 @@ def delete_file():
 
     # Attempt to delete from Pinecone
     try:
-        index_name = "ai-tutor-index"
+        index_name = "jaywing_index"
         index = pc.Index(index_name)
         
         # Check if the index exists first
@@ -444,7 +444,7 @@ def delete_class():
         else:
             print(f"No folder or files found at '{filepath}'. Skipping deletion.")
 
-        index_name = "ai-tutor-index"
+        index_name = "jaywing_index"
 
         # Check if the index exists first
         existing_indexes = pc.list_indexes()
