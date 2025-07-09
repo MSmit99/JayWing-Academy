@@ -1,6 +1,38 @@
 <?php
 require_once __DIR__ . '/../data_src/includes/session_handler.php';
 require_once __DIR__ . '/../data_src/includes/db_connect.php';
+
+$currentFile = basename(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
+
+switch ($currentFile) {
+    case 'index.php':
+        $currentPage = 'Home';
+        break;
+    case 'about_us.php':
+        $currentPage = 'About Us';
+        break;
+    case 'calendar.php':
+        $currentPage = 'Calendar';
+        break;
+    case 'class_management.php':
+        $currentPage = 'Class Management';
+        break;
+    case 'jaybot.php':
+        $currentPage = 'JayBot';
+        break;
+    case 'jobs.php':
+    case 'tutors.php':
+        $currentPage = 'Tutors';
+        break;
+    case 'message.php':
+        $currentPage = 'Messages';
+        break;
+    case 'profile.php':
+        $currentPage = 'Profile';
+        break;
+    default:
+        $currentPage = '';
+}
 ?>
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
     <div class="container-fluid">
@@ -10,14 +42,11 @@ require_once __DIR__ . '/../data_src/includes/db_connect.php';
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <!-- <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="/jaywing-academy/index.php">Home</a>
-                </li> -->
                 <li class="nav-item">
-                    <a class="nav-link" href="/jaywing-academy/src/pages/calendar.php">Calendar</a>
+                    <a class="nav-link <?php echo $currentPage == "Calendar" ? 'active' : ''; ?>" href="/jaywing-academy/src/pages/calendar.php">Calendar</a>
                 </li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <a class="nav-link dropdown-toggle <?php echo $currentPage == "Tutors" ? 'active' : ''; ?>" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Tutors
                     </a>
                     <ul class="dropdown-menu">
@@ -26,16 +55,16 @@ require_once __DIR__ . '/../data_src/includes/db_connect.php';
                     </ul>
                 </li>
                 <li class="nav-item <?php echo (!isLoggedIn()) ? 'hidden' : ''; ?>">
-                    <a class="nav-link" href="/jaywing-academy/src/pages/message.php">Messages</a>
+                    <a class="nav-link <?php echo $currentPage == "Messages" ? 'active' : ''; ?>" href="/jaywing-academy/src/pages/message.php">Messages</a>
                 </li>
                 <li class="nav-item <?php echo (isAdmin() || !isLoggedIn()) ? 'hidden' : ''; ?>">
-                    <a class="nav-link" href="/jaywing-academy/src/pages/jaybot.php">JayBot</a>
+                    <a class="nav-link <?php echo $currentPage == "JayBot" ? 'active' : ''; ?>" href="/jaywing-academy/src/pages/jaybot.php">JayBot</a>
                 </li>
                 <li class="nav-item <?php echo (!isLoggedIn()) ? 'hidden' : ''; ?>" id="profile-tab">
-                    <a class="nav-link" href="/jaywing-academy/src/pages/profile.php">Profile</a>
+                    <a class="nav-link <?php echo $currentPage == "Profile" ? 'active' : ''; ?>" href="/jaywing-academy/src/pages/profile.php">Profile</a>
                 </li>
                 <li class="nav-item <?php echo (!isAdmin()) ? 'hidden' : ''; ?>" id="class-management-tab">
-                <a class="nav-link" href="/jaywing-academy/src/pages/class_management.php">Class Management</a>
+                    <a class="nav-link <?php echo $currentPage == "Class Management" ? 'active' : ''; ?>" href="/jaywing-academy/src/pages/class_management.php">Class Management</a>
                 </li>
             </ul>
             <div class="d-flex align-items-center">

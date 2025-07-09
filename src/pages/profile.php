@@ -145,7 +145,7 @@ if ($classes && $all_classes) {
         <?php include '../components/navbar.php'; ?>
     </header>
 
-    <main>
+    <main style="background-color: #eee;">
         <!-- TODO: Profile page goes here -->
          <!-- <div class="center-container">
             <h1>Profile</h1>
@@ -153,8 +153,7 @@ if ($classes && $all_classes) {
 
          <!-- Bootstrap Link: https://mdbootstrap.com/docs/standard/extended/profiles/ -->
 
-         <section style="background-color: #eee;">
-         <div class="container py-5">
+         <div class="container pt-4">
     <div class="row">
       <div class="col">
         
@@ -193,7 +192,7 @@ if ($classes && $all_classes) {
             <!-- Wing Icon Section with Text Overlay -->
              <div style="position: relative; display: inline-block;">
              <h5 class="my-3">Wings Bank</h5>
-             <img src="../images/wing.png" alt="Wings Icon" style="width: 200px; height: 200px;">
+             <img src="../images/wing.png" alt="Wings Icon" style="width: 150px; height: 150px;">
              <h5 class="my-3">Current Balance: <?php echo htmlspecialchars($user['wings'] ?? 0); ?></h5>              
             </div>
           </div>
@@ -309,8 +308,8 @@ if ($classes && $all_classes) {
           </div>
 
           <!-- Availability Section -->
-          <div class="row mt-4">
-          <div class="col-md-12">
+          <div class="mt-4 pl-4">
+          <div class="col-md-12 p-0">
             <div class="card mb-4 mb-md-0">
               <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -382,8 +381,6 @@ if ($classes && $all_classes) {
     </div>
   </div>
 <!-- TODO: Add a calendar feature at the bottom that allows user to update their availability -->
-
-</section>
 
     </main>
     
