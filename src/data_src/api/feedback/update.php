@@ -48,9 +48,9 @@ switch ($method) {
 
             // Update database
             $stmt = $connection->prepare("
-                UPDATE messages
+                UPDATE ai_messages
                 SET feedbackRating = ?, feedbackExplanation = ?, feedbackTimestamp = NOW()
-                WHERE messageId = ?
+                WHERE message_id = ?
             ");
             $stmt->bind_param("ssi", $feedbackRating, $feedbackExplanation, $messageId);
             $success = $stmt->execute();
@@ -69,9 +69,9 @@ switch ($method) {
 
             // Update database
             $stmt = $connection->prepare("
-                UPDATE messages
+                UPDATE ai_messages
                 SET feedbackRating = ?, feedbackExplanation = null, feedbackTimestamp = NOW()
-                WHERE messageId = ?
+                WHERE message_id = ?
             ");
             $stmt->bind_param("si", $feedbackRating, $messageId);
             $success = $stmt->execute();
@@ -83,9 +83,9 @@ switch ($method) {
         if ($feedbackExplanation) {
             // Update database
             $stmt = $connection->prepare("
-                UPDATE messages
+                UPDATE ai_messages
                 SET feedbackExplanation = ?, feedbackTimestamp = NOW()
-                WHERE messageId = ?
+                WHERE message_id = ?
             ");
             $stmt->bind_param("si", $feedbackExplanation, $messageId);
             $success = $stmt->execute();
@@ -104,9 +104,9 @@ switch ($method) {
 
         // Delete feedback
         $stmt = $connection->prepare("
-            UPDATE messages
+            UPDATE ai_messages
             SET feedbackRating = NULL, feedbackExplanation = NULL, feedbackTimestamp = NULL
-            WHERE messageId = ?
+            WHERE message_id = ?
         ");
         $stmt->bind_param("i", $messageId);
         $success = $stmt->execute();
