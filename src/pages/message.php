@@ -142,62 +142,86 @@ if (isset($_GET['chat_id']) && filter_var($_GET['chat_id'], FILTER_VALIDATE_INT)
     <!-- bootstrap css -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 
+    <!-- font awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
     <!-- custom css -->
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/message.css">
+
 </head>
-<body class="bg-gray-100 min-h-screen">
+<body>
     <header>
         <?php include '../components/navbar.php'; ?>
     </header>  
-
-    <div class="container mx-auto px-4 py-8">
-        <div class="grid grid-cols-4 gap-6">
-            <!-- Sidebar with chats list -->
-            <div class="col-span-1 bg-white rounded-lg shadow-lg p-4">
-                <div class="flex justify-between items-center mb-4">
+    <div style="height: 56px;"></div>
+    <main class="flex flex-col h-screen gap-0 overflow-hidden">
+        <div id="my-content" class="flex flex-row flex-grow w-full mt-0 overflow-hidden">
+            
+            <!-- Left sidebar with chats list -->
+            <div id="left-sidebar" class="d-flex flex-column flex-shrink-0 bg-gray-100 h-full overflow-hidden w-full">
+                <div class="flex justify-between items-center mb-4 px-3 pt-3">
+                    <!-- Left: Chats Heading -->
                     <h2 class="text-xl font-bold">Chats</h2>
+
+                    <!-- Right: New Chat Button -->
                     <button onclick="showNewChatModal()" class="bg-blue-500 text-white px-3 py-1 rounded-full text-sm">
                         New Chat
                     </button>
                 </div>
-                
-                <!-- List of existing chats -->
-                <div class="space-y-2">
-                    <?php
-                        $stmt = $connection->prepare("
-                        SELECT DISTINCT c.chat_id, c.chatName, c.chatDescription
-                        FROM Chat c
-                        LEFT JOIN Messages m ON c.chat_id = m.chat_id
-                        LEFT JOIN Chat_Participant cp ON c.chat_id = cp.chat_id
-                        WHERE cp.user_id = ?
-                        ORDER BY c.chat_id DESC
-                        ");
-                        $stmt->bind_param("i", $userId);
-                        $stmt->execute();
-                        $chats = $stmt->get_result();
-                        
-                        if (isset($error)) {
-                            echo '<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">';
-                            echo '<strong class="font-bold">Error!</strong>';
-                            echo '<span class="block sm:inline"> ' . htmlspecialchars($error) . '</span>';
-                            echo '</div>';
-                        }
 
-                        while ($chat = $chats->fetch_assoc()):
-                    ?>
-                    <a href="?chat_id=<?php echo htmlspecialchars($chat['chat_id'], ENT_QUOTES, 'UTF-8'); ?>" 
-                        class="block p-3 rounded hover:bg-gray-100 <?php echo $currentChat == $chat['chat_id'] ? 'bg-gray-100' : ''; ?> message-container">
-                        <div class="font-medium truncate"><?php echo htmlspecialchars($chat['chatName'], ENT_QUOTES, 'UTF-8'); ?></div>
-                        <?php if ($chat['chatDescription']): ?>
-                            <div class="text-xs text-gray-500 truncate"><?php echo htmlspecialchars($chat['chatDescription'], ENT_QUOTES, 'UTF-8'); ?></div>
-                        <?php endif; ?>
-                    </a>
-                    <?php endwhile; ?>
+                <!-- List of existing chats -->
+                <div id="sidebar-chats" class="space-y-2 flex-grow ps-3 pb-3 overflow-y-auto overflow-x-hidden left-sidebar-content-hide p-sidebar-noshow">
+                    <div id="chat-div" class="d-grid gap-2">
+                        <?php
+                            $stmt = $connection->prepare("
+                            SELECT DISTINCT c.chat_id, c.chatName, c.chatDescription
+                            FROM Chat c
+                            LEFT JOIN Messages m ON c.chat_id = m.chat_id
+                            LEFT JOIN Chat_Participant cp ON c.chat_id = cp.chat_id
+                            WHERE cp.user_id = ?
+                            ORDER BY c.chat_id DESC
+                            ");
+                            $stmt->bind_param("i", $userId);
+                            $stmt->execute();
+                            $chats = $stmt->get_result();
+                            
+                            if (isset($error)) {
+                                echo '<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">';
+                                echo '<strong class="font-bold">Error!</strong>';
+                                echo '<span class="block sm:inline"> ' . htmlspecialchars($error) . '</span>';
+                                echo '</div>';
+                            }
+
+                            while ($chat = $chats->fetch_assoc()):
+                        ?>
+                            <a href="?chat_id=<?php echo htmlspecialchars($chat['chat_id'], ENT_QUOTES, 'UTF-8'); ?>" 
+                            class="flex items-center justify-between p-3 rounded hover:bg-gray-200 <?php echo $currentChat == $chat['chat_id'] ? 'bg-gray-200' : ''; ?> message-container">
+
+                                <!-- Left: Chat name and description -->
+                                <div class="flex-1 overflow-hidden">
+                                    <div class="font-medium truncate"><?php echo htmlspecialchars($chat['chatName'], ENT_QUOTES, 'UTF-8'); ?></div>
+                                    <?php if ($chat['chatDescription']): ?>
+                                        <div class="text-xs text-gray-500 truncate"><?php echo htmlspecialchars($chat['chatDescription'], ENT_QUOTES, 'UTF-8'); ?></div>
+                                    <?php endif; ?>
+                                </div>
+
+                                <!-- Right: Delete button (uses JavaScript to prevent following the link) -->
+                                <button 
+                                    type="button" 
+                                    onclick="event.stopPropagation(); event.preventDefault(); deleteChat(<?php echo $chat['chat_id']; ?>);" 
+                                    class="ml-2 text-blue-500 hover:text-blue-700 px-2 py-1 rounded"
+                                    title="Delete Chat"
+                                >
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </a>
+                        <?php endwhile; ?>
+                    </div>
                 </div>
             </div>
-            
-            <!-- Main chat area -->
-            <div class="col-span-3 bg-white rounded-lg shadow-lg p-4">
+
+            <!-- Main chat area JAYWING -->
+            <div id="chat-container" class="flex flex-col bg-white overflow-hidden">
                 <?php if ($currentChat): ?>
                     <?php
                     // Get chat details
@@ -207,16 +231,10 @@ if (isset($_GET['chat_id']) && filter_var($_GET['chat_id'], FILTER_VALIDATE_INT)
                     $chatDetails = $stmt->get_result()->fetch_assoc();
                     ?>
                     
-                    <div class="flex flex-col h-[600px]">
                         <!-- Chat header -->
-                        <div class="border-b pb-4 mb-4">
-                        <h2 class="text-xl font-bold"><?php echo htmlspecialchars($chatDetails['chatName'], ENT_QUOTES, 'UTF-8'); ?></h2>
-                            <?php if ($chatDetails['chatDescription']): ?>
-                                <div class="text-sm text-gray-500">
-                                    <?php echo htmlspecialchars($chatDetails['chatDescription']); ?>
-                                </div>
-                            <?php endif; ?>
-
+                        <div id="chat-header" class="flex items-center justify-between p-3 w-full border-b-4 border-gray-50">
+                            <h2 class="text-xl font-bold text-left m-0"><?php echo htmlspecialchars($chatDetails['chatName'], ENT_QUOTES, 'UTF-8'); ?></h2>
+                            
                             <!-- Button to show participants modal positioned right of the text -->
                             <button onclick="showParticipantsModal()" class="bg-green-500 text-white px-3 py-1 rounded-full text-sm">
                                 View Participants
@@ -224,7 +242,7 @@ if (isset($_GET['chat_id']) && filter_var($_GET['chat_id'], FILTER_VALIDATE_INT)
                         </div>
 
                         <!-- Participants Modal -->
-                        <div id="participantsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                        <div id="participantsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center" style="z-index: 1050;">
                             <div class="bg-white rounded-lg p-6 w-[32rem]">
                                 <h3 class="text-xl font-bold mb-4">Chat Participants</h3>
                                 
@@ -261,70 +279,86 @@ if (isset($_GET['chat_id']) && filter_var($_GET['chat_id'], FILTER_VALIDATE_INT)
                                 </button>
                             </div>
                         </div>
-
                         
                         <!-- Messages area -->
-                        <div class="flex-1 overflow-y-auto mb-4 space-y-4">
-                            <?php
-                            $stmt = $connection->prepare("
-                                SELECT m.*, u.username, u.firstName, u.lastName
-                                FROM Messages m
-                                JOIN User u ON m.sender_id = u.user_id
-                                WHERE m.chat_id = ?
-                                ORDER BY m.message_id ASC
-                            ");
-                            $stmt->bind_param("i", $currentChat);
-                            $stmt->execute();
-                            $messages = $stmt->get_result();
-                            
-                            while ($message = $messages->fetch_assoc()):
-                                $isOwnMessage = $message['sender_id'] == $userId;
-                            ?>
-                                <div data-message-id="<?php echo $message['message_id']; ?>" class="flex <?php echo $isOwnMessage ? 'justify-end' : 'justify-start'; ?>">
-                                    <div class="max-w-[70%] <?php echo $isOwnMessage ? 'bg-blue-500 text-white' : 'bg-gray-100'; ?> rounded-lg p-3">
-                                        <?php if (!$isOwnMessage): ?>
-                                            <div class="text-sm font-medium <?php echo $isOwnMessage ? 'text-white' : 'text-gray-900'; ?>">
-                                                <?php echo htmlspecialchars($message['firstName'] . ' ' . $message['lastName']); ?>
-                                            </div>
-                                        <?php endif; ?>
-                                        <div><?php echo nl2br(htmlspecialchars($message['messageContent'])); ?></div>
+                        <div id="conversation" class="flex-1 overflow-y-auto space-y-4 -mb-3 -mt-2 w-full p-chat-noshow">
+                            <div id="chat-location" class="sm:px-3 md:px-12 lg:px-24 xl:px-36">
+                                <?php
+                                $stmt = $connection->prepare("
+                                    SELECT m.*, u.username, u.firstName, u.lastName
+                                    FROM Messages m
+                                    JOIN User u ON m.sender_id = u.user_id
+                                    WHERE m.chat_id = ?
+                                    ORDER BY m.message_id ASC
+                                ");
+                                $stmt->bind_param("i", $currentChat);
+                                $stmt->execute();
+                                $messages = $stmt->get_result();
+                                
+                                while ($message = $messages->fetch_assoc()):
+                                    $isOwnMessage = $message['sender_id'] == $userId;
+                                ?>
+                                    <div data-message-id="<?php echo $message['message_id']; ?>" class="flex pb-2 <?php echo $isOwnMessage ? 'justify-end' : 'justify-start'; ?>">
+                                        <div class="max-w-2xl <?php echo $isOwnMessage ? 'bg-blue-500 text-white' : 'bg-gray-100'; ?> rounded-lg p-2">
+                                            <?php if (!$isOwnMessage): ?>
+                                                <div class="text-sm font-medium <?php echo $isOwnMessage ? 'text-white' : 'text-gray-900'; ?>">
+                                                    <?php echo htmlspecialchars($message['firstName'] . ' ' . $message['lastName']); ?>
+                                                </div>
+                                            <?php else: ?>
+                                                <div class="text-sm font-medium <?php echo $isOwnMessage ? 'text-white' : 'text-gray-900'; ?>">
+                                                    You
+                                                </div>
+                                            <?php endif; ?>
+                                            <div><?php echo nl2br(htmlspecialchars($message['messageContent'])); ?></div>
+                                        </div>
                                     </div>
-                                </div>
-                            <?php endwhile; ?>
+                                <?php endwhile; ?>
+                            </div>
                         </div>
+
                         
                         <!-- Message input -->
-                        <form method="POST" name="messageForm" class="mt-auto">
+                        <form id="message-input" method="POST" name="messageForm" class="mt-auto w-full pr-4 pb-3">
                             <input type="hidden" name="action" value="send_message">
                             <input type="hidden" name="chat_id" value="<?php echo $currentChat; ?>">
-                            <div class="flex gap-2">
-                                <textarea 
-                                    name="message" 
-                                    class="flex-1 border rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 break-words"
+
+                            <!-- Wrap textarea in a relative container -->
+                            <div id="input-container" class="flex gap-2 sm:px-3 md:px-12 lg:px-24 xl:px-36 w-full">
+                                <div class="relative w-full">
+                                <!-- Textarea -->
+                                <textarea
+                                    id="student-message"
+                                    name="message"
+                                    class="w-full border rounded-lg py-2 pr-12 m-0 break-words resize-none max-h-48"
                                     placeholder="Type your message..."
-                                    rows="2"
+                                    rows="1"
                                     required
                                 ></textarea>
-                                <button 
-                                    type="submit"
-                                    class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                >
-                                    Send
+
+                                <!-- Floating Send Button -->
+                                <button id="send-button" type="submit" class="absolute bottom-1.5 right-4 p-0 bg-transparent transition-opacity duration-150">
+                                    <div id="send-circle" class="w-8 h-8 flex items-center justify-center rounded-full
+                                                border-2 border-blue-600 text-blue-600 shadow-md
+                                                hover:bg-blue-600 hover:text-white
+                                                transition-colors duration-200">
+                                    <i id="send-icon" class="fas fa-arrow-up"></i>
+                                    </div>
                                 </button>
+                                </div>
                             </div>
                         </form>
-                    </div>
                 <?php else: ?>
-                    <div class="h-[600px] flex items-center justify-center text-gray-500">
-                        Select a chat or create a new one to start messaging
+                    <div class="pt-4 flex items-center justify-center text-gray-500">
+                        Select or create a chat to start messaging
                     </div>
+                    <img src="../images/etownEngineeringCSSticker.png" alt="ETown CS Sticker" class="h-full object-contain">
                 <?php endif; ?>
-            </div>
+            </div>  
         </div>
-    </div>
+    </main>
 
     <!-- New Chat Modal -->
-    <div id="newChatModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+    <div id="newChatModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center" style="z-index: 1050;">
         <div class="bg-white rounded-lg p-6 w-[32rem]">
             <h3 class="text-xl font-bold mb-4">New Chat</h3>
             <form method="POST">
@@ -404,7 +438,8 @@ if (isset($_GET['chat_id']) && filter_var($_GET['chat_id'], FILTER_VALIDATE_INT)
             </form>
         </div>
     </div>
-
+    
+    <div style="height: 58px;"></div> <!-- Spacer for fixed footer - footer is 59px high -->
     <footer id="footer"></footer>
 
     <!-- Bootstrap JS -->
