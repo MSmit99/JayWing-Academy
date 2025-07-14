@@ -60,11 +60,11 @@ switch ($currentFile) {
                 <li class="nav-item <?php echo (isAdmin() || !isLoggedIn()) ? 'hidden' : ''; ?>">
                     <a class="nav-link <?php echo $currentPage == "JayBot" ? 'active' : ''; ?>" href="/jaywing-academy/src/pages/jaybot.php">JayBot</a>
                 </li>
-                <li class="nav-item <?php echo (!isLoggedIn()) ? 'hidden' : ''; ?>" id="profile-tab">
-                    <a class="nav-link <?php echo $currentPage == "Profile" ? 'active' : ''; ?>" href="/jaywing-academy/src/pages/profile.php">Profile</a>
-                </li>
                 <li class="nav-item <?php echo (!isAdmin()) ? 'hidden' : ''; ?>" id="class-management-tab">
                     <a class="nav-link <?php echo $currentPage == "Class Management" ? 'active' : ''; ?>" href="/jaywing-academy/src/pages/class_management.php">Class Management</a>
+                </li>
+                <li class="nav-item <?php echo (!isLoggedIn()) ? 'hidden' : ''; ?>" id="profile-tab">
+                    <a class="nav-link <?php echo $currentPage == "Profile" ? 'active' : ''; ?>" href="/jaywing-academy/src/pages/profile.php">Profile</a>
                 </li>
             </ul>
             <div class="d-flex align-items-center">

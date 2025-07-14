@@ -13,15 +13,15 @@ if ($isUserLoggedIn) {
 }
 
 // Default
-$currentPage = "Dashboard";
+$currentSection = "Dashboard";
 
 // Detect via GET parameters
 if (isset($_GET['manageclasses'])) {
-    $currentPage = "Manage Classes";
+    $currentSection = "Manage Classes";
 } elseif (isset($_GET['manageenrollments'])) {
-    $currentPage = "Manage Enrollments";
+    $currentSection = "Manage Enrollments";
 } elseif (isset($_GET['manageproctornotes'])) {
-    $currentPage = "Manage Proctor Notes";
+    $currentSection = "Manage Proctor Notes";
 }
 
 // classes
@@ -130,18 +130,18 @@ if ($currentUserId) {
             <div id="sidebar-options" class="space-y-2 flex-grow p-3 overflow-y-auto overflow-x-hidden">
         
                 <div id="sidebar-div" class="d-grid gap-2">
-                    <a href="?" class="block p-3 rounded bg-gray-100 <?php echo $currentPage == "Dashboard" ? 'bg-gray-200' : ''; ?> hover:bg-gray-250 message-container w-full overflow-hidden">
+                    <a href="?" class="block p-3 rounded bg-gray-100 <?php echo $currentSection == "Dashboard" ? 'bg-gray-200' : ''; ?> hover:bg-gray-250 message-container w-full overflow-hidden">
                         <div class="font-medium truncate">Dashboard</div>
                     </a>
-                    <a href="?manageclasses" class="block p-3 rounded bg-gray-100 <?php echo $currentPage == "Manage Classes" ? 'bg-gray-200' : ''; ?> hover:bg-gray-250 message-container w-full overflow-hidden">
+                    <a href="?manageclasses" class="block p-3 rounded bg-gray-100 <?php echo $currentSection == "Manage Classes" ? 'bg-gray-200' : ''; ?> hover:bg-gray-250 message-container w-full overflow-hidden">
                         <div class="font-medium truncate">Manage Classes</div>
                     </a>
 
-                    <a href="?manageenrollments" class="block p-3 rounded bg-gray-100 <?php echo $currentPage == "Manage Enrollments" ? 'bg-gray-200' : ''; ?> hover:bg-gray-250 message-container w-full overflow-hidden">
+                    <a href="?manageenrollments" class="block p-3 rounded bg-gray-100 <?php echo $currentSection == "Manage Enrollments" ? 'bg-gray-200' : ''; ?> hover:bg-gray-250 message-container w-full overflow-hidden">
                         <div class="font-medium truncate">Manage Enrollments</div>
                     </a>
 
-                    <a href="?manageproctornotes" class="block p-3 rounded bg-gray-100 <?php echo $currentPage == "Manage Proctor Notes" ? 'bg-gray-200' : ''; ?> hover:bg-gray-250 message-container w-full overflow-hidden">
+                    <a href="?manageproctornotes" class="block p-3 rounded bg-gray-100 <?php echo $currentSection == "Manage Proctor Notes" ? 'bg-gray-200' : ''; ?> hover:bg-gray-250 message-container w-full overflow-hidden">
                         <div class="font-medium truncate">Manage Proctor Notes</div>
                     </a>
                 </div>
@@ -158,23 +158,23 @@ if ($currentUserId) {
                     aria-label="Toggle Dropdown Mobile">
                     <i id="toggle-dropdown-mobile-icon" class="fas fa-caret-down"></i>
                 </button>
-                <h2 id="chat-header-text" class="text-xl font-bold text-left m-0"> <?php echo htmlspecialchars($currentPage); ?> </h2>
+                <h2 id="chat-header-text" class="text-xl font-bold text-left m-0"> <?php echo htmlspecialchars($currentSection); ?> </h2>
             </div>
 
             <!-- Outer scrollable container -->
             <div id="dropdown-sidebar" class="hidden bg-gray-100 overflow-x-auto p-2">
             <!-- Inner flex container that centers content when there's room -->
             <div class="flex flex-row gap-2 min-w-max justify-center">
-                <a href="?" class="block p-3 rounded bg-gray-100 <?php echo $currentPage == "Dashboard" ? 'bg-gray-200' : ''; ?> hover:bg-gray-250 message-container flex-shrink-0">
+                <a href="?" class="block p-3 rounded bg-gray-100 <?php echo $currentSection == "Dashboard" ? 'bg-gray-200' : ''; ?> hover:bg-gray-250 message-container flex-shrink-0">
                     <div class="font-medium">Dashboard</div>
                 </a>
-                <a href="?manageclasses" class="block p-3 rounded bg-gray-100 <?php echo $currentPage == "Manage Classes" ? 'bg-gray-200' : ''; ?> hover:bg-gray-250 message-container flex-shrink-0">
+                <a href="?manageclasses" class="block p-3 rounded bg-gray-100 <?php echo $currentSection == "Manage Classes" ? 'bg-gray-200' : ''; ?> hover:bg-gray-250 message-container flex-shrink-0">
                     <div class="font-medium">Manage Classes</div>
                 </a>
-                <a href="?manageenrollments" class="block p-3 rounded bg-gray-100 <?php echo $currentPage == "Manage Enrollments" ? 'bg-gray-200' : ''; ?> hover:bg-gray-250 message-container flex-shrink-0">
+                <a href="?manageenrollments" class="block p-3 rounded bg-gray-100 <?php echo $currentSection == "Manage Enrollments" ? 'bg-gray-200' : ''; ?> hover:bg-gray-250 message-container flex-shrink-0">
                     <div class="font-medium">Manage Enrollments</div>
                 </a>
-                <a href="?manageproctornotes" class="block p-3 rounded bg-gray-100 <?php echo $currentPage == "Manage Proctor Notes" ? 'bg-gray-200' : ''; ?> hover:bg-gray-250 message-container flex-shrink-0">
+                <a href="?manageproctornotes" class="block p-3 rounded bg-gray-100 <?php echo $currentSection == "Manage Proctor Notes" ? 'bg-gray-200' : ''; ?> hover:bg-gray-250 message-container flex-shrink-0">
                     <div class="font-medium">Manage Proctor Notes</div>
                 </a>
             </div>
@@ -183,7 +183,7 @@ if ($currentUserId) {
             <!-- Main area -->
             <div id="conversation" class="flex-1 overflow-y-auto space-y-4 w-full p-chat-noshow">
 <!-- Dashboard Section -->
-                <?php if($currentPage == "Dashboard") : ?>
+                <?php if($currentSection == "Dashboard") : ?>
                     <div class="p-4 w-full h-full bg-white">
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                             <!-- Left: Filters -->
@@ -344,7 +344,7 @@ if ($currentUserId) {
 
 
 <!-- Class Management Section -->
-                <?php elseif($currentPage == "Manage Classes") : ?>
+                <?php elseif($currentSection == "Manage Classes") : ?>
                     <!-- Add Classes -->
                     <div class="card m-4">
                         <div class="card-header">
@@ -477,7 +477,7 @@ if ($currentUserId) {
                     </div>
 
 <!-- Enrollment Management Section -->
-                <?php elseif($currentPage == "Manage Enrollments") : ?>
+                <?php elseif($currentSection == "Manage Enrollments") : ?>
                     <!-- Add Enrollments -->
                     <div class="card m-4">
                         <div class="card-header">
@@ -644,7 +644,7 @@ if ($currentUserId) {
                     </div>
 
 <!-- Proctor Note Management Section -->
-                <?php elseif($currentPage == "Manage Proctor Notes") : ?>
+                <?php elseif($currentSection == "Manage Proctor Notes") : ?>
                     <div class="m-4">
                         <form id="proctorForm">
                             <div class="row">

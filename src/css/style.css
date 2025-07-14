@@ -216,3 +216,10 @@ main {
     background-color: #f8f9fa !important;
     border-color: #f8f9fa !important;
 }
+
+/*--------------------- Profile Styling ---------------------------*/
+
+.fixed-height-viewport {
+  height: 30vh; /* 30% of the viewport height */
+  overflow-y: auto;
+}
