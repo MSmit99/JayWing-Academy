@@ -75,7 +75,7 @@ $eventEnded = strtotime($event['eventEndTime']) < time();
     <?php include '../components/navbar.php'; ?>
 
     <main class="container mt-4">
-        <div class="card bg-dark text-white">
+        <div class="card">
             <div class="card-header">
                 <h2><?php echo htmlspecialchars($event['eventName']); ?></h2>
             </div>
@@ -97,7 +97,7 @@ $eventEnded = strtotime($event['eventEndTime']) < time();
                             <form id="attendanceForm">
                                 <input type="hidden" name="event_id" value="<?php echo $event_id; ?>">
                         <?php endif; ?>
-                        <table class="table table-dark">
+                        <table class="table table">
                             <thead>
                                 <tr>
                                     <th>Name</th>

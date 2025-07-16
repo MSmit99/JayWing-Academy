@@ -60,12 +60,16 @@ main {
     display:inline;
 }
 
-
 .fc-event-title {
     white-space: normal !important;
     overflow: visible !important;
     cursor: pointer;
 }
+
+.fc .fc-button .fa {
+    margin-right: 4px;
+}
+
 
 
 /*--------------------- CS341 Logo in Footer --------------------*/

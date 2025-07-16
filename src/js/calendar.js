@@ -12,28 +12,37 @@ document.addEventListener('DOMContentLoaded', function() {
 
   calendar = new FullCalendar.Calendar(calendarEl, {
       initialView: 'dayGridMonth',
+      themeSystem: 'bootstrap5',
       headerToolbar: {
-          left: 'prev,next today' + (isLoggedIn ? ' createEvent' : ''),
-          center: 'title',
-          right: 'dayGridMonth,timeGridWeek,timeGridDay'
-      },       
-      events: {
-          url: '/jaywing-academy/src/data_src/api/events/get_events.php',
-          method: 'GET',
-          failure: function() {
-              alert('There was an error while fetching events!');
-          }
+        left: 'prev,next today' + (isLoggedIn ? ' createEvent' : ''),
+        center: 'title',
+        right: 'dayGridMonth,timeGridWeek,timeGridDay'
       },
       customButtons: {
-          createEvent: {
-              text: 'Create Event',
-              click: function() {
-                  if (typeof bootstrap !== 'undefined') {
-                      var modal = new bootstrap.Modal(document.getElementById('createEventModal'));
-                      modal.show();
-                  }
-              }
-          }
+        createEvent: {
+            text: 'Create Event',
+            click: function () {
+                if (typeof bootstrap !== 'undefined') {
+                    var modal = new bootstrap.Modal(document.getElementById('createEventModal'));
+                    modal.show();
+                }
+            }
+        }
+      },
+      buttonText: {
+        prev: '',
+        next: '',
+        today: 'Today',
+        month: 'Month',
+        week: 'Week',
+        day: 'Day'
+      },
+      events: {
+        url: '/jaywing-academy/src/data_src/api/events/get_events.php',
+        method: 'GET',
+        failure: function () {
+            alert('There was an error while fetching events!');
+        }
       },
       eventClick: function(info) {
           showEventDetails(info.event);
@@ -46,6 +55,18 @@ document.addEventListener('DOMContentLoaded', function() {
               trigger: 'hover',
               container: 'body'
           });
+      },
+      datesSet: function () {
+        // Inject icons after calendar is rendered
+        const prevBtn = document.querySelector('.fc-prev-button');
+        const nextBtn = document.querySelector('.fc-next-button');
+
+        if (prevBtn && !prevBtn.querySelector('i')) {
+        prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
+        }
+        if (nextBtn && !nextBtn.querySelector('i')) {
+        nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
+        }
       }
   });
   
@@ -132,6 +153,9 @@ async function editEvent(eventId) {
             }
             eventIdInput.value = eventId;
 
+            // Modify modal name
+            document.getElementById('header').textContent = 'Edit Event';
+
             // Clear existing participants and add current ones
             const participantsList = document.getElementById('participantsList');
             participantsList.innerHTML = '';
@@ -140,14 +164,14 @@ async function editEvent(eventId) {
             participantsList.innerHTML = `
                 <div class="participant-entry row mb-2">
                     <div class="col-md-8">
-                        <input type="email" class="form-control bg-dark text-white participant-email" 
+                        <input type="email" class="form-control participant-email" 
                             value="${currentUserEmail}" 
                             name="participants[0][email]" 
                             required 
                             readonly>
                     </div>
                     <div class="col-md-4">
-                        <select class="form-select bg-dark text-white" name="participants[0][role]" required>
+                        <select class="form-select" name="participants[0][role]" required>
                             <option value="professor" ${data.participants[0].roleOfEvent === 'professor' ? 'selected' : ''}>Professor</option>
                             <option value="tutor" ${data.participants[0].roleOfEvent === 'tutor' ? 'selected' : ''}>Tutor</option>
                             <option value="tutee" ${data.participants[0].roleOfEvent === 'tutee' ? 'selected' : ''}>Tutee</option>
@@ -163,18 +187,16 @@ async function editEvent(eventId) {
                     newEntry.className = 'participant-entry row mb-2';
                     newEntry.innerHTML = `
                         <div class="col-md-8">
-                            <input type="email" class="form-control bg-dark text-white participant-email" 
+                            <input type="email" class="form-control participant-email" 
                                 value="${participant.email}" name="participants[${participantCounter}][email]" required>
                         </div>
-                        <div class="col-md-3">
-                            <select class="form-select bg-dark text-white" name="participants[${participantCounter}][role]" required>
+                        <div class="col-md-4 d-flex align-items-center gap-2 mb-2">
+                            <select class="form-select" name="participants[${participantCounter}][role]" required>
                                 <option value="professor" ${participant.roleOfEvent === 'professor' ? 'selected' : ''}>Professor</option>
                                 <option value="tutor" ${participant.roleOfEvent === 'tutor' ? 'selected' : ''}>Tutor</option>
                                 <option value="tutee" ${participant.roleOfEvent === 'tutee' ? 'selected' : ''}>Tutee</option>
                             </select>
-                        </div>
-                        <div class="col-md-1">
-                            <button type="button" class="btn btn-danger btn-sm" onclick="this.parentElement.parentElement.remove()">×</button>
+                            <button type="button" class="btn btn-danger btn-sm" onclick="this.parentElement.parentElement.remove()"><i class="fas fa-xmark"></i></button>
                         </div>
                     `;
                     participantsList.appendChild(newEntry);
@@ -302,21 +324,18 @@ function addParticipantField() {
     newEntry.className = 'participant-entry row mb-2';
     newEntry.innerHTML = `
         <div class="col-md-8">
-            <input type="email" class="form-control bg-dark text-white participant-email" 
+            <input type="email" class="form-control participant-email" 
                    placeholder="Participant Email" name="participants[${participantCounter}][email]" required>
         </div>
-        <div class="col-md-3">
-            <select class="form-select bg-dark text-white" name="participants[${participantCounter}][role]" required>
+        <div class="col-md-4 d-flex align-items-center gap-2 mb-2">
+            <select class="form-select" name="participants[${participantCounter}][role]" required>
                 <option value="professor">Professor</option>
                 <option value="tutor">Tutor</option>
                 <option value="tutee">Tutee</option>
             </select>
-        </div>
-        <div class="col-md-1">
-            <button type="button" class="btn btn-danger btn-sm" onclick="this.parentElement.parentElement.remove()">×</button>
+            <button type="button" class="btn btn-danger btn-sm" onclick="this.parentElement.parentElement.remove()"><i class="fas fa-xmark"></i></button>
         </div>
     `;
     participantsList.appendChild(newEntry);
     participantCounter++;
 }
-
