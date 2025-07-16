@@ -27,7 +27,7 @@ function loadCurrentAvailability() {
                         <td>
                             <button class="btn btn-danger btn-sm delete-availability" 
                                     data-availability-id="${slot.availability_id}">
-                                <i class="fas fa-times"></i> Delete
+                                Delete
                             </button>
                         </td>
                     `;
